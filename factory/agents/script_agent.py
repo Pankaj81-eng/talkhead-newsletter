@@ -169,16 +169,28 @@ def _unverified_percentages(script: Script, topic: str) -> list[str]:
     return sorted(narration_pcts - topic_pcts)
 
 
+def _topic_percentages(topic: str) -> list[str]:
+    return sorted({m.group().replace(" ", "") for m in _PERCENT_RE.finditer(topic)})
+
+
 def generate_script(topic: str, max_regeneration_attempts: int = 3) -> Script:
     lo, hi = _word_budget()
     prompt = build_prompt(topic)
+    topic_pcts = _topic_percentages(topic)
     script = None
     for attempt in range(max_regeneration_attempts):
         script = generate_structured(prompt, Script)
         wc = script.word_count
         bad_pcts = _unverified_percentages(script, topic)
+        narration_pcts = {m.group().replace(" ", "") for m in _PERCENT_RE.finditer(script.full_narration)}
+        # If the brief itself contains real percentages, the script should
+        # use at least one -- confirmed on a live run (2026-09-05): with
+        # nothing to catch as WRONG, the model just went fully generic and
+        # cited zero numbers at all. Catching "wrong" isn't enough; also
+        # catch "suspiciously none" when real ones were available.
+        too_generic = bool(topic_pcts) and not narration_pcts
 
-        if lo <= wc <= hi and not bad_pcts:
+        if lo <= wc <= hi and not bad_pcts and not too_generic:
             script.description = _ensure_clear_opening(script.description, topic)
             return script
 
@@ -195,6 +207,19 @@ def generate_script(topic: str, max_regeneration_attempts: int = 3) -> Script:
             )
             continue
 
+        if too_generic:
+            print(f"[script_agent] attempt {attempt+1}: brief has real "
+                  f"percentages but narration cited none -- regenerating")
+            prompt += (
+                f"\n\nYour previous attempt didn't cite a single specific "
+                f"percentage, even though the brief has real ones available: "
+                f"{', '.join(topic_pcts[:8])}. Rewrite the hook and at least "
+                f"one body beat to center on one or more of these exact "
+                f"figures -- being vague/generic here is a failure, not a "
+                f"safe choice."
+            )
+            continue
+
         print(f"[script_agent] attempt {attempt+1}: {wc} words, "
               f"outside [{lo},{hi}] budget — regenerating with tighter instruction")
         prompt += (
@@ -208,13 +233,22 @@ def generate_script(topic: str, max_regeneration_attempts: int = 3) -> Script:
     # than relying on the reviewer to independently know every benchmark's
     # real score.
     remaining_bad = _unverified_percentages(script, topic)
+    remaining_narration_pcts = {m.group().replace(" ", "") for m in _PERCENT_RE.finditer(script.full_narration)}
+    warnings = []
     if remaining_bad:
-        warning = (
+        warnings.append(
             f"⚠️ UNVERIFIED: {', '.join(remaining_bad)} could not be matched "
             f"to anything in the source brief after {max_regeneration_attempts} "
-            f"attempts -- double-check before approving.\n\n"
+            f"attempts -- double-check before approving."
         )
-        script.description = warning + script.description
+    if topic_pcts and not remaining_narration_pcts:
+        warnings.append(
+            f"⚠️ GENERIC: the brief has real percentages ({', '.join(topic_pcts[:5])}) "
+            f"but the script cited none after {max_regeneration_attempts} attempts -- "
+            f"consider rejecting and re-running."
+        )
+    if warnings:
+        script.description = "\n".join(warnings) + "\n\n" + script.description
     script.description = _ensure_clear_opening(script.description, topic)
     return script
 
