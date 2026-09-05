@@ -1,0 +1,37 @@
+# Secrets -- never commit real API keys
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+uv.lock
+
+# Generated output -- large media files, regenerated on every run, not source
+runs/
+cache/
+factory.db
+runs/checkpoints.db*
+
+# Your voice sample and outro are personal recordings -- keep them out of a
+# public repo by default. Remove these two lines if you WANT them versioned
+# (e.g. a private repo, or you're fine with your recorded voice being public).
+assets/voice/sample.*
+assets/outro/outro.*
+assets/outro/outro_vertical.mp4
+assets/intro/intro.*
+assets/intro/intro_vertical.mp4
+
+# Backup/reference voice takes -- not the active sample (see config.py's
+# _find_voice_sample / VOICE_SAMPLE), but still personal recordings. Kept
+# locally as backups, excluded from git like the active sample above.
+assets/voice/reference_clip.wav
+assets/voice/original/
+
+# Curated per-story b-roll pulled from a third party's own site (e.g. an
+# announcement's demo clips) -- their copyright, not ours to redistribute
+# via this repo. Manifest format lives in assets/official/, kept local.
+assets/official/
+
+# OS cruft
+.DS_Store

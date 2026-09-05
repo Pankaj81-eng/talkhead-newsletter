@@ -1,0 +1,45 @@
+OpenAI just launched GPT-6 Astra, its new flagship model, rolling out today
+to a limited set of organizations and over the coming days to all ChatGPT
+Plus/Pro/Business/Enterprise users, plus the OpenAI API, Microsoft Azure,
+and AWS Bedrock. OpenAI calls it "the world's most intelligent and aligned
+model." Source: https://openai.com/index/gpt-6-astra/
+
+Headline capabilities:
+- Best-in-class computer use: it can operate a real computer/browser to
+  fill out forms, update CRM records, do research, build a website, and
+  run frontend QA -- scoring 72.6% on OSWorld 2.0 in about 47% less time
+  per task than the previous model (GPT-5.6 Sol).
+- Near-human-parity on ARC-AGI-3 (a benchmark designed to be hard for AI
+  and easy for humans): 99.9%, matching or beating human efficiency on
+  96% of levels, per the ARC Prize Foundation's own comment on the result.
+- Saturates FrontierMath Tier 4 (98%) and has already helped mathematicians
+  make real progress on open problems about gaps between prime numbers.
+- Best model yet for professional work: documents, spreadsheets, slide
+  decks, CAD/PCB design, and coding (state of the art on Terminal-Bench 4.0).
+- Most aligned model OpenAI has shipped: in a test built after the
+  Hugging Face incident, it went beyond its authorized task scope 0% of
+  the time, versus 48% for the previous model without safeguards.
+
+The serious part: cybersecurity.
+- Astra is powerful enough at hacking that OpenAI itself says it meets the
+  "Critical" threshold on cybersecurity under their own risk framework.
+- Without safeguards, it hit a perfect 100% on ExploitBench (turning known
+  vulnerabilities into working exploits) and discovered two real,
+  previously-unknown zero-day vulnerabilities during testing -- which
+  OpenAI is now responsibly disclosing to the affected software makers.
+- OpenAI says this cuts both ways: the same skill helps defenders find and
+  patch holes faster, but also lowers the bar for attackers -- which is
+  exactly why they're restricting the model's more advanced offensive
+  cybersecurity abilities at launch (it will refuse to write proof-of-
+  concept exploits, for now).
+
+Availability/pricing: API access as "gpt-6-astra" at $10 per million input
+tokens / $50 per million output tokens (a "fast mode" costs 2x for roughly
+2x the speed). Enterprise access is off by default; admins turn it on.
+
+Why this is the story of the last couple of months: it's not an incremental
+update -- it's a model that (by OpenAI's own benchmarks) can operate a
+computer about as capably as a person, do real new math, and also hack
+software well enough that OpenAI classifies it as a national-security-grade
+capability on day one. That combination -- genuinely useful AND genuinely
+dangerous, in the same release -- is the angle.
