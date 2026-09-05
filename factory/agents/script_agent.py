@@ -33,10 +33,19 @@ Hard requirements:
   (at ~{config.WORDS_PER_SECOND} words/sec, this lands the video in the
   {config.MIN_SECONDS:.0f}-{config.SAFE_MAX_SECONDS:.0f} second range).
 - The HOOK is one beat, 1-2 sentences, spoken in the first 2-4 seconds.
-  It must be specific to this exact topic, not generic channel branding.
-  It should create curiosity or state a surprising claim — the kind of line
-  that stops someone scrolling. Do NOT start with "Hey guys" or "Welcome back".
-- BODY is 3-6 beats. Each beat is one clear idea, one narration line.
+  It must lead with the single most concrete, specific, surprising FACT
+  from the topic brief -- a real number, benchmark score, quote, or named
+  capability -- not a generic framing like "a big new AI model just
+  launched" or "this changes everything." If the brief contains a
+  striking stat (a percentage, a named benchmark, a dollar figure, a
+  count), the hook should almost always be built around it, not around
+  the mere fact that something launched. Do NOT start with "Hey guys" or
+  "Welcome back".
+- BODY is 3-6 beats. Each beat is one clear idea, one narration line. At
+  least ONE body beat must also cite a specific number or named fact from
+  the brief (not just the hook) -- avoid a body that stays entirely at
+  the level of vague capability claims ("it can do many tasks") when the
+  brief itself gives you concrete evidence for those claims.
 - For each beat (hook and body), decide the best visual:
   - "broll": if a real stock/screen-recording visual would help (give a
     concrete, literal search query — e.g. "person typing code on laptop

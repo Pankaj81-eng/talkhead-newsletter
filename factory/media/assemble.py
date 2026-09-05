@@ -119,7 +119,22 @@ def burn_captions(video_path: Path, caption_images: list[dict], out_path: Path) 
 
     inputs = ["-i", str(video_path)]
     for c in caption_images:
-        inputs += ["-i", str(c["path"])]
+        # -loop 1 matters here, not cosmetic (2026-09-05, confirmed the hard
+        # way): without it, each PNG is a single-frame stream that EOFs
+        # immediately after its first use. Overlay normally just holds that
+        # last frame for as long as `enable` needs it -- which is why the
+        # first caption or two still appeared to work -- but the very first
+        # beat-clip boundary in body_video.mp4 (a still-image beat's zoompan
+        # encode meeting a real video beat's encode, with slightly different
+        # stream parameters) triggers ffmpeg to reconfigure the whole
+        # filter_complex graph ONE time. That reconfigure flushes every
+        # overlay branch's held frame at once, and a stream already at EOF
+        # has nothing left to supply -- every caption after that point in
+        # the video silently stopped compositing, regardless of its own
+        # enable() window or position in the chain (confirmed both weren't
+        # the cause first). `-loop 1` makes each caption a proper infinite
+        # stream that can always supply a frame, reconfigure or not.
+        inputs += ["-loop", "1", "-i", str(c["path"])]
 
     y_pos = H - 380
     prev = "0:v"
@@ -131,7 +146,7 @@ def burn_captions(video_path: Path, caption_images: list[dict], out_path: Path) 
         # inclusive on both ends, so without this both briefly overlap for
         # a single frame at every caption transition.
         parts.append(
-            f"[{prev}][{idx}:v]overlay=x=0:y={y_pos}:"
+            f"[{prev}][{idx}:v]overlay=x=0:y={y_pos}:eof_action=pass:shortest=0:"
             f"enable='between(t,{c['start']:.3f},{max(c['end'] - 0.001, c['start']):.3f})'[{label}]"
         )
         prev = label
