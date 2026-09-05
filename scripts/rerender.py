@@ -63,7 +63,7 @@ def main() -> None:
     timings = beat_timings_from_words(word_counts, words, audio_duration)
 
     final_path = assemble_reel(script, timings, voiceover_wav, words, run_dir)
-    thumbs = generate_thumbnail(script, run_dir / "beat_00.mp4", run_dir)
+    thumbs = generate_thumbnail(script, run_dir)
     print(f"Re-rendered: {final_path}")
     print(f"Thumbnail: {thumbs['landscape']}")
 

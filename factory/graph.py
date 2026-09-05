@@ -168,8 +168,7 @@ def node_assemble(state: PipelineState) -> dict:
 def node_thumbnail(state: PipelineState) -> dict:
     script = Script.model_validate(state["script"])
     run_dir = Path(state["run_dir"])
-    hook_clip = run_dir / "beat_00.mp4"  # see assemble.py's build_beat_clip
-    paths = generate_thumbnail(script, hook_clip, run_dir)
+    paths = generate_thumbnail(script, run_dir)
     db.log_event(state["run_id"], "thumbnail", "done", str(paths["landscape"]))
     return {
         "thumbnail_path": str(paths["landscape"]),

@@ -114,15 +114,36 @@ def _compose(frame_path: Path, text: str, w: int, h: int, out_path: Path) -> Pat
     return out_path
 
 
-def generate_thumbnail(script, hook_beat_clip: Path, run_dir: Path) -> dict:
+def _best_source_beat_index(script) -> int:
     """
-    Returns {"landscape": Path, "vertical": Path}. hook_beat_clip is
-    beat_00.mp4 (see assemble.py's build_beat_clip) -- always exists
-    regardless of whether the hook rendered as broll/photo/text_card,
-    since every beat produces a clip at that fixed path.
+    Prefer a beat whose visual is real photo/video footage over one that's
+    a rendered text_card -- confirmed on a live run (2026-09-05): the hook
+    beat was a text_card ("100% ON EXPLOITBENCH"), so grabbing its frame
+    for the thumbnail just captured that rendered text, and the headline
+    ended up stacked on top of ANOTHER piece of rendered text instead of
+    over a real photo -- exactly the "text over a real frame" look this
+    was built to avoid. The hook is still preferred when it IS broll (the
+    most relevant beat, thumbnail-wise); otherwise take the first broll
+    body beat; if literally nothing in the script is broll, fall back to
+    the hook anyway (beat 0) since there's no better option.
     """
+    beats = script.all_beats
+    for i, beat in enumerate(beats):
+        if beat.visual == "broll":
+            return i
+    return 0
+
+
+def generate_thumbnail(script, run_dir: Path) -> dict:
+    """
+    Returns {"landscape": Path, "vertical": Path}. Picks whichever beat
+    clip (beat_NN.mp4, see assemble.py's build_beat_clip) is real footage
+    rather than a rendered text card -- see _best_source_beat_index().
+    """
+    idx = _best_source_beat_index(script)
+    beat_clip = run_dir / f"beat_{idx:02d}.mp4"
     raw_frame = run_dir / "thumbnail_source_frame.png"
-    _grab_frame(hook_beat_clip, raw_frame)
+    _grab_frame(beat_clip, raw_frame)
 
     landscape = _compose(raw_frame, script.thumbnail_text, THUMB_W, THUMB_H,
                           run_dir / "thumbnail.jpg")
