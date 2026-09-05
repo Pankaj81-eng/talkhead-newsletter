@@ -5,7 +5,9 @@
 __pycache__/
 *.pyc
 .venv/
-uv.lock
+# uv.lock IS committed (unlike the local-only-phase default) -- GitHub
+# Actions needs a reproducible, fast `uv sync` rather than re-resolving
+# heavy ML deps (torch/chatterbox-tts/kokoro) fresh on every run.
 
 # Generated output -- large media files, regenerated on every run, not source
 runs/

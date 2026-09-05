@@ -13,17 +13,25 @@ ai-daily's own newsletter run yet, and without ever modifying that repo.
 Requires ai-daily's own venv to exist (`cd ai-daily && uv venv && uv pip
 install -r requirements.txt && uv run python -m playwright install
 chromium` once) -- see README.md.
+
+Location is configurable via TALKHEAD_AI_DAILY_DIR (defaults to the
+sibling folder next to this repo, which is what the local Mac setup
+uses) -- the GitHub Actions workflow sets this to wherever it freshly
+clones ai-daily's own public repo into for that run, since there's no
+persistent sibling filesystem in the cloud.
 """
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess
 import time
 from datetime import datetime
 from pathlib import Path
 
-AI_DAILY_DIR = Path(__file__).resolve().parent.parent.parent.parent / "ai-daily"
+AI_DAILY_DIR = Path(os.getenv("TALKHEAD_AI_DAILY_DIR") or
+                     (Path(__file__).resolve().parent.parent.parent.parent / "ai-daily"))
 
 
 class AiDailyBridgeError(RuntimeError):

@@ -68,6 +68,9 @@ def _update_log_status(run_id: str, status: str, publish_result: dict | None = N
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", help="YYYY-MM-DD, defaults to today")
+    ap.add_argument("--decision-timeout", type=int, default=6 * 3600,
+                     help="Seconds to wait for the Publish/Discard tap (default 6h locally; "
+                          "the GitHub Actions workflow passes a shorter one to bound runner cost).")
     args = ap.parse_args()
     date = args.date or datetime.now().strftime("%Y-%m-%d")
 
@@ -166,7 +169,7 @@ def main() -> None:
         print(f"[daily_run] video sent, waiting for Publish/Discard decision on Telegram...")
 
         stage = "await_decision"
-        decision = await_decision(token, chat_id, message_id, run_id)
+        decision = await_decision(token, chat_id, message_id, run_id, args.decision_timeout)
 
         if decision == "publish":
             stage = "publish"
