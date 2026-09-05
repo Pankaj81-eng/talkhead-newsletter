@@ -40,7 +40,7 @@ from factory.media.metadata_export import write_metadata
 from factory.news.aidaily_bridge import fetch_top_story, story_to_brief, AiDailyBridgeError
 from factory.news.article_fetch import fetch_article_text
 from factory.news.hero_image import fetch_hero_image
-from factory.news.telegram_notify import send_daily_video, send_error, send_text
+from factory.news.telegram_notify import send_daily_video, await_decision, send_error, send_text
 
 PUBLISHED_LOG = config.ROOT / "state" / "published_log.json"
 
@@ -49,6 +49,17 @@ def _append_log(entry: dict) -> None:
     PUBLISHED_LOG.parent.mkdir(parents=True, exist_ok=True)
     log = json.loads(PUBLISHED_LOG.read_text()) if PUBLISHED_LOG.exists() else []
     log.append(entry)
+    PUBLISHED_LOG.write_text(json.dumps(log, indent=2))
+
+
+def _update_log_status(run_id: str, status: str) -> None:
+    if not PUBLISHED_LOG.exists():
+        return
+    log = json.loads(PUBLISHED_LOG.read_text())
+    for entry in log:
+        if entry.get("run_id") == run_id:
+            entry["status"] = status
+            entry["decided_at"] = datetime.now().isoformat()
     PUBLISHED_LOG.write_text(json.dumps(log, indent=2))
 
 
@@ -126,10 +137,10 @@ def main() -> None:
         metadata_path = write_metadata(script, run_dir)
 
         stage = "notify"
-        send_daily_video(
+        message_id = send_daily_video(
             token, chat_id, final_path, thumbs["landscape"],
             script.title, script.description, story.get("link", ""),
-            metadata_path,
+            metadata_path, run_id=run_id,
         )
 
         stage = "log"
@@ -146,11 +157,20 @@ def main() -> None:
             "thumbnail_path": str(thumbs["landscape"].relative_to(config.ROOT)),
             "metadata_path": str(metadata_path.relative_to(config.ROOT)),
             "used_hero_image": bool(hero),
-            "status": "awaiting_manual_review",
+            "status": "awaiting_decision",
             "generated_at": datetime.now().isoformat(),
         })
-        db.mark_status(run_id, "awaiting_manual_review", final_path=str(final_path))
-        print(f"[daily_run] done: {final_path}")
+        db.mark_status(run_id, "awaiting_decision", final_path=str(final_path))
+        print(f"[daily_run] video sent, waiting for Publish/Discard decision on Telegram...")
+
+        stage = "await_decision"
+        decision = await_decision(token, chat_id, message_id, run_id)
+        final_status = {
+            "publish": "approved_by_pankaj", "discard": "discarded_by_pankaj", None: "decision_timed_out",
+        }[decision]
+        _update_log_status(run_id, final_status)
+        db.mark_status(run_id, final_status)
+        print(f"[daily_run] done: {final_path} -- {final_status}")
 
     except AiDailyBridgeError as e:
         # "No newsletter today" is a normal, expected outcome (ai-daily's
