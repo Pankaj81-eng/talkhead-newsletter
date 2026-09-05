@@ -30,7 +30,7 @@ from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandl
 
 from . import config, db
 from .agents.script_agent import beats_to_script_text, build_script_from_lines, format_raw_script
-from .graph import build_custom_graph, new_run_id, run_dir_for
+from .graph import build_custom_graph, build_graph, new_run_id, run_dir_for
 
 # Telegram Bot API's own upload ceiling for bots -- a video larger than
 # this can't be sent as a video attachment at all, only mentioned by path.
@@ -99,10 +99,14 @@ def _close_session(status: str | None = None) -> None:
     _session = None
 
 
-def _open_session(run_id: str, pending_gate: str | None = None) -> _Session:
+def _open_session(run_id: str, pending_gate: str | None = None, use_llm_script: bool = False) -> _Session:
+    """use_llm_script=True builds the graph starting at generate_script
+    (see graph.py's build_graph) -- for a /topic run, where the narration
+    itself still needs writing. Default (False) is build_custom_graph,
+    for a raw script pasted in by hand (see handle_message)."""
     checkpointer_cm = SqliteSaver.from_conn_string(str(config.RUNS_DIR / "checkpoints.db"))
     checkpointer = checkpointer_cm.__enter__()
-    graph = build_custom_graph(checkpointer)
+    graph = build_graph(checkpointer) if use_llm_script else build_custom_graph(checkpointer)
     cfg = {"configurable": {"thread_id": run_id}}
     return _Session(graph=graph, cfg=cfg, run_id=run_id, checkpointer_cm=checkpointer_cm,
                      pending_gate=pending_gate)
@@ -124,7 +128,13 @@ async def _post_init(application) -> None:
     if pending is None:
         return
     run_id, gate = pending["id"], pending["status"].removeprefix("awaiting_")
-    _session = _open_session(run_id, pending_gate=gate)
+    # build_graph is a strict superset of build_custom_graph (same shared
+    # nodes from approve_script onward, see graph.py's _add_voice_and_rest)
+    # -- safe to always rehydrate with it regardless of which one the run
+    # actually started with, since we're resuming from a checkpoint at
+    # `gate`, never re-running the earlier generate_script/approve_script
+    # nodes that might differ.
+    _session = _open_session(run_id, pending_gate=gate, use_llm_script=True)
     print(f"[telegram_bot] rehydrated pending run {run_id}, gate={gate}")
     hint = "a number" if gate == "voice_choice" else "'approve' or 'reject'"
     await application.bot.send_message(
@@ -215,13 +225,64 @@ async def handle_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     if not _authorized(update):
         return
     await update.message.reply_text(
-        "Send me a script (any format -- markdown headers, bold, whatever) "
-        "as a text message or a .txt file, and I'll run it through the "
-        "whole pipeline: format it, generate title/description/hashtags, "
-        "ask you to approve, generate 3 voice takes for you to pick from, "
-        "then assemble the final video and send it back here for a last "
-        "approval."
+        "Two ways to start a run:\n\n"
+        "/topic <brief> -- give me the story/facts, I'll WRITE the script "
+        "(hook + beats) myself, then ask you to approve it.\n\n"
+        "Or just send a script you already wrote (any format -- markdown "
+        "headers, bold, whatever) as a text message or a .txt file, and "
+        "I'll only clean up formatting + write title/description/hashtags, "
+        "your narration stays verbatim.\n\n"
+        "Either way: approve the script, pick a voice take if asked, then "
+        "approve the final video."
     )
+
+
+async def handle_topic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    /topic <brief> -- for a story you want the LLM to actually WRITE a
+    script for (generate_script(), same as the CLI's `build` command),
+    as opposed to plain messages/documents (handle_message below), which
+    always treat the input as narration you already wrote verbatim.
+    Accepts a long, multi-paragraph brief in the same message -- only the
+    leading "/topic" token is stripped, everything else (including line
+    breaks) passes straight to generate_script() as-is.
+    """
+    global _session
+    if not _authorized(update):
+        return
+    if _session is not None:
+        await update.message.reply_text(
+            "A run is already in progress -- finish or reject it first."
+        )
+        return
+
+    text = update.message.text or ""
+    topic = text.split(None, 1)[1].strip() if len(text.split(None, 1)) > 1 else ""
+    if not topic:
+        await update.message.reply_text(
+            "Send /topic followed by the brief, e.g.:\n/topic OpenAI just launched..."
+        )
+        return
+
+    await update.message.reply_text("Got it -- writing the script...")
+
+    try:
+        db.init_db()
+        run_id = new_run_id()
+        db.create_run(run_id, _slug(topic))
+        run_dir = run_dir_for(run_id)
+        (run_dir / "telegram_topic.txt").write_text(topic, encoding="utf-8")
+
+        _session = _open_session(run_id, use_llm_script=True)
+        result = _session.graph.invoke(
+            {"run_id": run_id, "topic": topic, "run_dir": str(run_dir)}, _session.cfg
+        )
+        await _advance(update, result)
+    except Exception as e:  # noqa: BLE001
+        traceback.print_exc()
+        await update.message.reply_text(f"Something went wrong: {e}")
+        status = "rejected" if "rejected at gate" in str(e).lower() else "error"
+        _close_session(status=status)
 
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -325,6 +386,7 @@ def run_bot() -> None:
 
     app = Application.builder().token(config.TELEGRAM_BOT_TOKEN).post_init(_post_init).build()
     app.add_handler(CommandHandler("start", handle_start))
+    app.add_handler(CommandHandler("topic", handle_topic))
     app.add_handler(MessageHandler(filters.TEXT | filters.Document.ALL, handle_message))
     print(f"[telegram_bot] listening for chat_id={config.TELEGRAM_CHAT_ID} ... (Ctrl-C to stop)")
     app.run_polling()

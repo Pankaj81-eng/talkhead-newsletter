@@ -35,3 +35,6 @@ assets/official/
 
 # OS cruft
 .DS_Store
+
+# Moved-aside intro clips (see broll.py commit) -- still personal recordings
+assets/intro/_disabled/

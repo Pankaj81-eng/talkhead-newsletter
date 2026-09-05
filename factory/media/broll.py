@@ -113,25 +113,50 @@ def _pick_fresh(urls: list[str], recent_ids: set[str]) -> str | None:
     return urls[0]
 
 
-def _search_official(query: str) -> Path | None:
-    """Curated, per-story real footage -- see config.OFFICIAL_BROLL_DIR.
+_OFFICIAL_MIN_OVERLAP = 2  # see _search_official's docstring
+
+
+def _load_official_manifest(folder: Path) -> list[dict]:
+    manifest_path = folder / "manifest.json"
+    if not manifest_path.exists():
+        return []
+    try:
+        return json.loads(manifest_path.read_text())
+    except (json.JSONDecodeError, OSError) as e:
+        print(f"[broll] couldn't read official manifest {manifest_path}: {e}")
+        return []
+
+
+def _search_official(query: str, kind: str) -> Path | None:
+    """
+    Curated, per-story real assets -- see config.OFFICIAL_BROLL_DIR.
+    kind is "video" or "image" (manifest entries are tagged with "type";
+    entries with no "type" default to "video" for backward compatibility).
     Returns a local file path directly (no download/caching needed, it's
-    already on disk); None if unset, missing, or nothing tagged matches."""
+    already on disk); None if unset, missing, or nothing tagged matches.
+
+    Requires >=2 shared keywords, not 1 (2026-09-05, confirmed the hard
+    way): a single generic overlapping word -- e.g. a clip tagged "computer
+    use" matching a beat about "glowing computer server lights" purely on
+    the word "computer" -- put a tax-form clip on a beat about servers.
+    Curated assets are few and easy to over-match on one common word;
+    stock search's own _is_relevant() can stay looser because Pexels/
+    Pixabay results are numerous enough that a bad single-word match gets
+    filtered by the blocklist instead, but a 3-clip manifest has no such
+    safety net. Keep manifest tags specific/multi-word for this reason.
+    """
     if not config.OFFICIAL_BROLL_DIR:
         return None
     folder = Path(config.OFFICIAL_BROLL_DIR)
-    manifest_path = folder / "manifest.json"
-    if not manifest_path.exists():
-        return None
-    try:
-        manifest = json.loads(manifest_path.read_text())
-    except (json.JSONDecodeError, OSError) as e:
-        print(f"[broll] couldn't read official manifest {manifest_path}: {e}")
+    manifest = _load_official_manifest(folder)
+    if not manifest:
         return None
 
     q = _keywords(query)
-    best, best_overlap = None, 0
+    best, best_overlap = None, _OFFICIAL_MIN_OVERLAP - 1
     for entry in manifest:
+        if entry.get("type", "video") != kind:
+            continue
         tags = _keywords(" ".join(entry.get("tags", [])))
         overlap = len(q & tags)
         if overlap > best_overlap:
@@ -146,7 +171,7 @@ def _search_official(query: str) -> Path | None:
 
 
 def fetch_broll(query: str, run_id: str | None = None) -> Path | None:
-    official = _search_official(query)
+    official = _search_official(query, "video")
     if official is not None:
         return official
 
@@ -186,6 +211,10 @@ def _cache_image_path(clip_id: str) -> Path:
 
 
 def fetch_broll_image(query: str, run_id: str | None = None) -> Path | None:
+    official = _search_official(query, "image")
+    if official is not None:
+        return official
+
     recent_ids = db.recent_broll_clip_ids(config.BROLL_RECENCY_RUNS) if run_id else set()
 
     image_url = None
