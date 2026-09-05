@@ -36,6 +36,7 @@ from factory.media.voice import get_voice_engine
 from factory.media.captions import transcribe_words, beat_timings_from_words
 from factory.media.assemble import assemble_reel
 from factory.media.thumbnail import generate_thumbnail
+from factory.media.metadata_export import write_metadata
 from factory.news.aidaily_bridge import fetch_top_story, story_to_brief, AiDailyBridgeError
 from factory.news.article_fetch import fetch_article_text
 from factory.news.hero_image import fetch_hero_image
@@ -121,10 +122,14 @@ def main() -> None:
         stage = "thumbnail"
         thumbs = generate_thumbnail(script, run_dir)
 
+        stage = "metadata"
+        metadata_path = write_metadata(script, run_dir)
+
         stage = "notify"
         send_daily_video(
             token, chat_id, final_path, thumbs["landscape"],
             script.title, script.description, story.get("link", ""),
+            metadata_path,
         )
 
         stage = "log"
@@ -134,10 +139,12 @@ def main() -> None:
             "story": story["headline"],
             "source_url": story.get("link", ""),
             "title": script.title,
+            "description": script.description,
             "full_narration": script.full_narration,
             "hashtags": script.hashtags,
             "video_path": str(final_path.relative_to(config.ROOT)),
             "thumbnail_path": str(thumbs["landscape"].relative_to(config.ROOT)),
+            "metadata_path": str(metadata_path.relative_to(config.ROOT)),
             "used_hero_image": bool(hero),
             "status": "awaiting_manual_review",
             "generated_at": datetime.now().isoformat(),

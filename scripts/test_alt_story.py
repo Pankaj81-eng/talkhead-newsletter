@@ -22,6 +22,7 @@ from factory.media.voice import get_voice_engine
 from factory.media.captions import transcribe_words, beat_timings_from_words
 from factory.media.assemble import assemble_reel
 from factory.media.thumbnail import generate_thumbnail
+from factory.media.metadata_export import write_metadata
 from factory.news.aidaily_bridge import story_to_brief
 from factory.news.article_fetch import fetch_article_text
 from factory.news.hero_image import fetch_hero_image
@@ -76,10 +77,12 @@ def main() -> None:
     timings = beat_timings_from_words(word_counts, words, audio_duration)
     final_path = assemble_reel(script, timings, wav_path, words, run_dir)
     thumbs = generate_thumbnail(script, run_dir)
+    metadata_path = write_metadata(script, run_dir)
 
     print(f"[test] run_id: {run_id}")
     print(f"[test] final: {final_path}")
     print(f"[test] thumbnail: {thumbs['landscape']}")
+    print(f"[test] metadata: {metadata_path}")
 
 
 if __name__ == "__main__":

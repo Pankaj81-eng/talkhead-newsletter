@@ -30,11 +30,12 @@ def send_text(token: str, chat_id: str, text: str) -> None:
 
 def send_daily_video(
     token: str, chat_id: str, video_path: Path, thumbnail_path: Path | None,
-    title: str, description: str, story_link: str,
+    title: str, description: str, story_link: str, metadata_path: Path | None = None,
 ) -> None:
-    """Sends the thumbnail (if any) then the video with a caption -- two
-    messages, since Telegram's sendVideo doesn't accept a separate cover
-    image parameter the way sendVideoNote does."""
+    """Sends the thumbnail (if any), the video, then the full copy-paste-
+    ready YouTube/Instagram metadata as its own message -- separate from
+    the video's own (truncated-to-1024-char) caption, so the real title/
+    description/hashtags arrive intact and easy to copy whole."""
     if thumbnail_path and thumbnail_path.exists():
         with open(thumbnail_path, "rb") as f:
             _post(token, "sendPhoto", data={"chat_id": chat_id, "caption": "Thumbnail"},
@@ -45,6 +46,11 @@ def send_daily_video(
         _post(token, "sendVideo",
               data={"chat_id": chat_id, "caption": caption, "parse_mode": "Markdown"},
               files={"video": f})
+
+    if metadata_path and metadata_path.exists():
+        text = metadata_path.read_text(encoding="utf-8")
+        for chunk_start in range(0, len(text), 4000):
+            send_text(token, chat_id, text[chunk_start:chunk_start + 4000])
 
 
 def send_error(token: str, chat_id: str, stage: str, error: str) -> None:
