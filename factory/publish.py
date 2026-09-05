@@ -40,15 +40,14 @@ from . import config
 # same run, so this is a YouTube-side quirk, not a problem with the text
 # itself -- using one arrow-free-of-that-pattern version everywhere is
 # simpler than maintaining a YouTube-specific variant.
-# TODO before ever actually publishing: these are placeholder/copied-over
-# handles, not a real TalkHead channel yet. publish_video() is a no-op
-# for Phase 0 anyway (see .env -- YT/IG/Woop keys are intentionally
-# blank), so this footer never actually goes out until that's set up
-# for real and these links are updated.
+# 2026-09-05: publishing TalkHead videos through the existing TechTales
+# Engineering accounts (Pankaj's explicit choice -- shared channels for
+# now rather than waiting on separate TalkHead-branded ones), so this
+# footer points there, not at a TalkHead handle that doesn't exist yet.
 FOLLOW_FOOTER = (
     "Follow here for more exciting content on AI →\n\n"
-    "YouTube - https://www.youtube.com/@TalkHeadNewsletter\n"
-    "Instagram - https://www.instagram.com/talkheadnewsletter/"
+    "YouTube - https://www.youtube.com/@TechTalesEngineering\n"
+    "Instagram - https://www.instagram.com/techtalesengineering/"
 )
 
 log = logging.getLogger(__name__)

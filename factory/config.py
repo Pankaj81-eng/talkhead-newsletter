@@ -68,7 +68,7 @@ IG_ACCESS_TOKEN = os.getenv("IG_ACCESS_TOKEN", "")
 # S3-compatible bucket (Cloudflare R2 recommended -- free egress) just
 # long enough for Instagram to fetch it, then deleted. See publish.py.
 S3_BUCKET = os.getenv("S3_BUCKET", "")
-S3_PREFIX = os.getenv("S3_PREFIX", "techtales-factory")
+S3_PREFIX = os.getenv("S3_PREFIX", "talkhead-newsletter")
 S3_ENDPOINT = os.getenv("S3_ENDPOINT", "")  # e.g. R2's account-specific endpoint
 S3_ACCESS_KEY_ID = os.getenv("S3_ACCESS_KEY_ID", "")
 S3_SECRET_ACCESS_KEY = os.getenv("S3_SECRET_ACCESS_KEY", "")

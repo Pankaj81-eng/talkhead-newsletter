@@ -52,7 +52,7 @@ def _append_log(entry: dict) -> None:
     PUBLISHED_LOG.write_text(json.dumps(log, indent=2))
 
 
-def _update_log_status(run_id: str, status: str) -> None:
+def _update_log_status(run_id: str, status: str, publish_result: dict | None = None) -> None:
     if not PUBLISHED_LOG.exists():
         return
     log = json.loads(PUBLISHED_LOG.read_text())
@@ -60,6 +60,8 @@ def _update_log_status(run_id: str, status: str) -> None:
         if entry.get("run_id") == run_id:
             entry["status"] = status
             entry["decided_at"] = datetime.now().isoformat()
+            if publish_result is not None:
+                entry["publish_result"] = publish_result
     PUBLISHED_LOG.write_text(json.dumps(log, indent=2))
 
 
@@ -165,11 +167,35 @@ def main() -> None:
 
         stage = "await_decision"
         decision = await_decision(token, chat_id, message_id, run_id)
-        final_status = {
-            "publish": "approved_by_pankaj", "discard": "discarded_by_pankaj", None: "decision_timed_out",
-        }[decision]
-        _update_log_status(run_id, final_status)
-        db.mark_status(run_id, final_status)
+
+        if decision == "publish":
+            stage = "publish"
+            from factory.publish import publish_video
+            result = publish_video(script, final_path, thumbs["landscape"])
+            ok = any(k in result for k in ("youtube_url", "instagram_media_id", "linkedin_post_id"))
+            partial = any(k in result for k in ("youtube_error", "instagram_error", "linkedin_error"))
+            final_status = "published" if ok and not partial else ("publish_failed" if not ok else "published_partial")
+            _update_log_status(run_id, final_status, publish_result=result)
+            db.mark_status(run_id, final_status)
+            summary_lines = [f"Publish result for {run_id}:"]
+            if "youtube_url" in result:
+                summary_lines.append(f"YouTube: {result['youtube_url']}")
+            if "youtube_error" in result:
+                summary_lines.append(f"YouTube FAILED: {result['youtube_error']}")
+            if "instagram_media_id" in result:
+                summary_lines.append(f"Instagram: published (media id {result['instagram_media_id']})")
+            if "instagram_error" in result:
+                summary_lines.append(f"Instagram FAILED: {result['instagram_error']}")
+            if "linkedin_post_id" in result:
+                summary_lines.append(f"LinkedIn: published (post id {result['linkedin_post_id']})")
+            if "linkedin_error" in result:
+                summary_lines.append(f"LinkedIn FAILED: {result['linkedin_error']}")
+            send_text(token, chat_id, "\n".join(summary_lines))
+        else:
+            final_status = {"discard": "discarded_by_pankaj", None: "decision_timed_out"}[decision]
+            _update_log_status(run_id, final_status)
+            db.mark_status(run_id, final_status)
+
         print(f"[daily_run] done: {final_path} -- {final_status}")
 
     except AiDailyBridgeError as e:

@@ -92,5 +92,34 @@
     "used_hero_image": true,
     "status": "awaiting_manual_review",
     "generated_at": "2026-09-05T09:58:00"
+  },
+  {
+    "date": "2026-09-05",
+    "run_id": "26f56effc252",
+    "story": "OpenAI releases GPT-6 Astra to paid users",
+    "source_url": "https://openai.com/index/gpt-6-astra",
+    "title": "OpenAI Releases GPT-6 Astra with Perfect Cybersecurity Score",
+    "description": "What is OpenAI's new GPT-6 Astra model? OpenAI launched GPT-6 Astra with perfect results on digital security tests and strict limits to keep the software on track. Subscribe to TalkHead for simple daily AI updates.",
+    "full_narration": "OpenAI just released a new AI model called GPT-6 Astra, and it scored a perfect 100% on a hard cybersecurity hacking test. That test measures whether an AI can spot and fix real software security flaws, and the model solved every single challenge without making a mistake. It also tackled advanced math and visual logic puzzles at a level matching top human experts, handling complex work that used to confuse older software. What matters most for regular users isn't just raw intelligence, but how safely the AI follows instructions without drifting off on its own. On a safety test measuring whether the AI stays strictly within its permission limits, this new model went beyond its assigned scope 0% of the time. That upgrade means users can hand off real work, like organizing spreadsheets, filling out web forms, or writing computer code, with much less supervision.",
+    "hashtags": [
+      "ai",
+      "openai",
+      "gpt6",
+      "tech",
+      "cybersecurity",
+      "talkhead"
+    ],
+    "video_path": "runs/26f56effc252/final.mp4",
+    "thumbnail_path": "runs/26f56effc252/thumbnail.jpg",
+    "metadata_path": "runs/26f56effc252/metadata.txt",
+    "used_hero_image": false,
+    "status": "published_partial",
+    "generated_at": "2026-09-05T10:50:25.334856",
+    "decided_at": "2026-09-05T10:53:52.837941",
+    "publish_result": {
+      "youtube_error": "YouTube upload failed: 401 Unauthorized (youtubeSignupRequired) -- refresh token needs fixing",
+      "instagram_media_id": "17921070993423804",
+      "linkedin_post_id": "169749816421646336"
+    }
   }
 ]
