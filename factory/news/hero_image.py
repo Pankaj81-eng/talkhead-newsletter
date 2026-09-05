@@ -8,6 +8,7 @@ should never block the whole run.
 """
 from __future__ import annotations
 
+import html
 import re
 from pathlib import Path
 
@@ -35,16 +36,23 @@ def fetch_hero_image(source_url: str, out_dir: Path, headline: str) -> dict | No
             headers={"User-Agent": "Mozilla/5.0 (compatible; TalkHeadBot/1.0)"},
         )
         resp.raise_for_status()
-        html = resp.text
+        page_html = resp.text
     except requests.RequestException as e:
         print(f"[hero_image] couldn't fetch {source_url}: {e}")
         return None
 
-    match = _META_RE.search(html) or _META_RE_REVERSED.search(html)
+    match = _META_RE.search(page_html) or _META_RE_REVERSED.search(page_html)
     if not match:
         print(f"[hero_image] no og:image/twitter:image found on {source_url}")
         return None
-    image_url = match.group(1)
+    # HTML-unescape: confirmed on a live run (2026-09-05) -- a meta tag's
+    # content attribute had its query-string "&" written as the entity
+    # "&amp;" (valid HTML, but not a valid URL as-is), which made the
+    # image request 400 with "&amp;h=900&amp;fit=fill" literally in the
+    # query string instead of "&h=900&fit=fill". (Also: don't name a local
+    # variable `html` in a function that imports the `html` module --
+    # shadows it for the whole function body once assigned anywhere in it.)
+    image_url = html.unescape(match.group(1))
     if image_url.startswith("//"):
         image_url = "https:" + image_url
 

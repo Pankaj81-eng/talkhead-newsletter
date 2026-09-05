@@ -37,6 +37,7 @@ from factory.media.captions import transcribe_words, beat_timings_from_words
 from factory.media.assemble import assemble_reel
 from factory.media.thumbnail import generate_thumbnail
 from factory.news.aidaily_bridge import fetch_top_story, story_to_brief, AiDailyBridgeError
+from factory.news.article_fetch import fetch_article_text
 from factory.news.hero_image import fetch_hero_image
 from factory.news.telegram_notify import send_daily_video, send_error, send_text
 
@@ -66,6 +67,18 @@ def main() -> None:
         story = fetch_top_story(date)
         brief = story_to_brief(story)
         print(f"[daily_run] top story: {story['headline']} ({story.get('link')})")
+
+        stage = "fetch_article"
+        # ai-daily's own LLM-written summary varies in specificity call to
+        # call (confirmed live: same story, sometimes with real benchmark
+        # numbers, sometimes vague) -- supplement with the actual source
+        # article text so generate_script()'s fact-checker has real
+        # numbers to find even when the summary alone didn't preserve them.
+        if story.get("link"):
+            article_text = fetch_article_text(story["link"])
+            if article_text:
+                brief += f"\n\nFull source article text (for additional real facts/numbers):\n{article_text}"
+                print(f"[daily_run] enriched brief with {len(article_text)} chars of article text")
 
         db.init_db()
         run_id = new_run_id()
