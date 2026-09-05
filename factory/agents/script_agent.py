@@ -32,20 +32,27 @@ Hard requirements:
 - Total narration across hook + body must be between {lo} and {hi} words
   (at ~{config.WORDS_PER_SECOND} words/sec, this lands the video in the
   {config.MIN_SECONDS:.0f}-{config.SAFE_MAX_SECONDS:.0f} second range).
+- FACTUAL ACCURACY IS NON-NEGOTIABLE: every number, percentage, benchmark
+  name, dollar figure, count, or quote you use MUST appear literally in
+  the topic brief below. Do NOT invent, estimate, round to a "nicer"
+  number, or extrapolate a plausible-sounding statistic that isn't
+  actually stated -- this is a news channel, not fiction, and a fabricated
+  stat is a worse failure than a less punchy hook. If the brief doesn't
+  hand you a specific number for some claim, describe it in the brief's
+  own words instead of inventing one to fill the gap.
 - The HOOK is one beat, 1-2 sentences, spoken in the first 2-4 seconds.
-  It must lead with the single most concrete, specific, surprising FACT
-  from the topic brief -- a real number, benchmark score, quote, or named
-  capability -- not a generic framing like "a big new AI model just
-  launched" or "this changes everything." If the brief contains a
-  striking stat (a percentage, a named benchmark, a dollar figure, a
-  count), the hook should almost always be built around it, not around
-  the mere fact that something launched. Do NOT start with "Hey guys" or
-  "Welcome back".
+  It must lead with the single most concrete, surprising fact ACTUALLY
+  PRESENT in the brief -- a real number, benchmark score, quote, or named
+  capability, quoted or closely paraphrased from the brief itself -- not
+  a generic framing like "a big new AI model just launched" or "this
+  changes everything," and never a number you made up to sound punchier.
+  Do NOT start with "Hey guys" or "Welcome back".
 - BODY is 3-6 beats. Each beat is one clear idea, one narration line. At
-  least ONE body beat must also cite a specific number or named fact from
-  the brief (not just the hook) -- avoid a body that stays entirely at
-  the level of vague capability claims ("it can do many tasks") when the
-  brief itself gives you concrete evidence for those claims.
+  least ONE body beat must also cite a specific number or named fact
+  taken directly from the brief (not just the hook) -- avoid a body that
+  stays entirely at the level of vague capability claims ("it can do many
+  tasks") when the brief itself gives you concrete evidence for those
+  claims. Again: only facts that are actually in the brief.
 - For each beat (hook and body), decide the best visual:
   - "broll": if a real stock/screen-recording visual would help (give a
     concrete, literal search query — e.g. "person typing code on laptop

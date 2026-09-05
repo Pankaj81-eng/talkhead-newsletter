@@ -190,7 +190,11 @@ def node_approve_video(state: PipelineState) -> dict:
     decision = interrupt({
         "gate": "video",
         "final_path": state["final_path"],
-        "thumbnail_path": state["thumbnail_path"],
+        # .get(), not []: a checkpoint from before the thumbnail node
+        # existed won't have this key -- resuming (e.g. to reject) an old
+        # in-flight run under newer code shouldn't KeyError, since the
+        # whole node re-runs from the top on resume (see module docstring).
+        "thumbnail_path": state.get("thumbnail_path"),
         "message": "Watch the video, then approve to publish, or reject to discard?",
     })
     if decision != "approve":

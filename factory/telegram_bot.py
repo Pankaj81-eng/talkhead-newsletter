@@ -349,6 +349,20 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             await update.message.reply_text("Send the script as text or a .txt file.")
             return
 
+        # A bare "approve"/"reject" with NO run in flight is almost always
+        # a stray reply aimed at a gate that already closed (confirmed the
+        # hard way, 2026-09-05: it got swallowed as a one-word "script" and
+        # spawned a whole unrelated video about AI rejecting prompts).
+        # Catch it explicitly rather than let format_raw_script() free-
+        # associate a topic out of one leftover word.
+        if raw_text.strip().lower() in ("approve", "reject") and not update.message.document:
+            await update.message.reply_text(
+                "No run is currently waiting on a decision -- this looks like "
+                "a reply to a gate that already closed. Send /topic <brief> "
+                "or a full script to start a new run."
+            )
+            return
+
         await update.message.reply_text("Got it -- formatting and starting the pipeline...")
 
         topic = _slug(next((l for l in raw_text.splitlines() if l.strip()), "telegram-script"))
