@@ -121,5 +121,29 @@
       "instagram_media_id": "17921070993423804",
       "linkedin_post_id": "169749816421646336"
     }
+  },
+  {
+    "date": "2026-09-05",
+    "run_id": "7fc51c596c41",
+    "story": "Integrating Outlook with Amazon Quick",
+    "source_url": "https://aws.amazon.com/blogs/machine-learning/integrating-outlook-with-amazon-quick-for-ai-powered-email-automation/",
+    "title": "Amazon Quick Integrates AI Assistant Directly into Microsoft Outlook",
+    "description": "How does Amazon Quick integrate with Microsoft Outlook to automate email work? Amazon's AI assistant can now summarize inbox threads, draft contextual replies, and prepare automated meeting briefings directly inside Outlook.",
+    "full_narration": "Amazon just connected its AI assistant directly into Microsoft Outlook to handle your daily inbox. Imagine opening your email and finding that an AI has already summarized long message chains and drafted your replies. Instead of spending hours reading through endless back-and-forth messages, this tool, called Amazon Quick, reads the context and pulls out the main action items for you. It can also write professional responses using your company's internal documents and guides, so you never have to waste time hunting down details across multiple apps. Before scheduled meetings start, the system automatically pulls relevant emails and background notes into an organized briefing summary delivered straight to your inbox. It can even trigger complex steps across your business systems, like starting customer onboarding or sending procurement approvals, all without manual handoffs. By quietly handling these repetitive inbox chores directly inside Outlook, the technology aims to give teams back their most valuable resource: actual focus time.",
+    "hashtags": [
+      "ai",
+      "productivity",
+      "amazon",
+      "outlook",
+      "tech",
+      "automation"
+    ],
+    "video_path": "runs/7fc51c596c41/final.mp4",
+    "thumbnail_path": "runs/7fc51c596c41/thumbnail.jpg",
+    "metadata_path": "runs/7fc51c596c41/metadata.txt",
+    "used_hero_image": true,
+    "status": "decision_timed_out",
+    "generated_at": "2026-09-05T12:39:42.846981",
+    "decided_at": "2026-09-05T13:34:49.328513"
   }
 ]
