@@ -13,12 +13,13 @@ cache/
 factory.db
 runs/checkpoints.db*
 
-# Your voice sample and outro are personal recordings -- keep them out of a
-# public repo by default. Remove these two lines if you WANT them versioned
-# (e.g. a private repo, or you're fine with your recorded voice being public).
-assets/voice/sample.*
-assets/outro/outro.*
-assets/outro/outro_vertical.mp4
+# Voice sample + outro ARE committed here (2026-09-05, Pankaj's explicit
+# choice): this repo is private, and the GitHub Actions runner needs them
+# to do voice cloning / video assembly in the cloud -- there's no local
+# sibling filesystem for it to read from like the Mac setup has. Intro
+# stays ignored below since it's unused (removed from the video per
+# Pankaj's request) and still a personal recording with no reason to be
+# in the cloud if it's never read.
 assets/intro/intro.*
 assets/intro/intro_vertical.mp4
 
