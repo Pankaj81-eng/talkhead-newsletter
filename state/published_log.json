@@ -1,0 +1,32 @@
+[
+  {
+    "date": "2026-09-05",
+    "run_id": "a78de398f599",
+    "story": "OpenAI launches GPT-6 Astra",
+    "source_url": "https://openai.com/index/gpt-6-astra/",
+    "title": "OpenAI Unveils GPT-6 Astra: What You Need to Know!",
+    "hook": "OpenAI just officially unveiled GPT-6 Astra, and while it is currently locked behind invite-only doors, it completely changes how we will interact with computers.",
+    "full_narration": "OpenAI just officially unveiled GPT-6 Astra, and while it is currently locked behind invite-only doors, it completely changes how we will interact with computers. Astra is OpenAI's newest flagship artificial intelligence model, built from the ground up to not just write text, but to actually control apps and perform multi-step tasks for you. Think of it like a digital assistant that can see your screen, listen to your voice, and physically click buttons to do things like organize spreadsheets or plan entire travel itineraries. For now, OpenAI is only rolling it out to a select group of partner companies and security testers to make sure it is safe before a public launch. The key upgrade is instant response time and seamless memory, meaning it remembers what you were working on yesterday across your phone and laptop without getting confused. So while you cannot download it today, GPT-6 Astra gives us our clearest look yet at a future where software operates entirely on your behalf through simple plain speech.",
+    "hashtags": ["openai", "gpt6", "astra", "ai", "technews", "talkhead", "futuretech"],
+    "video_path": "runs/a78de398f599/final.mp4",
+    "thumbnail_path": "runs/a78de398f599/thumbnail.jpg",
+    "duration_seconds": 65.65,
+    "status": "published_manually_by_pankaj",
+    "published_at": "2026-09-05",
+    "platforms": null,
+    "pankaj_feedback": {
+      "liked": [
+        "Voice clone quality",
+        "TechTales outro",
+        "Real OpenAI hero art / official b-roll clips used for authenticity",
+        "Fixed captions running the whole video (was the deciding factor -- this was the version he called genuinely good)",
+        "Trimmed outro (removed ~1s of stale opening pose)"
+      ],
+      "disliked": [
+        "The fully-autonomous Telegram /topic script-generation loop -- inconsistent quality across attempts (sometimes generic with zero real facts, sometimes fabricated/wrong benchmark numbers), needed 6+ rejected rounds to get one good script, too much back-and-forth to trust unsupervised",
+        "This particular script's narration itself is fairly generic/vague ('invite-only', 'cannot download it today') and doesn't use GPT-6 Astra's actual most newsworthy facts (ARC-AGI-3 99.9%, the zero-days found, the Critical cybersecurity classification) -- approved anyway because the VISUALS/production quality were what mattered for this first publish"
+      ],
+      "decision": "Park the interactive Telegram Gate1/Gate2 approval flow. Build a simpler pipeline instead: fetch news automatically, generate everything (script/voice/broll/captions/thumbnail) with NO mid-pipeline human gate, then send the finished video+thumbnail to Telegram as a single one-way notification for a final manual go/no-go. Pankaj publishes manually for now; auto-publish is a later step once this is trusted."
+    }
+  }
+]

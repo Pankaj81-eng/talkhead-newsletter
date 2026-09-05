@@ -38,3 +38,4 @@ assets/official/
 
 # Moved-aside intro clips (see broll.py commit) -- still personal recordings
 assets/intro/_disabled/
+logs/
