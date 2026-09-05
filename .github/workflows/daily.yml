@@ -74,6 +74,18 @@ jobs:
       - name: Run the daily pipeline
         env:
           TALKHEAD_AI_DAILY_DIR: /tmp/ai-daily
+          # NOT secrets -- plain pipeline config, but still had to be set
+          # explicitly here: confirmed the hard way (2026-09-05) that
+          # without this, config.py's os.getenv() falls back to its
+          # hardcoded "kokoro" default in the cloud (no committed .env
+          # for load_dotenv() to read here, unlike the local Mac setup),
+          # silently using a generic pre-built voice instead of Pankaj's
+          # actual clone -- the video was otherwise fine, just not his
+          # voice. FACTORY_VOICE_SEED matches the take already approved
+          # and pinned for real use in the sibling techtales-factory
+          # project's own .env.
+          FACTORY_VOICE_ENGINE: chatterbox
+          FACTORY_VOICE_SEED: "1965803137"
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
