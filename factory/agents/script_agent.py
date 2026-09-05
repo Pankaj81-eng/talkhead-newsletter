@@ -24,9 +24,17 @@ def build_prompt(topic: str) -> str:
     return f"""
 You are writing a short-form vertical video (YouTube Shorts / Instagram Reels)
 for a channel called TalkHead, which takes the day's biggest AI news story
-and explains it in simple, plain language for a general audience -- not
-just developers. Assume the viewer follows tech news casually but hasn't
-read the actual announcement.
+and explains it in simple, plain language for a general audience.
+
+AUDIENCE AND VOICE TEST (this is the most important thing about this
+channel, more important than any individual fact): the viewer is a smart
+friend who does not follow AI news and has never worked in tech -- not a
+developer, not someone who already knows what a "benchmark" is. Before
+finalizing, imagine reading the script out loud to that friend. If they
+would have to ask "wait, what does that mean?" or "what's that a score
+out of?", the script has failed, no matter how accurate it is. Being
+technically precise but only understandable to people already in AI is a
+failure here, not a narrower success.
 
 TOPIC BRIEF (this is a detailed, multi-paragraph brief, not a one-line
 headline -- it already contains specific numbers, percentages, named
@@ -37,48 +45,65 @@ sentence):
 {topic}
 ---
 
-Before writing, privately identify the 2-3 most surprising, specific,
-citable facts in the brief above (a percentage, a benchmark name+score, a
-dollar figure, a count, a direct quote). These are what the video is
-FOR. If you can't find at least one, re-read the brief -- it's there.
+Before writing, privately identify the ONE or TWO most surprising,
+explainable facts in the brief above -- not the longest list you can
+find, the ones that will actually land with a total beginner.
 
 Hard requirements:
 - Total narration across hook + body must be between {lo} and {hi} words
   (at ~{config.WORDS_PER_SECOND} words/sec, this lands the video in the
   {config.MIN_SECONDS:.0f}-{config.SAFE_MAX_SECONDS:.0f} second range).
-- FACTUAL ACCURACY IS NON-NEGOTIABLE: every number, percentage, benchmark
-  name, dollar figure, count, or quote you use MUST appear literally in
-  the brief above. Do NOT invent, estimate, round to a "nicer" number, or
+- PLAIN LANGUAGE OVER PRECISION. Explain the impact, not the mechanism or
+  the test's name. A named benchmark (FrontierMath, ExploitBench,
+  OSWorld, SWE-bench, ARC-AGI-3, GPQA...) means NOTHING to this audience
+  -- reciting several of them back to back reads as a spec sheet, not a
+  story, even when every number is accurate. Prefer describing what KIND
+  of test it was in plain words, and only name the benchmark if the name
+  itself is short and self-explanatory enough to define in the same
+  breath. Pick ONE or TWO numbers for the whole script, not five.
+    BAD (accurate but jargon-heavy): "It scored 98% on FrontierMath Tier
+    4 and 100% on ExploitBench, plus 99.9% on ARC-AGI-3."
+    GOOD (same facts, plain): "It aced a brutally hard math test that
+    stumps most people, and a security test found it can hack real
+    software with a perfect record."
+  If a technical term is truly unavoidable, define what it IS in the same
+  sentence, as if the listener has never heard it before.
+- FACTUAL ACCURACY IS STILL NON-NEGOTIABLE: every number, benchmark
+  result, dollar figure, count, or quote you use (even paraphrased in
+  plain words) MUST be traceable to something literally stated in the
+  brief above. Do NOT invent, estimate, round to a "nicer" number, or
   extrapolate a plausible-sounding statistic that isn't actually stated --
-  this is a news channel, not fiction, and a fabricated stat is a worse
-  failure than a less punchy hook. That said, the brief DOES contain real
-  striking numbers -- your job is to find and use THOSE, not to retreat
-  to a vague summary just to play it safe. "I couldn't find a number so I
-  said nothing specific" is also a failure here. Watch out specifically
-  for benchmark names you may recognize from your own training (GPQA,
-  SWE-bench, MMLU, etc.) -- do NOT substitute a score you remember for
-  that benchmark from elsewhere; use ONLY the exact score given for it in
-  THIS brief, for THIS model, and only mention a benchmark that is
-  actually named in the brief above at all.
-- Any specific benchmark score or percentage you cite MUST be written in
+  a fabricated stat is a worse failure than a plainer hook. Watch out
+  specifically for benchmark names you may recognize from your own
+  training (GPQA, SWE-bench, MMLU, etc.) -- do NOT substitute a score you
+  remember for that benchmark from elsewhere; use ONLY what THIS brief
+  says about THIS model. "Simplify the language" never means "invent a
+  rounder or more dramatic number" -- simplify the WORDS, keep the DIGITS
+  exact.
+- Whenever you cite a number in the narration, ALSO write it once in
   digit-plus-percent form EXACTLY as it appears in the brief (e.g. "96%",
   never spelled out as "ninety-six percent" and never a different digit)
-  -- this lets it be mechanically double-checked against the brief before
-  anyone approves it, so getting the digits exactly right here matters
-  more than usual.
+  even while explaining it in plain words around that number -- e.g.
+  "it got 96% on a brutally hard science test" is fine (plain AND
+  checkable); "it aced a brutally hard science test" alone is not (no
+  digits left to verify). This lets the number be mechanically
+  double-checked against the brief before anyone approves it.
 - The HOOK is one beat, 1-2 sentences, spoken in the first 2-4 seconds.
-  It must be built around ONE of the specific facts you identified above
-  -- quoted or closely paraphrased, with its real number/name intact --
-  not a generic framing like "a big new AI model just launched," "this
-  changes everything," or "rolling out to a limited set of organizations"
-  (that's scaffolding, not the story). Do NOT start with "Hey guys" or
-  "Welcome back".
-- BODY is 3-6 beats. Each beat is one clear idea, one narration line. At
-  least TWO body beats must each cite a different specific number or
-  named fact from the brief (not just repeating the hook's) -- avoid a
-  body that stays at the level of vague capability claims ("it can do
-  many tasks," "access is limited for now") when the brief hands you
-  concrete evidence instead. Again: only facts that are actually stated.
+  It must be built around the single most surprising fact you identified
+  above, explained in plain words a total beginner would follow -- not a
+  generic framing like "a big new AI model just launched," "this changes
+  everything," or "rolling out to a limited set of organizations" (that's
+  scaffolding, not the story), and not a bare benchmark-name-and-number
+  either. Do NOT start with "Hey guys" or "Welcome back".
+- BODY is 3-6 beats. Each beat is one clear idea, one narration line,
+  explained the way you'd explain it to a friend, not a list of
+  capability claims or test names. At least one body beat should ground
+  the hook's claim with one more concrete, plainly-explained number or
+  fact from the brief -- but stop there; do not turn the body into an
+  inventory of every statistic the brief happens to contain.
+- NO HYPE: avoid "revolutionary", "game-changing", "groundbreaking",
+  "next-generation", "cutting-edge", "state-of-the-art", "seamlessly", or
+  exclamation marks. State what happened and what it means, plainly.
 - For each beat (hook and body), decide the best visual:
   - "broll": if a real stock/screen-recording visual would help (give a
     concrete, literal search query — e.g. "person typing code on laptop
@@ -91,8 +116,6 @@ Hard requirements:
     action-based ones do.
   - "text_card": if the idea is best shown as a short on-screen phrase or
     keyword (give the exact short text to render, <=6 words).
-- No jargon left unexplained — assume the viewer is a curious layperson
-  who follows tech casually, not an expert in this specific topic.
 - Video ends with a fixed outro clip that is NOT part of this script — do
   not write a sign-off or CTA line, the outro handles that.
 - title: punchy, <=100 chars. description: its very FIRST line must be a
