@@ -79,5 +79,18 @@
     "used_hero_image": true,
     "status": "awaiting_manual_review",
     "generated_at": "2026-09-05T09:44:51.774152"
+  },
+  {
+    "date": "2026-09-05",
+    "run_id": "3ffb106925be",
+    "story": "Google's AI weather model now updates every hour",
+    "source_url": "https://deepmind.google/blog/introducing-weathernext-3-our-most-advanced-and-accurate-global-weather-ai-model/",
+    "title": "How Google's New AI Delivers Hourly Weather Forecasts",
+    "note": "Test of plain-language prompt rewrite on a different real ai-daily-picked story (not the top pick) -- verifies the fix generalizes beyond GPT-6 Astra.",
+    "video_path": "runs/3ffb106925be/final.mp4",
+    "thumbnail_path": "runs/3ffb106925be/thumbnail.jpg",
+    "used_hero_image": true,
+    "status": "awaiting_manual_review",
+    "generated_at": "2026-09-05T09:58:00"
   }
 ]
