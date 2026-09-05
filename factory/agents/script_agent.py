@@ -4,6 +4,8 @@ Metadata agents for Phase 1. Add that back later if quality demands it.
 """
 from __future__ import annotations
 
+import re
+
 from pydantic import BaseModel, Field
 
 from .. import config
@@ -52,7 +54,18 @@ Hard requirements:
   failure than a less punchy hook. That said, the brief DOES contain real
   striking numbers -- your job is to find and use THOSE, not to retreat
   to a vague summary just to play it safe. "I couldn't find a number so I
-  said nothing specific" is also a failure here.
+  said nothing specific" is also a failure here. Watch out specifically
+  for benchmark names you may recognize from your own training (GPQA,
+  SWE-bench, MMLU, etc.) -- do NOT substitute a score you remember for
+  that benchmark from elsewhere; use ONLY the exact score given for it in
+  THIS brief, for THIS model, and only mention a benchmark that is
+  actually named in the brief above at all.
+- Any specific benchmark score or percentage you cite MUST be written in
+  digit-plus-percent form EXACTLY as it appears in the brief (e.g. "96%",
+  never spelled out as "ninety-six percent" and never a different digit)
+  -- this lets it be mechanically double-checked against the brief before
+  anyone approves it, so getting the digits exactly right here matters
+  more than usual.
 - The HOOK is one beat, 1-2 sentences, spoken in the first 2-4 seconds.
   It must be built around ONE of the specific facts you identified above
   -- quoted or closely paraphrased, with its real number/name intact --
@@ -135,15 +148,53 @@ def _ensure_clear_opening(description: str, topic: str) -> str:
     return f"{opener}\n\n{description.strip()}"
 
 
-def generate_script(topic: str, max_regeneration_attempts: int = 2) -> Script:
+_PERCENT_RE = re.compile(r"\d+(?:\.\d+)?\s?%")
+
+
+def _unverified_percentages(script: Script, topic: str) -> list[str]:
+    """
+    Every digit-form percentage claim in the narration (e.g. "96%") must
+    appear VERBATIM somewhere in the source brief -- catches the failure
+    mode confirmed on a live run (2026-09-05): the model cited a real
+    benchmark name (GPQA Diamond) but with a wrong score (88% vs the
+    brief's actual 96.0%), plus an entirely fabricated benchmark/score
+    not in the brief at all. This only catches digit-form claims (the
+    prompt now requires that form specifically so this check has
+    something to verify against) -- it can't catch a claim spelled out in
+    words, or a fabricated non-numeric "fact", so it's a floor, not a
+    complete guarantee. Gate 1's human review is still the real backstop.
+    """
+    narration_pcts = {m.group().replace(" ", "") for m in _PERCENT_RE.finditer(script.full_narration)}
+    topic_pcts = {m.group().replace(" ", "") for m in _PERCENT_RE.finditer(topic)}
+    return sorted(narration_pcts - topic_pcts)
+
+
+def generate_script(topic: str, max_regeneration_attempts: int = 3) -> Script:
     lo, hi = _word_budget()
     prompt = build_prompt(topic)
+    script = None
     for attempt in range(max_regeneration_attempts):
         script = generate_structured(prompt, Script)
         wc = script.word_count
-        if lo <= wc <= hi:
+        bad_pcts = _unverified_percentages(script, topic)
+
+        if lo <= wc <= hi and not bad_pcts:
             script.description = _ensure_clear_opening(script.description, topic)
             return script
+
+        if bad_pcts:
+            print(f"[script_agent] attempt {attempt+1}: cited percentage(s) "
+                  f"{bad_pcts} not found anywhere in the brief -- regenerating")
+            prompt += (
+                f"\n\nYour previous attempt cited {', '.join(bad_pcts)}, which "
+                f"do not appear anywhere in the brief above -- you either "
+                f"misremembered a real benchmark's typical score or invented "
+                f"one. Every percentage you use must be copied exactly from "
+                f"the brief. If you can't find a specific percentage for a "
+                f"claim, describe it in the brief's own words instead."
+            )
+            continue
+
         print(f"[script_agent] attempt {attempt+1}: {wc} words, "
               f"outside [{lo},{hi}] budget — regenerating with tighter instruction")
         prompt += (
@@ -151,8 +202,19 @@ def generate_script(topic: str, max_regeneration_attempts: int = 2) -> Script:
             f"{'too long' if wc > hi else 'too short'}. Target closer to "
             f"{(lo + hi)//2} words this time."
         )
-    # Last attempt: return whatever we have rather than looping forever.
-    # The human gate (Gate 1) will catch anything genuinely off-budget.
+    # Ran out of attempts: return whatever we have rather than looping
+    # forever, but if an unverified percentage survived every retry, make
+    # it impossible for Gate 1 to miss -- prepend a loud warning rather
+    # than relying on the reviewer to independently know every benchmark's
+    # real score.
+    remaining_bad = _unverified_percentages(script, topic)
+    if remaining_bad:
+        warning = (
+            f"⚠️ UNVERIFIED: {', '.join(remaining_bad)} could not be matched "
+            f"to anything in the source brief after {max_regeneration_attempts} "
+            f"attempts -- double-check before approving.\n\n"
+        )
+        script.description = warning + script.description
     script.description = _ensure_clear_opening(script.description, topic)
     return script
 
