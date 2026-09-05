@@ -83,6 +83,8 @@ def _run_pipeline_gates(graph, cfg, result) -> dict:
             decision = _ask_voice_choice(payload["candidates"])
         elif gate == "video":
             typer.secho(f"\nVideo ready: {payload['final_path']}", fg="green", bold=True)
+            if payload.get("thumbnail_path"):
+                typer.echo(f"Thumbnail: {payload['thumbnail_path']}")
             typer.echo("Open and watch it, then come back here.")
             decision = _ask("Approve to publish, or reject to discard? [approve/reject]")
         else:

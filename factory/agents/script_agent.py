@@ -68,6 +68,11 @@ Hard requirements:
   -- so someone can tell what the video covers from that one line alone,
   without watching. Then 1-2 more sentences of context, ending in a soft
   CTA. hashtags: 5-8 lowercase tags, no '#' symbol.
+- thumbnail_text: 2-5 words, Title Case or ALL CAPS, for the video's
+  THUMBNAIL image -- read at a glance, more dramatic/clickbait than the
+  title (e.g. "IT FOUND A ZERO-DAY", "AI JUST PASSED THIS TEST"). Pull
+  from the single sharpest fact in the brief, not a generic phrase like
+  "New AI Model."
 
 Return JSON matching this shape exactly:
 {{
@@ -76,7 +81,8 @@ Return JSON matching this shape exactly:
   "body": [{{"text": "...", "visual": "...", "query": "..."}}, ...],
   "title": "...",
   "description": "...",
-  "hashtags": ["...", ...]
+  "hashtags": ["...", ...],
+  "thumbnail_text": "..."
 }}
 """.strip()
 
@@ -189,9 +195,10 @@ def build_script_from_lines(topic: str, lines: list[str]) -> Script:
               f"estimated duration so you can judge whether to trim it.")
 
     meta_prompt = f"""
-Write ONLY title, description, and hashtags for a short-form vertical
-video (YouTube Shorts / Instagram Reels) on the TalkHead channel
-(AI/software engineering, explained simply for developers).
+Write ONLY title, description, hashtags, and thumbnail_text for a
+short-form vertical video (YouTube Shorts / Instagram Reels) on the
+TalkHead channel (the day's biggest AI news, explained simply for a
+general audience).
 
 The narration (already final, do not rewrite or reference it directly
 in the metadata -- just use it for context):
@@ -202,16 +209,18 @@ standalone question or clear statement naming the exact topic (e.g.
 "What is context in AI engineering?", "How does RAG actually work?") --
 so someone can tell what the video covers from that one line alone,
 without watching. Then 1-2 more sentences of context, ending in a soft
-CTA. hashtags: 5-8 lowercase tags, no '#' symbol.
+CTA. hashtags: 5-8 lowercase tags, no '#' symbol. thumbnail_text: 2-5
+words, Title Case or ALL CAPS, for the video's THUMBNAIL image -- read
+at a glance, more dramatic/clickbait than the title.
 
-Return JSON: {{"title": "...", "description": "...", "hashtags": ["...", ...]}}
+Return JSON: {{"title": "...", "description": "...", "hashtags": ["...", ...], "thumbnail_text": "..."}}
 """.strip()
     meta = generate_structured(meta_prompt, Metadata)
 
     return Script(
         topic=topic, hook=hook, body=body,
         title=meta.title, description=_ensure_clear_opening(meta.description, topic),
-        hashtags=meta.hashtags,
+        hashtags=meta.hashtags, thumbnail_text=meta.thumbnail_text,
     )
 
 

@@ -25,6 +25,7 @@ from factory import config
 from factory.models import Script
 from factory.media.captions import beat_timings_from_words
 from factory.media.assemble import assemble_reel
+from factory.media.thumbnail import generate_thumbnail
 
 
 def main() -> None:
@@ -51,6 +52,9 @@ def main() -> None:
         script_dict["hook"]["visual"] = args.hook_visual
     if args.hook_query:
         script_dict["hook"]["query"] = args.hook_query
+    # Backward compat: runs from before thumbnail_text was added to the
+    # schema (see models.py) won't have it in their checkpoint.
+    script_dict.setdefault("thumbnail_text", script_dict.get("title", "AI NEWS")[:40])
 
     script = Script.model_validate(script_dict)
     beats = script.all_beats
@@ -59,7 +63,9 @@ def main() -> None:
     timings = beat_timings_from_words(word_counts, words, audio_duration)
 
     final_path = assemble_reel(script, timings, voiceover_wav, words, run_dir)
+    thumbs = generate_thumbnail(script, run_dir / "beat_00.mp4", run_dir)
     print(f"Re-rendered: {final_path}")
+    print(f"Thumbnail: {thumbs['landscape']}")
 
 
 if __name__ == "__main__":

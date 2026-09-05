@@ -24,6 +24,7 @@ from .agents.script_agent import generate_script
 from .media.voice import get_voice_engine
 from .media.captions import transcribe_words, beat_timings_from_words
 from .media.assemble import assemble_reel
+from .media.thumbnail import generate_thumbnail
 from .models import Script
 
 
@@ -36,6 +37,8 @@ class PipelineState(TypedDict, total=False):
     voice_candidates: list
     words: list
     final_path: str
+    thumbnail_path: str
+    thumbnail_vertical_path: str
     publish_result: dict
 
 
@@ -162,6 +165,18 @@ def node_assemble(state: PipelineState) -> dict:
     return {"final_path": str(final_path)}
 
 
+def node_thumbnail(state: PipelineState) -> dict:
+    script = Script.model_validate(state["script"])
+    run_dir = Path(state["run_dir"])
+    hook_clip = run_dir / "beat_00.mp4"  # see assemble.py's build_beat_clip
+    paths = generate_thumbnail(script, hook_clip, run_dir)
+    db.log_event(state["run_id"], "thumbnail", "done", str(paths["landscape"]))
+    return {
+        "thumbnail_path": str(paths["landscape"]),
+        "thumbnail_vertical_path": str(paths["vertical"]),
+    }
+
+
 def node_approve_video(state: PipelineState) -> dict:
     """
     Approve = publish. Reject = discard, nothing goes online -- see
@@ -175,6 +190,7 @@ def node_approve_video(state: PipelineState) -> dict:
     decision = interrupt({
         "gate": "video",
         "final_path": state["final_path"],
+        "thumbnail_path": state["thumbnail_path"],
         "message": "Watch the video, then approve to publish, or reject to discard?",
     })
     if decision != "approve":
@@ -189,7 +205,8 @@ def node_publish(state: PipelineState) -> dict:
 
     script = Script.model_validate(state["script"])
     final_path = Path(state["final_path"])
-    result = publish_video(script, final_path)
+    thumbnail_path = Path(state["thumbnail_path"]) if state.get("thumbnail_path") else None
+    result = publish_video(script, final_path, thumbnail_path)
 
     ok = any(k in result for k in ("youtube_url", "instagram_media_id", "linkedin_post_id"))
     partial = any(k in result for k in ("youtube_error", "instagram_error", "linkedin_error"))
@@ -212,6 +229,7 @@ def _add_voice_and_rest(g: StateGraph) -> None:
     g.add_node("choose_voice", node_choose_voice)
     g.add_node("captions", node_captions)
     g.add_node("assemble", node_assemble)
+    g.add_node("thumbnail", node_thumbnail)
     g.add_node("approve_video", node_approve_video)
     g.add_node("publish", node_publish)
 
@@ -223,7 +241,8 @@ def _add_voice_and_rest(g: StateGraph) -> None:
     g.add_edge("choose_voice", "captions")
     g.add_edge("voice", "captions")
     g.add_edge("captions", "assemble")
-    g.add_edge("assemble", "approve_video")
+    g.add_edge("assemble", "thumbnail")
+    g.add_edge("thumbnail", "approve_video")
     g.add_edge("approve_video", "publish")
     g.add_edge("publish", END)
 

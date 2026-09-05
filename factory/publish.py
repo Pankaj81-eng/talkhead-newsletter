@@ -117,7 +117,10 @@ _YT_SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 _YT_TOKEN_URI = "https://oauth2.googleapis.com/token"
 
 
-def upload_youtube(video_path: Path, title: str, description: str, hashtags: list[str]) -> str:
+def upload_youtube(
+    video_path: Path, title: str, description: str, hashtags: list[str],
+    thumbnail_path: Path | None = None,
+) -> str:
     """Returns the video's watch URL. A vertical video under 60s is
     treated as a Short automatically -- no separate "shorts" flag."""
     creds = Credentials(
@@ -161,6 +164,21 @@ def upload_youtube(video_path: Path, title: str, description: str, hashtags: lis
             "almost always means the OAuth app hasn't passed Google's "
             "audit yet. Publish manually until it clears.", actual_privacy,
         )
+
+    if thumbnail_path is not None:
+        try:
+            yt.thumbnails().set(
+                videoId=video_id,
+                media_body=MediaFileUpload(str(thumbnail_path)),
+            ).execute()
+        except HttpError as exc:
+            # Not fatal -- a channel without phone verification (or one
+            # that hasn't cleared YouTube's audit yet, same as the privacy
+            # note above) gets a 403 here specifically, while the video
+            # itself still uploaded fine. Log and move on rather than
+            # losing an otherwise-successful publish over the thumbnail.
+            log.warning("Custom thumbnail upload failed (video still published): %s", exc)
+
     return f"https://youtube.com/shorts/{video_id}"
 
 
@@ -263,9 +281,12 @@ def publish_linkedin(video_path: Path, caption: str) -> str:
 
 # --- Orchestration -----------------------------------------------------
 
-def publish_video(script, video_path: Path) -> dict:
+def publish_video(script, video_path: Path, thumbnail_path: Path | None = None) -> dict:
     """
     script: the pipeline's Script object (title/description/hashtags).
+    thumbnail_path: landscape (1280x720) thumbnail from thumbnail.py, set
+    on YouTube after upload -- optional so an older run without one (or a
+    manually-triggered publish) still works, just without a custom cover.
     Publishes to all platforms independently; a failure on one doesn't
     prevent the others from being attempted -- returns whatever
     succeeded plus any errors, rather than raising and losing a
@@ -276,7 +297,7 @@ def publish_video(script, video_path: Path) -> dict:
     try:
         description = f"{script.description}\n\n{FOLLOW_FOOTER}"
         result["youtube_url"] = upload_youtube(
-            video_path, script.title, description, script.hashtags
+            video_path, script.title, description, script.hashtags, thumbnail_path
         )
     except Exception as e:  # noqa: BLE001
         result["youtube_error"] = str(e)

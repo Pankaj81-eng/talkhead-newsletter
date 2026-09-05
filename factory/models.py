@@ -27,6 +27,11 @@ class Script(BaseModel):
     title: str = Field(..., description="YouTube/Instagram title, <=100 chars.")
     description: str = Field(..., description="Short description with a soft CTA.")
     hashtags: list[str] = Field(..., description="5-8 relevant hashtags, no '#' prefix.")
+    thumbnail_text: str = Field(
+        ..., description="Short punchy phrase for the video THUMBNAIL image "
+        "(2-5 words, Title Case or ALL CAPS) -- more dramatic/clickbait than "
+        "the title, meant to be read instantly at a glance over a photo."
+    )
 
     @property
     def all_beats(self) -> list[Beat]:
@@ -47,6 +52,11 @@ class Metadata(BaseModel):
     title: str = Field(..., description="YouTube/Instagram title, <=100 chars.")
     description: str = Field(..., description="Short description with a soft CTA.")
     hashtags: list[str] = Field(..., description="5-8 relevant hashtags, no '#' prefix.")
+    thumbnail_text: str = Field(
+        ..., description="Short punchy phrase for the video THUMBNAIL image "
+        "(2-5 words, Title Case or ALL CAPS) -- more dramatic/clickbait than "
+        "the title, meant to be read instantly at a glance over a photo."
+    )
 
 
 class BeatTiming(BaseModel):

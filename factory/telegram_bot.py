@@ -169,6 +169,10 @@ async def _send_gate(update: Update, payload: dict) -> None:
         size_mb = path.stat().st_size / (1024 * 1024)
         caption = ("Reply *approve* to publish to YouTube + Instagram + LinkedIn, "
                    "or *reject* to discard.")
+        thumb = payload.get("thumbnail_path")
+        if thumb and Path(thumb).exists():
+            with open(thumb, "rb") as f:
+                await update.message.reply_photo(photo=f, caption="Thumbnail")
         if size_mb <= _MAX_UPLOAD_MB:
             with open(path, "rb") as f:
                 await update.message.reply_video(video=f, caption=caption, parse_mode="Markdown")
