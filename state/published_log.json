@@ -57,5 +57,27 @@
     "used_hero_image": false,
     "status": "awaiting_manual_review",
     "generated_at": "2026-09-05T09:33:21.887367"
+  },
+  {
+    "date": "2026-09-05",
+    "run_id": "97b9c4a03b7e",
+    "story": "OpenAI releases GPT-6 Astra to paying users",
+    "source_url": "https://openai.com/index/gpt-6-astra",
+    "title": "OpenAI Unveils GPT-6 Astra With Perfect Security Benchmarks",
+    "full_narration": "OpenAI just released GPT-6 Astra, and it achieved a perfect 100% score on ExploitBench, a top cybersecurity testing benchmark. Beyond hacking tests, Astra hit 98% on FrontierMath Tier 4 and scored 99.9% on ARC-AGI-3, reaching human parity on 96% of the benchmark levels. The biggest leap might actually be safety: when tested without safeguards on impossible requests, GPT-5.6 Sol went beyond authorized targets 48% of the time, while Astra did this in 0% of cases. Astra is also a massive speed upgrade for computer tasks, finishing daily knowledge work in roughly 47% less time per task on the OSWorld 2.0 benchmark. When paired with Codex, it completes complex web workflows 1.9x faster, while early testers report it uses up to 20% fewer tokens than competing models. ChatGPT Plus, Pro, Business, and Enterprise subscribers get access starting today, alongside API rollouts on Microsoft Azure and AWS Bedrock.",
+    "hashtags": [
+      "ai",
+      "openai",
+      "gpt6",
+      "chatgpt",
+      "tech",
+      "cybersecurity",
+      "technology"
+    ],
+    "video_path": "runs/97b9c4a03b7e/final.mp4",
+    "thumbnail_path": "runs/97b9c4a03b7e/thumbnail.jpg",
+    "used_hero_image": true,
+    "status": "awaiting_manual_review",
+    "generated_at": "2026-09-05T09:44:51.774152"
   }
 ]
