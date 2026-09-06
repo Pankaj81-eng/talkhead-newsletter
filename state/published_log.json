@@ -145,5 +145,34 @@
     "status": "decision_timed_out",
     "generated_at": "2026-09-05T12:39:42.846981",
     "decided_at": "2026-09-05T13:34:49.328513"
+  },
+  {
+    "date": "2026-09-06",
+    "run_id": "acfcbe50d65c",
+    "story": "Run agent-driven Amazon SageMaker HyperPod operations",
+    "source_url": "https://aws.amazon.com/blogs/machine-learning/run-agent-driven-amazon-sagemaker-hyperpod-operations-with-instantstart/",
+    "title": "AWS InstantStart: Set Up AI Infrastructure With 1 Sentence",
+    "description": "How does Amazon InstantStart simplify setting up AI infrastructure?\n\nSetting up large-scale AI training hardware usually requires a dedicated tech team and endless manual configuration. AWS released an open-source tool called InstantStart that lets an AI agent handle the whole process through a single command. Check out the latest AI updates and subscribe for more plain-English breakdowns.",
+    "full_narration": "Building the massive server networks used to train big AI models is usually a long, complex chore for tech teams. But Amazon just released a tool that lets an AI assistant handle the setup from 1 simple sentence. Normally, setting up these huge AI systems requires connecting storage, configuring secure networks, and constantly watching out for server crashes. Every step has its own separate programming code, manual handoffs, and long waiting periods that slow down projects. Amazon's new open-source software, called InstantStart, replaces all that custom work with a simple form or single command. You can type a request like help me create a new cluster, and an AI assistant plans and launches every stage. The assistant automatically connects data storage and hardware, pausing only to ask for basic choices like your desired location or capacity. It even monitors server health and manages automatic recovery if hardware fails, keeping training jobs alive without manual work.",
+    "hashtags": [
+      "aws",
+      "ai",
+      "cloudcomputing",
+      "sagemaker",
+      "tech news",
+      "technology"
+    ],
+    "video_path": "runs/acfcbe50d65c/final.mp4",
+    "thumbnail_path": "runs/acfcbe50d65c/thumbnail.jpg",
+    "metadata_path": "runs/acfcbe50d65c/metadata.txt",
+    "used_hero_image": true,
+    "status": "published_partial",
+    "generated_at": "2026-09-06T05:51:35.936884",
+    "decided_at": "2026-09-06T06:00:00.298294",
+    "publish_result": {
+      "youtube_error": "YouTube upload failed: <HttpError 401 when requesting None returned \"Unauthorized\". Details: \"[{'message': 'Unauthorized', 'domain': 'youtube.header', 'reason': 'youtubeSignupRequired', 'location': 'Authorization', 'locationType': 'header'}]\">",
+      "instagram_media_id": "18101065871256301",
+      "linkedin_post_id": "170050506658414592"
+    }
   }
 ]
