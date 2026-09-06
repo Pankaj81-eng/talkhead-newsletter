@@ -11,9 +11,9 @@
     <key>StartCalendarInterval</key>
     <dict>
         <key>Hour</key>
-        <integer>8</integer>
+        <integer>6</integer>
         <key>Minute</key>
-        <integer>0</integer>
+        <integer>15</integer>
     </dict>
     <key>StandardOutPath</key>
     <string>/Users/pankajkumar/Documents/AI/AI_Projects/talkhead-newsletter/logs/launchd.out.log</string>
