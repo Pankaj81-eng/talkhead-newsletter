@@ -105,15 +105,36 @@ Hard requirements:
   "next-generation", "cutting-edge", "state-of-the-art", "seamlessly", or
   exclamation marks. State what happened and what it means, plainly.
 - For each beat (hook and body), decide the best visual:
-  - "broll": if a real stock/screen-recording visual would help (give a
-    concrete, literal search query — e.g. "person typing code on laptop
-    closeup", not an abstract phrase). For a recap/summary beat ("so the
-    simple way to remember it is...", "here's the key takeaway"), prefer
-    a concrete ACTION (writing, checking off a list, underlining notes)
-    over a mental-state phrase like "person thinking/simplifying" —
-    confirmed by direct testing that "thinking/simplifying" style queries
-    reliably find no real footage on free stock libraries, while
-    action-based ones do.
+  - "broll": if a real stock/screen-recording visual would help, give a
+    concrete, literal search query, not an abstract phrase — confirmed by
+    direct testing that a concrete ACTION (writing, checking off a list,
+    underlining notes) reliably finds real footage on free stock
+    libraries, while a mental-state phrase like "person thinking/
+    simplifying" reliably finds nothing.
+    Pick the action from whatever the story is actually ABOUT, not a
+    default — "person typing on a laptop" is a fine choice for a
+    software/coding story, but reusing it for every story is exactly what
+    makes videos start to look repetitive. Match the domain instead, e.g.:
+      * infrastructure/cloud/data centers → server racks, blinking data
+        center lights, cables in a server room
+      * robotics/hardware → robotic arm in motion, a warehouse robot,
+        assembly line close-up
+      * chips/semiconductors → circuit board close-up, silicon wafer,
+        chip fabrication
+      * consumer apps/phones → hand scrolling or tapping a phone screen
+      * research/science → whiteboard with diagrams, someone writing
+        equations, a lab setting
+      * business/finance/enterprise → office meeting, hands over a
+        keyboard doing spreadsheet work, a handshake
+      * cars/transport/logistics → a delivery truck, a warehouse
+        conveyor belt, a car dashboard
+      * health/medical AI → a doctor or lab technician at a screen, a
+        medical scanner
+    For a recap/summary beat ("so the simple way to remember it is...",
+    "here's the key takeaway"), the same rule applies — a concrete action
+    (writing, checking off a list, underlining notes) over a mental-state
+    phrase, but still tied to the story's own domain where it fits rather
+    than reaching for the same generic note-taking shot every time.
   - "text_card": if the idea is best shown as a short on-screen phrase or
     keyword (give the exact short text to render, <=6 words).
 - Video ends with a fixed outro clip that is NOT part of this script — do
@@ -397,21 +418,34 @@ Your job:
    own.
 4. Every single beat gets "visual": "broll" -- never "text_card". Give
    each one the best possible concrete, literal, filmable search query
-   for real stock/screen-recording footage (e.g. "person typing code on
-   laptop closeup"), even for an abstract idea -- reach for the closest
-   literal, filmable stand-in rather than defaulting to text (e.g. for
-   "AI creates" try something like "computer screen generating digital
-   content", not just "artificial intelligence"). A beat only ever ends
-   up as an on-screen text card automatically at video-generation time,
-   as a last-resort fallback when no relevant B-roll or photo exists for
-   your query -- never something this formatting step should choose.
+   for real stock/screen-recording footage, even for an abstract idea --
+   reach for the closest literal, filmable stand-in rather than
+   defaulting to text (e.g. for "AI creates" try something like "computer
+   screen generating digital content", not just "artificial
+   intelligence"). A beat only ever ends up as an on-screen text card
+   automatically at video-generation time, as a last-resort fallback when
+   no relevant B-roll or photo exists for your query -- never something
+   this formatting step should choose.
+   Match the query to whatever the script is actually ABOUT, not a
+   default -- "person typing code on laptop closeup" is a fine choice for
+   a software/coding beat, but reusing it for every beat regardless of
+   topic is exactly what makes videos look repetitive across a channel.
+   Reach for the domain instead, e.g.: server racks/data-center lights
+   for infrastructure, a robotic arm for robotics/hardware, a circuit
+   board or silicon wafer for chips, a hand scrolling a phone for
+   consumer apps, a whiteboard with diagrams for research, an office
+   meeting or spreadsheet close-up for business/enterprise, a delivery
+   truck or warehouse for logistics, a doctor/lab tech at a screen for
+   health/medical AI.
    For a recap/summary line ("so the simple way to remember it is...",
-   "here's the key takeaway"), prefer a concrete ACTION (writing,
-   checking off a list, underlining notes, typing) over a mental-state
-   phrase like "person thinking/simplifying/pondering" -- confirmed by
-   direct testing that "person thinking simplifying concept closeup"
-   style queries reliably find NO real footage on free stock libraries,
-   while "person writing checklist notebook closeup" style ones do.
+   "here's the key takeaway"), the same rule applies -- prefer a concrete
+   ACTION (writing, checking off a list, underlining notes, typing) over
+   a mental-state phrase like "person thinking/simplifying/pondering"
+   (confirmed by direct testing that "thinking/simplifying" style queries
+   reliably find NO real footage on free stock libraries, while
+   action-based ones do), but keep it tied to the script's own domain
+   where that fits rather than always reaching for the same generic
+   note-taking shot.
 
 Return JSON matching this shape exactly:
 {{"beats": [{{"text": "...", "visual": "broll", "query": "..."}}, ...]}}

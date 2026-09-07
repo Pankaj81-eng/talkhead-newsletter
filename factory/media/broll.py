@@ -31,6 +31,19 @@ _STOPWORDS = {
     "for", "close", "up", "shot", "screen", "person", "someone",
 }
 
+# How many results to pull per search call, across every provider/endpoint
+# below. Was 5 -- confirmed too small in practice (2026-09-06, Pankaj
+# noticed repeated visuals across videos): a generic query like "person
+# typing on laptop" often has only 2-3 results in the first 5 that pass
+# _is_relevant(), so _pick_fresh()'s "skip anything used in the last
+# BROLL_RECENCY_RUNS runs" logic exhausts that pool within a few runs and
+# falls back to a repeat. A bigger pool gives it real room to find
+# something fresh before giving up. Every provider here comfortably
+# supports 15 per call (Pexels/Pixabay allow far more; Coverr's docs don't
+# specify a cap but 15 is well within reason) -- no cost or rate-limit
+# concern at this project's one-search-per-beat, one-run-per-day volume.
+_CANDIDATE_POOL_SIZE = 15
+
 # Free stock libraries are full of generic marketing/warning "title card"
 # clips (flat color background + bold text) that share vocabulary with
 # perfectly reasonable queries -- "warning"/"error"/"alert" pulls both real
@@ -242,7 +255,7 @@ def _search_pexels_photo(query: str, recent_ids: set[str]) -> str | None:
         resp = requests.get(
             "https://api.pexels.com/v1/search",
             headers={"Authorization": config.PEXELS_API_KEY},
-            params={"query": query, "orientation": "portrait", "per_page": 5},
+            params={"query": query, "orientation": "portrait", "per_page": _CANDIDATE_POOL_SIZE},
             timeout=15,
         )
         resp.raise_for_status()
@@ -272,7 +285,7 @@ def _search_pixabay_photo(query: str, recent_ids: set[str]) -> str | None:
         resp = requests.get(
             "https://pixabay.com/api/",
             params={
-                "key": config.PIXABAY_API_KEY, "q": query, "per_page": 5,
+                "key": config.PIXABAY_API_KEY, "q": query, "per_page": _CANDIDATE_POOL_SIZE,
                 "image_type": "photo", "orientation": "vertical",
             },
             timeout=15,
@@ -319,10 +332,10 @@ def _search_pexels(query: str, recent_ids: set[str]) -> str | None:
         resp = requests.get(
             "https://api.pexels.com/videos/search",
             headers={"Authorization": config.PEXELS_API_KEY},
-            # per_page=5 (not 1): gives _best_pexels_file real options, and
-            # if the top match's own resolution is poor we can fall through
-            # to the next candidate instead of being stuck with it.
-            params={"query": query, "orientation": "portrait", "per_page": 5},
+            # _CANDIDATE_POOL_SIZE (not 1): gives _best_pexels_file real
+            # options, and if the top match's own resolution is poor we can
+            # fall through to the next candidate instead of being stuck with it.
+            params={"query": query, "orientation": "portrait", "per_page": _CANDIDATE_POOL_SIZE},
             timeout=15,
         )
         resp.raise_for_status()
@@ -353,7 +366,7 @@ def _search_pixabay(query: str, recent_ids: set[str]) -> str | None:
     try:
         resp = requests.get(
             "https://pixabay.com/api/videos/",
-            params={"key": config.PIXABAY_API_KEY, "q": query, "per_page": 5},
+            params={"key": config.PIXABAY_API_KEY, "q": query, "per_page": _CANDIDATE_POOL_SIZE},
             timeout=15,
         )
         resp.raise_for_status()
@@ -386,7 +399,7 @@ def _coverr_search_once(query: str) -> list[dict]:
     resp = requests.get(
         "https://api.coverr.co/videos",
         params={
-            "query": query, "page_size": 5, "urls": "true",
+            "query": query, "page_size": _CANDIDATE_POOL_SIZE, "urls": "true",
             "api_key": config.COVERR_API_KEY,
         },
         timeout=15,
