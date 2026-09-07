@@ -139,28 +139,52 @@ class ChatterboxVoice:
 
         gap = np.zeros(int(model.sr * 0.25), dtype=np.float32)  # 250ms between chunks
 
+        # Confirmed the hard way (2026-09-06): identical code + a pinned
+        # seed can still render one or two chunks noticeably rushed --
+        # whisper word-timing on a real run showed the opening ~30s at
+        # ~180 wpm vs ~168 wpm for the rest of the same clip (Pankaj
+        # caught it by ear before this check existed). This isn't a
+        # conditioning-step artifact (prepare_conditionals just sets
+        # self.conds, it doesn't touch sampling) -- it's plain sampling
+        # variance, so retry ONLY the offending chunk with a nudged seed
+        # rather than re-rolling the whole take.
+        MAX_WORDS_PER_SEC = 3.2
+        MAX_PACE_RETRIES = 3
+
         chunks = []
         for i, sentence in enumerate(merged):
-            # Only pass audio_prompt_path on the FIRST chunk -- that's
-            # what triggers Chatterbox to (re)process the reference audio.
-            # Passing it on every call re-ran that (expensive) step per
-            # chunk for no reason; conditioning is identical every time
-            # since the reference doesn't change mid-video. Using the full
-            # sample_path (not a trimmed clip) and library-default
-            # generation params -- confirmed as the version that actually
-            # sounded like you, kept as-is rather than "improved" further.
-            wav = model.generate(
-                sentence,
-                audio_prompt_path=str(self.sample_path) if i == 0 else None,
-            )
-            wav = wav.squeeze().detach().cpu().numpy().astype(np.float32)
-            dur = len(wav) / model.sr
-            # Printed per-chunk so a future glitch (e.g. a chunk running
-            # way longer than its word count would suggest) is visible
-            # immediately in the console instead of requiring an ffprobe
-            # forensic pass after the fact.
-            print(f"[voice] chunk {i+1}/{len(merged)} ({len(sentence.split())} words) "
-                  f"-> {dur:.2f}s: \"{sentence[:60]}{'...' if len(sentence) > 60 else ''}\"")
+            n_words = len(sentence.split())
+            for attempt in range(MAX_PACE_RETRIES + 1):
+                # Only pass audio_prompt_path on the FIRST chunk (first
+                # attempt) -- that's what triggers Chatterbox to (re)process
+                # the reference audio. Passing it on every call re-ran that
+                # (expensive) step per chunk for no reason; conditioning is
+                # identical every time since the reference doesn't change
+                # mid-video. Using the full sample_path (not a trimmed clip)
+                # and library-default generation params -- confirmed as the
+                # version that actually sounded like you, kept as-is rather
+                # than "improved" further.
+                wav = model.generate(
+                    sentence,
+                    audio_prompt_path=str(self.sample_path) if i == 0 and attempt == 0 else None,
+                )
+                wav = wav.squeeze().detach().cpu().numpy().astype(np.float32)
+                dur = len(wav) / model.sr
+                wps = n_words / dur if dur > 0 else 0
+                too_fast = wps > MAX_WORDS_PER_SEC
+                # Printed per-chunk so a future glitch (e.g. a chunk running
+                # way longer than its word count would suggest) is visible
+                # immediately in the console instead of requiring an ffprobe
+                # forensic pass after the fact.
+                flag = " -- TOO FAST, retrying" if too_fast and attempt < MAX_PACE_RETRIES else ""
+                print(f"[voice] chunk {i+1}/{len(merged)} attempt {attempt+1} "
+                      f"({n_words} words) -> {dur:.2f}s ({wps:.2f} wps){flag}: "
+                      f"\"{sentence[:60]}{'...' if len(sentence) > 60 else ''}\"")
+                if not too_fast or attempt == MAX_PACE_RETRIES:
+                    break
+                # Nudge the RNG so the retry is a genuinely different
+                # sample, not the same rushed take again.
+                torch.manual_seed(seed + (i + 1) * 1000 + attempt + 1)
             chunks.append(wav)
             chunks.append(gap)
 
