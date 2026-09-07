@@ -31,6 +31,14 @@ assets/intro/intro_vertical.mp4
 assets/voice/reference_clip.wav
 assets/voice/original/
 
+# Raw intro-library source recordings (2026-09-07) -- 4320x7680 HEVC,
+# ~30MB each, kept locally as the real master takes. Only the small
+# pre-converted 1080x1920 versions (assets/intro/library_vertical/, ~6MB
+# total for all 3, NOT ignored -- committed so the cloud runner has them
+# without needing ffmpeg to redo the conversion) are what assemble_reel()
+# actually reads at video-build time -- see prepare_intro_vertical().
+assets/intro/library/
+
 # Curated per-story b-roll pulled from a third party's own site (e.g. an
 # announcement's demo clips) -- their copyright, not ours to redistribute
 # via this repo. Manifest format lives in assets/official/, kept local.

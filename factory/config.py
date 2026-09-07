@@ -19,10 +19,12 @@ CACHE_VOICE = CACHE_DIR / "voice"
 ASSETS_DIR = ROOT / "assets"
 OUTRO_DIR = ASSETS_DIR / "outro"
 INTRO_DIR = ASSETS_DIR / "intro"
+INTRO_LIBRARY_DIR = INTRO_DIR / "library"  # rotating multi-clip intro, see prepare_intro_vertical()
+INTRO_LIBRARY_CACHE_DIR = INTRO_DIR / "library_vertical"
 VOICE_DIR = ASSETS_DIR / "voice"
 DB_PATH = ROOT / "factory.db"
 
-for p in (RUNS_DIR, CACHE_BROLL, CACHE_VOICE, OUTRO_DIR, INTRO_DIR, VOICE_DIR):
+for p in (RUNS_DIR, CACHE_BROLL, CACHE_VOICE, OUTRO_DIR, INTRO_DIR, INTRO_LIBRARY_DIR, INTRO_LIBRARY_CACHE_DIR, VOICE_DIR):
     p.mkdir(parents=True, exist_ok=True)
 
 # --- Duration budget ---
@@ -122,10 +124,18 @@ OUTRO_VERTICAL = OUTRO_DIR / "outro_vertical.mp4"  # always the standardized, ca
 # --- Fixed intro asset (2026-08-31: same pattern as the outro, mirrored
 # for the front instead of the back -- a real face on screen at the very
 # start, confirmed by Pankaj's own Instagram data to perform noticeably
-# better than opening on B-roll/text). Optional: if no intro.* file
-# exists, the video just starts with the hook beat as it always has --
-# see assemble.py's assemble_reel(), which only prepends this if
-# INTRO_SOURCE.exists(). ---
+# better than opening on B-roll/text). Optional: if neither a library
+# clip nor a single intro.* file exists, the video just starts with the
+# hook beat as it always has -- see assemble.py's assemble_reel().
+#
+# 2026-09-07: extended to a rotating LIBRARY of intro clips (a friend's
+# suggestion Pankaj picked up -- a short "this is real news, not a
+# concept video" cold-open, rotated so it doesn't feel identical every
+# day) -- see assemble.py's prepare_intro_vertical(). Drop clips in
+# INTRO_LIBRARY_DIR named intro_01.*, intro_02.*, ... -- sorted
+# filename order IS rotation order. A single legacy INTRO_SOURCE (one
+# fixed intro.* file, no rotation) still works as a fallback if the
+# library is empty, for backward compatibility. ---
 def _find_intro_source() -> Path | None:
     for ext in ("mp4", "mov", "m4v"):
         candidate = INTRO_DIR / f"intro.{ext}"

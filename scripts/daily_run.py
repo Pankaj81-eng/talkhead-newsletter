@@ -136,7 +136,7 @@ def main() -> None:
         word_counts = [len(b.text.split()) for b in beats]
         audio_duration = sf.info(str(wav_path)).duration
         timings = beat_timings_from_words(word_counts, words, audio_duration)
-        final_path = assemble_reel(script, timings, wav_path, words, run_dir)
+        final_path = assemble_reel(script, timings, wav_path, words, run_dir, date=date)
 
         stage = "thumbnail"
         thumbs = generate_thumbnail(script, run_dir)

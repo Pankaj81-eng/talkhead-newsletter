@@ -182,25 +182,68 @@ def prepare_outro_vertical() -> Path:
     return config.OUTRO_VERTICAL
 
 
-def prepare_intro_vertical() -> Path | None:
+def _intro_library_clips() -> list[Path]:
+    """Every intro_*.<ext> file in INTRO_LIBRARY_DIR, sorted by filename --
+    that sort order IS rotation order (intro_01, intro_02, intro_03, ...).
+    See config.py's INTRO_LIBRARY_DIR docstring."""
+    exts = ("mp4", "mov", "m4v")
+    return sorted(
+        p for p in config.INTRO_LIBRARY_DIR.iterdir()
+        if p.is_file() and p.suffix.lstrip(".").lower() in exts
+    ) if config.INTRO_LIBRARY_DIR.exists() else []
+
+
+def _select_intro_source(date: str | None) -> Path | None:
+    """
+    Picks today's rotation slot from the intro library -- a plain,
+    stateless day-of-year rotation (date.toordinal() % pool size), so the
+    same calendar date always maps to the same clip with no extra state
+    to track, and the cycle repeats automatically (3 clips -> every 3rd
+    day repeats, 2026-09-07's request: "day one intro one, day two intro
+    two, day three intro three, then start again"). Falls back to the
+    single legacy INTRO_SOURCE file if the library is empty, for
+    backward compatibility; None if neither exists.
+    """
+    clips = _intro_library_clips()
+    if clips:
+        import datetime
+        day = (
+            datetime.date.fromisoformat(date) if date
+            else datetime.date.today()
+        )
+        return clips[day.toordinal() % len(clips)]
+    return config.INTRO_SOURCE
+
+
+def prepare_intro_vertical(date: str | None = None) -> Path | None:
     """
     Same conversion/caching as prepare_outro_vertical(), mirrored for the
     front instead of the back -- see config.py's INTRO_SOURCE docstring.
-    Optional: returns None (not an error) if no intro.* file exists, so a
-    video without one just starts on the hook beat as it always has.
+    Optional: returns None (not an error) if no intro clip exists at all,
+    so a video without one just starts on the hook beat as it always has.
+    Each library clip gets its own cached converted file (named after its
+    source) since there's more than one now, unlike the single fixed
+    INTRO_VERTICAL path the legacy single-file path still uses.
     """
-    if config.INTRO_SOURCE is None:
+    source = _select_intro_source(date)
+    if source is None:
         return None
-    if config.INTRO_VERTICAL.exists():
-        return config.INTRO_VERTICAL
+
+    if source == config.INTRO_SOURCE:
+        cached = config.INTRO_VERTICAL
+    else:
+        cached = config.INTRO_LIBRARY_CACHE_DIR / f"{source.stem}_vertical.mp4"
+
+    if cached.exists():
+        return cached
     run_ffmpeg([
-        "-i", str(config.INTRO_SOURCE),
+        "-i", str(source),
         "-vf", f"crop=ih*9/16:ih,scale={W}:{H},fps={FPS},format=yuv420p",
         "-c:v", "libx264",
         "-c:a", "aac", "-b:a", "128k", "-ar", "48000", "-ac", "2",
-        str(config.INTRO_VERTICAL),
+        str(cached),
     ])
-    return config.INTRO_VERTICAL
+    return cached
 
 
 def _check_full_narration_covered(timings: list[BeatTiming], voiceover_wav: Path) -> None:
@@ -240,6 +283,7 @@ def assemble_reel(
     voiceover_wav: Path,
     words: list[dict],
     run_dir: Path,
+    date: str | None = None,
 ) -> Path:
     _check_full_narration_covered(timings, voiceover_wav)
 
@@ -259,7 +303,7 @@ def assemble_reel(
     body_captioned = run_dir / "body_captioned.mp4"
     burn_captions(body_with_audio, caption_images, body_captioned)
 
-    intro = prepare_intro_vertical()
+    intro = prepare_intro_vertical(date)
     outro = prepare_outro_vertical()
 
     final_path = run_dir / "final.mp4"
