@@ -75,6 +75,13 @@ jobs:
           # project's own .env.
           FACTORY_VOICE_ENGINE: chatterbox
           FACTORY_VOICE_SEED: "1965803137"
+          # Explicit as of 2026-09-07 -- these were previously UNSET here,
+          # silently falling back to config.py's own defaults (which
+          # happen to already be 85/90) rather than being a deliberate,
+          # documented choice. Matches TikTok's own guidance that 60-90s
+          # is their promoted range. Made explicit, not changed.
+          FACTORY_SAFE_MAX_SECONDS: "85"
+          FACTORY_HARD_MAX_SECONDS: "90"
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
