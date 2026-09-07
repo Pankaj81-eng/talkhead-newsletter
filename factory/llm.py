@@ -37,6 +37,15 @@ def _call_gemini(prompt: str, schema: type[T]) -> T | None:
             contents=f"{_SYSTEM_JSON_INSTRUCTION}\n\nSchema fields: "
                      f"{list(schema.model_fields.keys())}\n\n{prompt}",
         )
+        # Printed so free-tier usage is visible in the run log rather than
+        # only guessable after the fact -- was previously not logged at
+        # all (2026-09-07, Pankaj asked how much of the free tier a run
+        # actually uses and there was no real answer available).
+        usage = getattr(resp, "usage_metadata", None)
+        if usage:
+            print(f"[llm] Gemini usage: prompt={usage.prompt_token_count} "
+                  f"output={usage.candidates_token_count} "
+                  f"total={usage.total_token_count}")
         return schema.model_validate_json(_extract_json(resp.text))
     except Exception as e:  # noqa: BLE001 — fall through to next provider deliberately
         print(f"[llm] Gemini failed, falling back: {e}")
@@ -57,6 +66,10 @@ def _call_groq(prompt: str, schema: type[T]) -> T | None:
             ],
             response_format={"type": "json_object"},
         )
+        usage = getattr(resp, "usage", None)
+        if usage:
+            print(f"[llm] Groq usage: prompt={usage.prompt_tokens} "
+                  f"output={usage.completion_tokens} total={usage.total_tokens}")
         raw = resp.choices[0].message.content
         return schema.model_validate_json(_extract_json(raw))
     except Exception as e:  # noqa: BLE001

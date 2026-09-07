@@ -99,7 +99,11 @@ TIKTOK_REFRESH_TOKEN = os.getenv("TIKTOK_REFRESH_TOKEN", "")
 # https://ai.google.dev/gemini-api/docs/models for the current name and
 # update FACTORY_GEMINI_MODEL in .env -- no code change needed.
 GEMINI_MODEL = os.getenv("FACTORY_GEMINI_MODEL", "gemini-3.6-flash")
-GROQ_MODEL = os.getenv("FACTORY_GROQ_MODEL", "llama-3.3-70b-versatile")
+# llama-3.3-70b-versatile confirmed retired from Groq as of 2026-09-07
+# (404 model_not_found on a real call) -- checked Groq's live /models
+# endpoint for a replacement; openai/gpt-oss-120b is their current
+# largest general-purpose chat model.
+GROQ_MODEL = os.getenv("FACTORY_GROQ_MODEL", "openai/gpt-oss-120b")
 
 # --- Fixed outro asset ---
 # Accepts whatever container your camera/screen-recorder actually produced
