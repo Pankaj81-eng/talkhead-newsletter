@@ -256,5 +256,34 @@
       "instagram_media_id": "18082962272309791",
       "linkedin_post_id": "170417673069395968"
     }
+  },
+  {
+    "date": "2026-09-07",
+    "run_id": "9bd2490f72f7",
+    "story": "Research acceleration: The view inside OpenAI",
+    "source_url": "https://openai.com/index/research-acceleration-view-inside-openai",
+    "title": "How OpenAI Uses AI to Build AI Faster",
+    "description": "How is OpenAI using AI agents to speed up research?\n\nInside OpenAI, coding agents are running experiments and taking on complex tasks to accelerate development. Here is how automated tools are changing how computer science gets done. What do you think about AI building AI?",
+    "full_narration": "Inside OpenAI, researchers are no longer writing every single line of code by hand; they are using automated AI coding agents to help design future models. Instead of human engineers manually writing every script or setting up every individual test, these software agents step in to run research tasks directly. Early data from inside the company shows this shift is significantly increasing experiment velocity, allowing research teams to test far more ideas in much less time. These AI assistants are not just completing basic repetitive chores; they are taking on increasingly complex research tasks that previously required constant human supervision. This creates a continuous feedback loop where current AI tools actively accelerate the development process for the next set of artificial intelligence systems. In simple terms, research acceleration means progress is no longer bottlenecked by how fast humans can write code, but by how well scientists direct these digital assistants.",
+    "hashtags": [
+      "openai",
+      "ai",
+      "tech",
+      "coding",
+      "research",
+      "futuretech"
+    ],
+    "video_path": "runs/9bd2490f72f7/final.mp4",
+    "thumbnail_path": "runs/9bd2490f72f7/thumbnail.jpg",
+    "metadata_path": "runs/9bd2490f72f7/metadata.txt",
+    "used_hero_image": true,
+    "status": "published_partial",
+    "generated_at": "2026-09-07T09:44:49.104031",
+    "decided_at": "2026-09-07T09:53:15.007824",
+    "publish_result": {
+      "youtube_error": "YouTube upload failed: <HttpError 401 when requesting None returned \"Unauthorized\". Details: \"[{'message': 'Unauthorized', 'domain': 'youtube.header', 'reason': 'youtubeSignupRequired', 'location': 'Authorization', 'locationType': 'header'}]\">",
+      "instagram_media_id": "18106715489184032",
+      "linkedin_post_id": "170456493051609088"
+    }
   }
 ]

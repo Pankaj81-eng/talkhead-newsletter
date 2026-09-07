@@ -1,6 +1,9 @@
 """
-The real daily pipeline: fetch today's top AI story from ai-daily's own
-editorial pipeline, write a script, synthesize voice, assemble the video
+The real daily pipeline: fetch today's top AI story from our own
+independent RSS-fetch + editorial-gate pipeline (factory/news/
+story_picker.py -- as of 2026-09-07, no longer a call into the sibling
+ai-daily project; see that module's docstring), write a script,
+synthesize voice, assemble the video
 with real b-roll (including the story's own hero image when available)
 and captions, generate a thumbnail, then push the finished video to
 Telegram as a ONE-WAY notification for Pankaj to review and publish
@@ -37,7 +40,7 @@ from factory.media.captions import transcribe_words, beat_timings_from_words
 from factory.media.assemble import assemble_reel
 from factory.media.thumbnail import generate_thumbnail
 from factory.media.metadata_export import write_metadata
-from factory.news.aidaily_bridge import fetch_top_story, story_to_brief, AiDailyBridgeError
+from factory.news.story_picker import fetch_top_story, story_to_brief, NoStoryTodayError
 from factory.news.article_fetch import fetch_article_text
 from factory.news.hero_image import fetch_hero_image
 from factory.news.telegram_notify import send_daily_video, await_decision, send_error, send_text
@@ -86,11 +89,11 @@ def main() -> None:
         print(f"[daily_run] top story: {story['headline']} ({story.get('link')})")
 
         stage = "fetch_article"
-        # ai-daily's own LLM-written summary varies in specificity call to
-        # call (confirmed live: same story, sometimes with real benchmark
-        # numbers, sometimes vague) -- supplement with the actual source
-        # article text so generate_script()'s fact-checker has real
-        # numbers to find even when the summary alone didn't preserve them.
+        # story_picker's own "body" is just the RSS feed's own summary --
+        # often a thin one-sentence blurb, sometimes with no real numbers
+        # at all -- supplement with the actual source article text so
+        # generate_script()'s fact-checker has real numbers to find even
+        # when the feed summary alone didn't carry them.
         if story.get("link"):
             article_text = fetch_article_text(story["link"])
             if article_text:
@@ -205,11 +208,11 @@ def main() -> None:
 
         print(f"[daily_run] done: {final_path} -- {final_status}")
 
-    except AiDailyBridgeError as e:
-        # "No newsletter today" is a normal, expected outcome (ai-daily's
-        # own editorial gate found nothing worth publishing) -- tell
-        # Pankaj so a quiet morning reads as "checked, nothing qualified"
-        # rather than "silently broke", but don't treat it as an error.
+    except NoStoryTodayError as e:
+        # "No newsletter today" is a normal, expected outcome (our own
+        # editorial gate found nothing worth publishing) -- tell Pankaj so
+        # a quiet morning reads as "checked, nothing qualified" rather than
+        # "silently broke", but don't treat it as an error.
         print(f"[daily_run] no story today: {e}")
         send_text(token, chat_id, f"TalkHead: no video today.\n\n{e}")
     except Exception as e:  # noqa: BLE001

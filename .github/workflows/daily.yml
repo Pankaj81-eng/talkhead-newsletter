@@ -61,19 +61,8 @@ jobs:
       - name: Install TalkHead dependencies
         run: uv sync --frozen
 
-      - name: Clone ai-daily (private, cross-repo token) and set up its env
-        env:
-          AI_DAILY_CLONE_TOKEN: ${{ secrets.AI_DAILY_CLONE_TOKEN }}
-        run: |
-          git clone "https://x-access-token:${AI_DAILY_CLONE_TOKEN}@github.com/Pankaj81-eng/ai-daily.git" /tmp/ai-daily
-          cd /tmp/ai-daily
-          uv venv
-          uv pip install -r requirements.txt
-          .venv/bin/python -m playwright install --with-deps chromium
-
       - name: Run the daily pipeline
         env:
-          TALKHEAD_AI_DAILY_DIR: /tmp/ai-daily
           # NOT secrets -- plain pipeline config, but still had to be set
           # explicitly here: confirmed the hard way (2026-09-05) that
           # without this, config.py's os.getenv() falls back to its

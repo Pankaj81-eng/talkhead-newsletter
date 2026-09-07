@@ -22,6 +22,7 @@ dependencies = [
     "google-api-python-client>=2.0",
     "google-auth>=2.0",
     "boto3>=1.34",
+    "feedparser>=6.0",
     # Pinned below 81: newer setuptools dropped bundling pkg_resources by
     # default, which a dependency three layers deep (resemble-perth, used
     # by chatterbox-tts for audio watermarking) still imports directly.
