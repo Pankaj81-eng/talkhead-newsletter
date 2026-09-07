@@ -106,6 +106,9 @@ jobs:
           WOOP_API_KEY: ${{ secrets.WOOP_API_KEY }}
           WOOP_PROJECT_ID: ${{ secrets.WOOP_PROJECT_ID }}
           WOOP_LINKEDIN_ACCOUNT_ID: ${{ secrets.WOOP_LINKEDIN_ACCOUNT_ID }}
+          TIKTOK_CLIENT_KEY: ${{ secrets.TIKTOK_CLIENT_KEY }}
+          TIKTOK_CLIENT_SECRET: ${{ secrets.TIKTOK_CLIENT_SECRET }}
+          TIKTOK_REFRESH_TOKEN: ${{ secrets.TIKTOK_REFRESH_TOKEN }}
         run: |
           uv run python scripts/daily_run.py \
             ${{ inputs.date && format('--date {0}', inputs.date) || '' }} \

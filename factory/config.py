@@ -82,6 +82,16 @@ WOOP_API_KEY = os.getenv("WOOP_API_KEY", "")
 WOOP_PROJECT_ID = os.getenv("WOOP_PROJECT_ID", "")
 WOOP_LINKEDIN_ACCOUNT_ID = os.getenv("WOOP_LINKEDIN_ACCOUNT_ID", "")
 
+# TikTok Content Posting API (2026-09-06, backlog item finally picked up).
+# TIKTOK_ACCESS_TOKEN is a short-lived (~24h) bootstrap value from the
+# one-time get_tiktok_token.py exchange -- publish.py always refreshes a
+# fresh one from TIKTOK_REFRESH_TOKEN before actually posting, so only
+# the refresh token needs to stay current day to day (TikTok's refresh
+# tokens last ~365 days, unlike YouTube's 7-day Testing-mode ones).
+TIKTOK_CLIENT_KEY = os.getenv("TIKTOK_CLIENT_KEY", "")
+TIKTOK_CLIENT_SECRET = os.getenv("TIKTOK_CLIENT_SECRET", "")
+TIKTOK_REFRESH_TOKEN = os.getenv("TIKTOK_REFRESH_TOKEN", "")
+
 # --- LLM model names ---
 # These WILL go stale -- Google/Groq retire and rename models with little
 # warning (gemini-2.5-flash was pulled entirely as of this writing). If

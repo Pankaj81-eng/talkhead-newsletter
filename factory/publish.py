@@ -278,6 +278,124 @@ def publish_linkedin(video_path: Path, caption: str) -> str:
     return r.json().get("id", "unknown")
 
 
+# --- TikTok --------------------------------------------------------------
+#
+# Content Posting API, Direct Post + FILE_UPLOAD source (2026-09-06,
+# backlog item). IMPORTANT caveat carried over from setup: an app TikTok
+# hasn't audited yet can only direct-post as "private to the poster"
+# (SELF_ONLY) regardless of what privacy_level is requested here -- same
+# shape of limitation as YouTube's pre-audit forced-private behavior
+# above. Once TikTok approves the app for public posting, no code change
+# is needed here, just the privacy_level request actually taking effect.
+
+_TIKTOK_API = "https://open.tiktokapis.com/v2"
+_TIKTOK_SINGLE_CHUNK_MAX = 64 * 1024 * 1024  # 64MB -- TikTok's single-chunk ceiling
+_TIKTOK_CHUNK_SIZE = 10 * 1024 * 1024  # 10MB, only used when actually splitting above the ceiling
+_TIKTOK_POLL_INTERVAL_S = 3
+_TIKTOK_POLL_MAX_ATTEMPTS = 60
+
+
+def _tiktok_access_token() -> str:
+    """Exchanges the long-lived refresh token for a fresh (~24h) access
+    token. Called fresh before every publish rather than cached anywhere
+    -- one extra HTTP call per run is nothing next to the cost of a
+    stale-token failure mid-upload."""
+    r = requests.post(
+        f"{_TIKTOK_API}/oauth/token/",
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        data={
+            "client_key": config.TIKTOK_CLIENT_KEY,
+            "client_secret": config.TIKTOK_CLIENT_SECRET,
+            "grant_type": "refresh_token",
+            "refresh_token": config.TIKTOK_REFRESH_TOKEN,
+        },
+        timeout=30,
+    )
+    data = r.json()
+    if "access_token" not in data:
+        raise PublishError(f"TikTok token refresh failed: {r.status_code}: {r.text[:400]}")
+    return data["access_token"]
+
+
+def publish_tiktok(video_path: Path, caption: str) -> str:
+    """Returns TikTok's publish_id. Uploads the file directly to TikTok
+    (no temp public hosting needed, unlike Instagram) via the
+    init -> chunked PUT -> poll-status dance the Content Posting API
+    requires for FILE_UPLOAD source."""
+    access_token = _tiktok_access_token()
+    headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json; charset=UTF-8"}
+
+    # Confirmed the hard way (2026-09-06): TikTok's FILE_UPLOAD validation
+    # rejects a video under 64MB that's split into multiple chunks --
+    # "the total chunk count is invalid" -- even though the chunk math
+    # (ceil(video_size / chunk_size)) was internally consistent. Their
+    # docs' real rule: anything under the 64MB single-chunk ceiling must
+    # be sent as ONE chunk (chunk_size == video_size, total_chunk_count
+    # == 1); multi-chunk is only for videos that actually exceed it. Our
+    # short vertical Shorts/Reels are always well under 64MB in practice,
+    # but keep the split path for the rare case that changes.
+    video_size = video_path.stat().st_size
+    if video_size <= _TIKTOK_SINGLE_CHUNK_MAX:
+        chunk_size = video_size
+        total_chunks = 1
+    else:
+        chunk_size = _TIKTOK_CHUNK_SIZE
+        total_chunks = (video_size + chunk_size - 1) // chunk_size
+
+    init_body = {
+        "post_info": {
+            "title": caption[:2200],
+            "privacy_level": "SELF_ONLY",  # forced anyway pre-audit; see note above
+            "disable_duet": False,
+            "disable_comment": False,
+            "disable_stitch": False,
+        },
+        "source_info": {
+            "source": "FILE_UPLOAD",
+            "video_size": video_size,
+            "chunk_size": chunk_size,
+            "total_chunk_count": total_chunks,
+        },
+    }
+    r = requests.post(f"{_TIKTOK_API}/post/publish/video/init/", headers=headers, json=init_body, timeout=30)
+    data = r.json()
+    if r.status_code >= 400 or data.get("error", {}).get("code") not in (None, "ok"):
+        raise PublishError(f"TikTok publish init failed: {r.status_code}: {r.text[:400]}")
+    publish_id = data["data"]["publish_id"]
+    upload_url = data["data"]["upload_url"]
+
+    with open(video_path, "rb") as f:
+        for i in range(total_chunks):
+            start = i * chunk_size
+            f.seek(start)
+            end = min(start + chunk_size, video_size) - 1
+            chunk = f.read(end - start + 1)
+            r = requests.put(
+                upload_url,
+                headers={
+                    "Content-Type": "video/mp4",
+                    "Content-Range": f"bytes {start}-{end}/{video_size}",
+                },
+                data=chunk,
+                timeout=120,
+            )
+            if r.status_code not in (200, 201, 206):
+                raise PublishError(f"TikTok chunk upload failed at byte {start}: {r.status_code}: {r.text[:400]}")
+
+    for _attempt in range(_TIKTOK_POLL_MAX_ATTEMPTS):
+        r = requests.post(
+            f"{_TIKTOK_API}/post/publish/status/fetch/", headers=headers,
+            json={"publish_id": publish_id}, timeout=30,
+        )
+        status = r.json().get("data", {}).get("status")
+        if status == "PUBLISH_COMPLETE":
+            return publish_id
+        if status == "FAILED":
+            raise PublishError(f"TikTok publish {publish_id} failed: {r.text[:400]}")
+        time.sleep(_TIKTOK_POLL_INTERVAL_S)
+    raise PublishError(f"TikTok publish {publish_id} never completed (still processing)")
+
+
 # --- Orchestration -----------------------------------------------------
 
 def publish_video(script, video_path: Path, thumbnail_path: Path | None = None) -> dict:
@@ -315,5 +433,14 @@ def publish_video(script, video_path: Path, thumbnail_path: Path | None = None) 
         result["linkedin_post_id"] = publish_linkedin(video_path, caption)
     except Exception as e:  # noqa: BLE001
         result["linkedin_error"] = str(e)
+
+    if config.TIKTOK_CLIENT_KEY and config.TIKTOK_REFRESH_TOKEN:
+        try:
+            caption = (
+                f"{script.title}\n\n" + " ".join(f"#{h}" for h in script.hashtags)
+            )
+            result["tiktok_publish_id"] = publish_tiktok(video_path, caption)
+        except Exception as e:  # noqa: BLE001
+            result["tiktok_error"] = str(e)
 
     return result

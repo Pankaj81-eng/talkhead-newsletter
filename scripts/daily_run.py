@@ -175,8 +175,8 @@ def main() -> None:
             stage = "publish"
             from factory.publish import publish_video
             result = publish_video(script, final_path, thumbs["landscape"])
-            ok = any(k in result for k in ("youtube_url", "instagram_media_id", "linkedin_post_id"))
-            partial = any(k in result for k in ("youtube_error", "instagram_error", "linkedin_error"))
+            ok = any(k in result for k in ("youtube_url", "instagram_media_id", "linkedin_post_id", "tiktok_publish_id"))
+            partial = any(k in result for k in ("youtube_error", "instagram_error", "linkedin_error", "tiktok_error"))
             final_status = "published" if ok and not partial else ("publish_failed" if not ok else "published_partial")
             _update_log_status(run_id, final_status, publish_result=result)
             db.mark_status(run_id, final_status)
@@ -193,6 +193,10 @@ def main() -> None:
                 summary_lines.append(f"LinkedIn: published (post id {result['linkedin_post_id']})")
             if "linkedin_error" in result:
                 summary_lines.append(f"LinkedIn FAILED: {result['linkedin_error']}")
+            if "tiktok_publish_id" in result:
+                summary_lines.append(f"TikTok: published (publish id {result['tiktok_publish_id']})")
+            if "tiktok_error" in result:
+                summary_lines.append(f"TikTok FAILED: {result['tiktok_error']}")
             send_text(token, chat_id, "\n".join(summary_lines))
         else:
             final_status = {"discard": "discarded_by_pankaj", None: "decision_timed_out"}[decision]
