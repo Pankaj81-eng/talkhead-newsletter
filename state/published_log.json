@@ -174,5 +174,35 @@
       "instagram_media_id": "18101065871256301",
       "linkedin_post_id": "170050506658414592"
     }
+  },
+  {
+    "date": "2026-09-07",
+    "run_id": "d43b5b4d95bd",
+    "story": "Seattle Times and Newsday sue OpenAI",
+    "source_url": "https://www.theverge.com/ai-artificial-intelligence/990932/seattle-times-newsday-lawsuit-openai-microsoft",
+    "title": "Newspapers Sue OpenAI and Microsoft to Destroy AI Models",
+    "description": "Why are newspapers demanding that OpenAI destroy its AI models? The Seattle Times and Newsday have filed a copyright infringement lawsuit against OpenAI and Microsoft. They claim training chatbots on news articles damages subscription revenue and are asking courts to order the destruction of affected models. Let us know your thoughts below.",
+    "full_narration": "Two major newspapers are taking OpenAI and Microsoft to court, and they are not just asking for cash. They want the AI models themselves completely destroyed. The Seattle Times and Newsday are the latest publishers to sue for copyright infringement, claiming the tech companies took years of original journalism without permission. They argue that OpenAI used their reporting as training data and that the chatbots now frequently copy and reproduce passages from those articles in response to user prompts. Because these AI tools answer questions directly on screen, readers do not need to click over to the original news websites, which strips away valuable subscription revenue. The publishers also targeted Microsoft as a defendant in the lawsuit because its Copilot chatbot is built directly on top of OpenAI's technology. Instead of simply seeking money, the outlets are asking the court to order the complete destruction of all training datasets and any AI models that used their work.",
+    "hashtags": [
+      "ai",
+      "ainews",
+      "openai",
+      "microsoft",
+      "lawsuit",
+      "tech",
+      "copyright"
+    ],
+    "video_path": "runs/d43b5b4d95bd/final.mp4",
+    "thumbnail_path": "runs/d43b5b4d95bd/thumbnail.jpg",
+    "metadata_path": "runs/d43b5b4d95bd/metadata.txt",
+    "used_hero_image": true,
+    "status": "published",
+    "generated_at": "2026-09-07T05:51:58.696263",
+    "decided_at": "2026-09-07T06:18:59.576002",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/BQLil7Q4gXo",
+      "instagram_media_id": "18082962272309791",
+      "linkedin_post_id": "170417673069395968"
+    }
   }
 ]
