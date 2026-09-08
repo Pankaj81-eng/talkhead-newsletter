@@ -182,15 +182,29 @@ def prepare_outro_vertical() -> Path:
     return config.OUTRO_VERTICAL
 
 
-def _intro_library_clips() -> list[Path]:
-    """Every intro_*.<ext> file in INTRO_LIBRARY_DIR, sorted by filename --
-    that sort order IS rotation order (intro_01, intro_02, intro_03, ...).
-    See config.py's INTRO_LIBRARY_DIR docstring."""
+def _list_clips(directory: Path) -> list[Path]:
     exts = ("mp4", "mov", "m4v")
     return sorted(
-        p for p in config.INTRO_LIBRARY_DIR.iterdir()
+        p for p in directory.iterdir()
         if p.is_file() and p.suffix.lstrip(".").lower() in exts
-    ) if config.INTRO_LIBRARY_DIR.exists() else []
+    ) if directory.exists() else []
+
+
+def _intro_library_clips() -> list[Path]:
+    """Every intro_*.<ext> file, sorted by filename -- that sort order IS
+    rotation order (intro_01, intro_02, intro_03, ...). See config.py's
+    INTRO_LIBRARY_DIR docstring.
+
+    Confirmed the hard way (2026-09-08): the raw masters in
+    INTRO_LIBRARY_DIR are deliberately gitignored (~87MB, local-only --
+    see .gitignore), so a fresh cloud checkout has an empty directory
+    there and this returned [] every cloud run, silently producing NO
+    intro at all despite the feature "working" in every local test. Fall
+    back to INTRO_LIBRARY_CACHE_DIR's already-converted files (small,
+    committed, always present) when the raw folder is empty -- that's
+    exactly the case the cloud hits every single day.
+    """
+    return _list_clips(config.INTRO_LIBRARY_DIR) or _list_clips(config.INTRO_LIBRARY_CACHE_DIR)
 
 
 def _select_intro_source(date: str | None) -> Path | None:
@@ -229,6 +243,11 @@ def prepare_intro_vertical(date: str | None = None) -> Path | None:
     if source is None:
         return None
 
+    if source.parent == config.INTRO_LIBRARY_CACHE_DIR:
+        # Already the final converted asset (the cloud/no-raw-masters
+        # fallback in _intro_library_clips()) -- use as-is, no
+        # reconversion needed.
+        return source
     if source == config.INTRO_SOURCE:
         cached = config.INTRO_VERTICAL
     else:
