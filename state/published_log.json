@@ -285,5 +285,34 @@
       "instagram_media_id": "18106715489184032",
       "linkedin_post_id": "170456493051609088"
     }
+  },
+  {
+    "date": "2026-09-08",
+    "run_id": "93392e667086",
+    "story": "Mistral raises \u20ac3B to make sovereign, open-weight AI the technology frontier",
+    "source_url": "https://mistral.ai/news/mistral-makes-sovereign-open-weight-ai-to-frontier/",
+    "title": "Mistral Raises \u20ac3B in Record Europe AI Round",
+    "description": "Why did Mistral AI just raise \u20ac3 billion? European AI firm Mistral secured Europe's largest tech funding round to build independent AI systems for global companies. Subscribe for daily plain-English AI news.",
+    "full_narration": "A European tech company just raised \u20ac3 billion in what is officially the largest equity funding round ever completed by a European technology startup. With this new funding, Mistral AI reaches a valuation of over \u20ac21 billion, built in just three years since the company was launched. Major global investors and companies including Samsung, Airbus, ASML, and HSBC are backing them to change how large organizations use artificial intelligence. Most popular AI services require companies to send their sensitive information to an outside cloud, creating big risks around privacy, data leaks, and vendor lock-in. Mistral does things differently by giving organizations total control over their data, customizable software models, and private computer systems so nothing leaves their internal walls. They already support 125+ global enterprises across 20 countries, proving that international demand for private and independent artificial intelligence is growing fast. This historic deal shows that the next big battle in tech is about giving businesses full ownership of their tools rather than handing control to a single giant provider.",
+    "hashtags": [
+      "ai",
+      "mistral",
+      "tech",
+      "business",
+      "ainews",
+      "europe"
+    ],
+    "video_path": "runs/93392e667086/final.mp4",
+    "thumbnail_path": "runs/93392e667086/thumbnail.jpg",
+    "metadata_path": "runs/93392e667086/metadata.txt",
+    "used_hero_image": true,
+    "status": "published",
+    "generated_at": "2026-09-08T05:58:27.660683",
+    "decided_at": "2026-09-08T06:28:37.465227",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/olS8IZb7Uyo",
+      "instagram_media_id": "18142579156499108",
+      "linkedin_post_id": "170782484886192128"
+    }
   }
 ]
