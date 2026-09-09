@@ -314,5 +314,34 @@
       "instagram_media_id": "18142579156499108",
       "linkedin_post_id": "170782484886192128"
     }
+  },
+  {
+    "date": "2026-09-09",
+    "run_id": "d8ae767b78d0",
+    "story": "Introducing Muse: The World\u2019s First Personal AI Agent Built for Everyone",
+    "source_url": "https://about.fb.com/news/2026/09/introducing-muse-personal-ai-agent/",
+    "title": "Meta's New AI Agent Can Actually Do Your Chores",
+    "description": "What is Meta's new Muse AI agent and how does it work? Meta introduced Muse, a personal AI assistant designed to handle online tasks, organize plans, and make purchases securely on your behalf. Would you trust an AI to negotiate your bills? Let us know in the comments.",
+    "full_narration": "Meta just launched Muse, a personal AI helper that does not just answer questions\u2014it actually opens a web browser, fills out forms, and completes real tasks for you. You talk to it just like messaging a friend on WhatsApp, tell it what you need, and it plans out the steps. It can turn a recipe video you saved on Instagram into a grocery list, negotiate to lower your bills, or help sell a car. When buying things, it pays using a temporary one-time card through Stripe so your real bank card details stay completely hidden from the internet. To protect your privacy, Muse runs inside its own virtual computer in the cloud, guarded by a separate safety system that asks your permission before sending an email or spending money. Meta is rolling it out in the US on mobile and web for free, with subscription options if you need higher limits.",
+    "hashtags": [
+      "ai",
+      "meta",
+      "tech",
+      "whatsapp",
+      "stripe",
+      "technology"
+    ],
+    "video_path": "runs/d8ae767b78d0/final.mp4",
+    "thumbnail_path": "runs/d8ae767b78d0/thumbnail.jpg",
+    "metadata_path": "runs/d8ae767b78d0/metadata.txt",
+    "used_hero_image": true,
+    "status": "published",
+    "generated_at": "2026-09-09T05:48:23.573649",
+    "decided_at": "2026-09-09T05:56:29.261447",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/tGQ9rFtRgYc",
+      "instagram_media_id": "18097490420071667",
+      "linkedin_post_id": "171136785236099072"
+    }
   }
 ]
