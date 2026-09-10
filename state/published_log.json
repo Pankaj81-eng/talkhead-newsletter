@@ -343,5 +343,34 @@
       "instagram_media_id": "18097490420071667",
       "linkedin_post_id": "171136785236099072"
     }
+  },
+  {
+    "date": "2026-09-10",
+    "run_id": "b0065cb8948b",
+    "story": "Deploying Qwen3.8-2.4T-A95B on Amazon SageMaker HyperPod with vLLM",
+    "source_url": "https://aws.amazon.com/blogs/machine-learning/deploying-qwen3-8-2-4t-a95b-on-amazon-sagemaker-hyperpod-with-vllm/",
+    "title": "Alibaba Releases Open 2.4-Trillion Parameter AI Model",
+    "description": "How does Alibaba's new open-weight AI model work? Alibaba released Qwen3.8, a massive 2.4-trillion parameter model that companies can host on their own servers for complex research and coding tasks. Subscribe to TalkHead for daily plain-English AI news updates.",
+    "full_narration": "Alibaba just released a massive new artificial intelligence model for free that anyone can run on their own hardware, and it scored 93.0 on a tough research test called PaperBench. Instead of keeping this giant digital brain locked behind paid subscriptions, they made the full blueprint public so companies can run it completely on their own private servers. Even though the model holds 2.4 trillion total parts, it uses a clever shortcut that only turns on 95B parameters for any single question, saving massive amounts of computing power. On tests measuring how well an AI can follow detailed instructions without making mistakes, it scored 82.8 on IFBench, proving it can manage complex multi-step work. It can also handle huge files in a single pass\u2014reading up to 262K tokens of information at once\u2014which lets it analyze massive technical projects without losing track of details. By giving businesses complete control over their data while matching top-tier performance, open releases like this are making high-end AI tech much more accessible to everyone.",
+    "hashtags": [
+      "ai",
+      "tech",
+      "alibaba",
+      "qwen",
+      "cloud",
+      "machinelearning"
+    ],
+    "video_path": "runs/b0065cb8948b/final.mp4",
+    "thumbnail_path": "runs/b0065cb8948b/thumbnail.jpg",
+    "metadata_path": "runs/b0065cb8948b/metadata.txt",
+    "used_hero_image": true,
+    "status": "published",
+    "generated_at": "2026-09-10T06:00:42.336623",
+    "decided_at": "2026-09-10T06:05:24.549693",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/teTuLL1bqS8",
+      "instagram_media_id": "18338864011250343",
+      "linkedin_post_id": "171501418274881536"
+    }
   }
 ]
