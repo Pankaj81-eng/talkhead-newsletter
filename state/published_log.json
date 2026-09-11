@@ -372,5 +372,34 @@
       "instagram_media_id": "18338864011250343",
       "linkedin_post_id": "171501418274881536"
     }
+  },
+  {
+    "date": "2026-09-11",
+    "run_id": "d7499e9792ca",
+    "story": "Introducing the Agents API",
+    "source_url": "https://openai.com/index/introducing-the-agents-api",
+    "title": "OpenAI Launches Agents API to Run Long-Running AI Workflows",
+    "description": "What is OpenAI's new Agents API? OpenAI released a service that lets developers build AI agents that can work independently for days across complex workflows. Early corporate users report massive drops in failure rates and cost per task. How do you feel about AI handling days of work automatically?",
+    "full_narration": "OpenAI just released a tool that lets software agents run for days at a time, and early testing shows it cut AI errors by 86%. Normally, when companies try to build AI for complex multi-step jobs like reviewing insurance files or fixing computer code, the model gets confused or loses track of what it was doing. To fix that, OpenAI released something called the Agents API. It acts like an automated manager that organizes long tasks, coordinates smaller helper agents, and runs code safely in the cloud. Because the underlying system handles all the complicated bookkeeping, one engineering team saw their failed AI responses drop by 86%, while a security team cut their cost per case by 60%. Another company is already using these long-running agents to help coordinate hundreds of millions of real-world package deliveries across global logistics networks. Instead of just chatting back and forth in a text box, companies can now give AI long multi-step projects and let it work independently for days until the job is done.",
+    "hashtags": [
+      "openai",
+      "aiagents",
+      "techexplained",
+      "technology",
+      "artificialintelligence",
+      "automation"
+    ],
+    "video_path": "runs/d7499e9792ca/final.mp4",
+    "thumbnail_path": "runs/d7499e9792ca/thumbnail.jpg",
+    "metadata_path": "runs/d7499e9792ca/metadata.txt",
+    "used_hero_image": true,
+    "status": "published",
+    "generated_at": "2026-09-11T05:56:35.160846",
+    "decided_at": "2026-09-11T06:00:16.913729",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/Zsw1vL0R9EQ",
+      "instagram_media_id": "18135376978556774",
+      "linkedin_post_id": "171862515720912896"
+    }
   }
 ]
