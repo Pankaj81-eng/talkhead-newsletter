@@ -396,6 +396,34 @@ def publish_tiktok(video_path: Path, caption: str) -> str:
     raise PublishError(f"TikTok publish {publish_id} never completed (still processing)")
 
 
+# --- Facebook (Page) ------------------------------------------------------
+#
+# Own publish step (2026-09-11, backlog item) -- Meta's "auto-share to
+# Facebook" toggle on the Instagram account only applies to posts made
+# from the Instagram app itself, not ones published via the Content
+# Publishing API the way this pipeline does, so there's no setting that
+# makes this automatic. Uses the Page Video API directly with the local
+# file (graph-video.facebook.com accepts a multipart upload), unlike
+# Instagram which requires a public video_url -- no temp S3 hosting
+# needed here.
+
+_FB_VIDEO_API = "https://graph-video.facebook.com/v21.0"
+
+
+def publish_facebook(video_path: Path, caption: str) -> str:
+    """Returns the published video's id."""
+    with open(video_path, "rb") as f:
+        r = requests.post(
+            f"{_FB_VIDEO_API}/{config.FB_PAGE_ID}/videos",
+            data={"description": caption[:5000], "access_token": config.FB_PAGE_ACCESS_TOKEN},
+            files={"source": f},
+            timeout=300,
+        )
+    if r.status_code >= 400:
+        raise PublishError(f"Facebook Page video upload failed: {r.status_code}: {r.text[:400]}")
+    return r.json()["id"]
+
+
 # --- Orchestration -----------------------------------------------------
 
 def publish_video(script, video_path: Path, thumbnail_path: Path | None = None) -> dict:
@@ -442,5 +470,14 @@ def publish_video(script, video_path: Path, thumbnail_path: Path | None = None) 
             result["tiktok_publish_id"] = publish_tiktok(video_path, caption)
         except Exception as e:  # noqa: BLE001
             result["tiktok_error"] = str(e)
+
+    if config.FB_PAGE_ID and config.FB_PAGE_ACCESS_TOKEN:
+        try:
+            caption = (
+                f"{script.title}\n\n{script.description}\n\n{FOLLOW_FOOTER}"
+            )
+            result["facebook_video_id"] = publish_facebook(video_path, caption)
+        except Exception as e:  # noqa: BLE001
+            result["facebook_error"] = str(e)
 
     return result

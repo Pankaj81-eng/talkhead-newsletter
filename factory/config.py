@@ -94,6 +94,19 @@ TIKTOK_CLIENT_KEY = os.getenv("TIKTOK_CLIENT_KEY", "")
 TIKTOK_CLIENT_SECRET = os.getenv("TIKTOK_CLIENT_SECRET", "")
 TIKTOK_REFRESH_TOKEN = os.getenv("TIKTOK_REFRESH_TOKEN", "")
 
+# Facebook Page posting (2026-09-11, backlog item -- Instagram's own
+# auto-share-to-Facebook toggle only applies to posts made from the app,
+# not API-published ones, so this is a real separate publish step).
+# Set up via its own isolated Meta "Facebook Login for Business"
+# configuration (TechTales_FacebookPage), deliberately kept apart from
+# the existing TechTales_Newsletter config that Instagram relies on, so
+# nothing here can affect that working integration. FB_PAGE_ACCESS_TOKEN
+# is a Page Access Token derived from a long-lived User token (obtained
+# via Graph API Explorer, not a refresh-token flow like TikTok/YouTube --
+# revisit if it ever expires).
+FB_PAGE_ID = os.getenv("FB_PAGE_ID", "")
+FB_PAGE_ACCESS_TOKEN = os.getenv("FB_PAGE_ACCESS_TOKEN", "")
+
 # --- LLM model names ---
 # These WILL go stale -- Google/Groq retire and rename models with little
 # warning (gemini-2.5-flash was pulled entirely as of this writing). If
