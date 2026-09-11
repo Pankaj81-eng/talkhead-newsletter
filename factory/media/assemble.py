@@ -96,10 +96,71 @@ def concat_clips(paths: list[Path], out_path: Path, faststart: bool = False) -> 
     run_ffmpeg([*args, str(out_path)])
 
 
+_LOUDNORM_TARGET = "I=-16:TP=-1.5:LRA=11"
+
+
+def _measure_loudness(audio_path: Path) -> dict | None:
+    """First pass of a proper two-pass loudnorm: measure the file's real
+    stats so the apply pass can use them (`linear=true`) instead of
+    loudnorm's own on-the-fly single-pass estimate, which undershoots
+    badly on very quiet source audio -- confirmed on a real run's raw
+    TTS narration (-34.6 LUFS in): single-pass only reached -24.5 LUFS
+    out, two-pass with measured stats reached -19.4 LUFS out, same
+    -1.5 dBTP safety ceiling, no clipping either way. Returns None (the
+    caller falls back to single-pass) if ffmpeg's measurement JSON is
+    ever malformed -- a slightly-less-loud video beats a crashed run.
+    """
+    import json
+    import re
+    import subprocess
+
+    cmd = [
+        "ffmpeg", "-y", "-i", str(audio_path),
+        "-af", f"loudnorm={_LOUDNORM_TARGET}:print_format=json",
+        "-f", "null", "-",
+    ]
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    match = re.search(r"\{[^{}]*\}", result.stderr, re.DOTALL)
+    if not match:
+        return None
+    try:
+        return json.loads(match.group(0))
+    except json.JSONDecodeError:
+        return None
+
+
 def mux_audio(video_path: Path, audio_path: Path, out_path: Path) -> None:
+    """
+    Loudness-normalizes the narration before muxing it in (2026-09-11,
+    Pankaj's feedback: voiceover sounded noticeably quieter than the
+    intro/outro clips, which carry their own naturally full-level
+    recorded audio -- the raw TTS output from voice.py has no volume
+    handling at all, so the body of every video was at whatever level
+    Chatterbox happened to render). `loudnorm` (EBU R128, the same
+    standard podcasts and Reels/Shorts commonly target) rather than a
+    flat volume multiplier -- self-corrects for take-to-take level
+    variance instead of assuming every voiceover is equally quiet.
+    -16 LUFS / -1.5 dBTP is the typical mobile/social target, matching
+    real recorded video like the outro rather than broadcast's quieter
+    -23 LUFS. Two-pass (measure via _measure_loudness(), then apply with
+    those measured stats) gets noticeably closer to that target than a
+    single blind pass -- see _measure_loudness()'s docstring.
+    """
+    stats = _measure_loudness(audio_path)
+    if stats:
+        af = (
+            f"loudnorm={_LOUDNORM_TARGET}:"
+            f"measured_I={stats['input_i']}:measured_TP={stats['input_tp']}:"
+            f"measured_LRA={stats['input_lra']}:measured_thresh={stats['input_thresh']}:"
+            f"linear=true"
+        )
+    else:
+        af = f"loudnorm={_LOUDNORM_TARGET}"
+
     run_ffmpeg([
         "-i", str(video_path), "-i", str(audio_path),
         "-map", "0:v:0", "-map", "1:a:0",
+        "-af", af,
         "-c:v", "copy",
         "-c:a", "aac", "-b:a", "128k", "-ar", "48000", "-ac", "2",
         "-shortest",
