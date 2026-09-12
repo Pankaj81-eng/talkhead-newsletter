@@ -401,5 +401,35 @@
       "instagram_media_id": "18135376978556774",
       "linkedin_post_id": "171862515720912896"
     }
+  },
+  {
+    "date": "2026-09-12",
+    "run_id": "7cb03f85a50f",
+    "story": "Reduce LLM latency with prefix-aware routing on Amazon SageMaker Inference",
+    "source_url": "https://aws.amazon.com/blogs/machine-learning/reduce-llm-latency-with-prefix-aware-routing-on-amazon-sagemaker-inference/",
+    "title": "How Amazon Made AI 77% Faster With a Smart Routing Trick",
+    "description": "How does prefix-aware routing make AI chatbots respond faster?\n\nAmazon SageMaker introduced prefix-aware routing to send similar AI requests to the same cloud server so shared instructions can be reused instantly. Subscribe to TalkHead for daily plain-language AI updates.",
+    "full_narration": "Amazon just figured out a simple trick to cut the wait time for AI responses by up to 77%. Think about when you talk to a customer service chatbot. Before it even reads your tiny question, it has to digest thousands of words of background instructions and company policies. Normally, when millions of people use an app, cloud networks spread those requests randomly across a huge fleet of servers. That meant every server had to re-read those exact same instructions from scratch every single time. Amazon SageMaker introduced a smart traffic system called prefix-aware routing. It looks at the beginning of a request and automatically directs similar questions to the exact same server. Because that specific server already saved the shared setup text in its short-term memory, the cache hit rate jumped from roughly 25% to over 80%. It skips re-processing thousands of words of setup text, adding less than 1.9 milliseconds of overhead to direct traffic, while delivering answers much faster to end users.",
+    "hashtags": [
+      "ai",
+      "tech",
+      "amazon",
+      "aws",
+      "cloud",
+      "techexplained"
+    ],
+    "video_path": "runs/7cb03f85a50f/final.mp4",
+    "thumbnail_path": "runs/7cb03f85a50f/thumbnail.jpg",
+    "metadata_path": "runs/7cb03f85a50f/metadata.txt",
+    "used_hero_image": true,
+    "status": "published_partial",
+    "generated_at": "2026-09-12T05:53:58.549446",
+    "decided_at": "2026-09-12T06:07:48.582376",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/20QwYTpTp6U",
+      "instagram_media_id": "18142270861583117",
+      "linkedin_post_id": "172226793439232000",
+      "facebook_error": "Facebook Page video upload failed: 400: {\"error\":{\"message\":\"Error validating access token: Session has expired on Friday, 11-Sep-26 11:00:00 PDT. The current time is Friday, 11-Sep-26 23:07:48 PDT.\",\"type\":\"OAuthException\",\"code\":190,\"error_subcode\":463,\"fbtrace_id\":\"Ah4seLkBRNr38lvQgg8WPnH\"}}"
+    }
   }
 ]
