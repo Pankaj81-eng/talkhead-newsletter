@@ -18,14 +18,47 @@ import requests
 
 _API = "https://api.telegram.org/bot{token}/{method}"
 
+_POST_RETRIES = 3
+_POST_BACKOFF_S = 5.0
+
 
 def _post(token: str, method: str, **kwargs) -> dict:
+    """
+    Retries on transient network failures (2026-09-14, real incident: a
+    GitHub Actions runner's write to Telegram timed out mid-upload of the
+    finished video -- `requests.exceptions.ConnectionError`, `TimeoutError:
+    The write operation timed out` -- with zero retry anywhere, that single
+    network blip crashed the entire run, losing an otherwise-successful
+    build. Only retries `requests.RequestException` (connection/timeout
+    failures) -- a `RuntimeError` from Telegram's own API responding with
+    `"ok": false` (bad token, chat not found, etc.) is not a transient
+    condition retrying would fix, so that still raises immediately, same
+    as before. `files=` values (e.g. the open video file for sendVideo)
+    get seek(0)'d before each attempt -- a retried upload would otherwise
+    send whatever's left of an already-partially-read file handle from the
+    failed attempt, i.e. a corrupt truncated video.
+    """
     url = _API.format(token=token, method=method)
-    resp = requests.post(url, timeout=120, **kwargs)
-    data = resp.json()
-    if not data.get("ok"):
-        raise RuntimeError(f"Telegram {method} failed: {data}")
-    return data
+    files = kwargs.get("files")
+    last_exc: Exception | None = None
+    for attempt in range(_POST_RETRIES):
+        if files:
+            for f in files.values():
+                if hasattr(f, "seek"):
+                    f.seek(0)
+        try:
+            resp = requests.post(url, timeout=120, **kwargs)
+            data = resp.json()
+            if not data.get("ok"):
+                raise RuntimeError(f"Telegram {method} failed: {data}")
+            return data
+        except requests.RequestException as exc:
+            last_exc = exc
+            if attempt < _POST_RETRIES - 1:
+                print(f"[telegram] {method} attempt {attempt + 1}/{_POST_RETRIES} "
+                      f"failed ({exc}), retrying in {_POST_BACKOFF_S * (attempt + 1):.0f}s")
+                time.sleep(_POST_BACKOFF_S * (attempt + 1))
+    raise last_exc  # type: ignore[misc]  # loop always either returns or sets this
 
 
 def send_text(token: str, chat_id: str, text: str) -> None:
