@@ -164,6 +164,56 @@ Return JSON matching this shape exactly:
 """.strip()
 
 
+_BRIEF_LEAK_MARKER = "Full source article text (for additional real facts/numbers):"
+_SOURCE_LINE_RE = re.compile(r"(?m)^Source:\s*https?://\S+\s*$")
+_MAX_DESCRIPTION_CHARS = 500
+
+
+def _clean_description(description: str) -> str:
+    """
+    Belt-and-suspenders against a real, recurring failure (confirmed
+    live 2026-09-05, 09-13, and 09-15 -- Pankaj's feedback: YouTube/
+    Instagram/LinkedIn descriptions were coming out as a multi-thousand-
+    character wall of text): the LLM occasionally echoes its entire
+    input brief -- headline, the raw "Source: <link>" line, body, and
+    even the full raw source-article text story_picker.py's caller
+    appends purely for the model's OWN fact-checking reference, never
+    meant to reach a published caption -- into its "description" output
+    field, despite the prompt explicitly asking for "1-2 sentences...
+    soft CTA". generate_structured() strictly parses whatever valid JSON
+    the model returns, so no code bug produces this; it's a genuine,
+    intermittent model instruction-following failure. Same lesson as the
+    earlier percentage-fabrication fix (see _unverified_percentages'
+    docstring): prefer a mechanical check over another prompt wording
+    tweak, since prompt-only fixes for this class of failure have
+    already failed to hold twice before.
+
+    First cuts off anything from the exact known leak marker onward (the
+    real 6900+ char dump seen live becomes ~500 chars after this alone);
+    then strips any stray raw "Source: <url>" line the brief format also
+    leaks (redundant with -- and would otherwise visibly duplicate --
+    the Source: line daily_run.py/telegram_notify.py already append
+    separately); then, as a marker-independent final layer, hard-caps
+    the result at a generous length no real short description should
+    ever approach, trimmed at a sentence boundary rather than mid-word.
+    """
+    idx = description.find(_BRIEF_LEAK_MARKER)
+    if idx != -1:
+        description = description[:idx].rstrip()
+
+    description = _SOURCE_LINE_RE.sub("", description)
+    description = re.sub(r"\n{3,}", "\n\n", description).strip()
+
+    if len(description) > _MAX_DESCRIPTION_CHARS:
+        truncated = description[:_MAX_DESCRIPTION_CHARS]
+        last_boundary = max(truncated.rfind(". "), truncated.rfind("! "), truncated.rfind("? "))
+        if last_boundary > _MAX_DESCRIPTION_CHARS * 0.4:
+            truncated = truncated[:last_boundary + 1]
+        description = truncated.rstrip()
+
+    return description
+
+
 def _ensure_clear_opening(description: str, topic: str) -> str:
     """
     Belt-and-suspenders for the prompt instruction above (2026-09-02,
@@ -235,7 +285,7 @@ def generate_script(topic: str, max_regeneration_attempts: int = 3) -> Script:
         too_generic = bool(topic_pcts) and not narration_pcts
 
         if lo <= wc <= hi and not bad_pcts and not too_generic:
-            script.description = _ensure_clear_opening(script.description, topic)
+            script.description = _ensure_clear_opening(_clean_description(script.description), topic)
             return script
 
         if bad_pcts:
@@ -291,6 +341,7 @@ def generate_script(topic: str, max_regeneration_attempts: int = 3) -> Script:
             f"but the script cited none after {max_regeneration_attempts} attempts -- "
             f"consider rejecting and re-running."
         )
+    script.description = _clean_description(script.description)
     if warnings:
         script.description = "\n".join(warnings) + "\n\n" + script.description
     script.description = _ensure_clear_opening(script.description, topic)
