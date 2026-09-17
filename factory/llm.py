@@ -5,9 +5,12 @@ call site — free tiers change without notice, this is the one place that pays.
 from __future__ import annotations
 
 import json
+import time
 from typing import TypeVar
 from pydantic import BaseModel, ValidationError
 from . import config
+
+_RETRY_DELAY_S = 5.0
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -90,9 +93,22 @@ def _call_groq(prompt: str, schema: type[T]) -> T | None:
 
 
 def generate_structured(prompt: str, schema: type[T], retries: int = 1) -> T:
-    """Try Gemini free tier, then Groq free tier. Retry once on validation failure."""
+    """
+    Try Gemini free tier, then Groq free tier. Retry once on validation
+    failure.
+
+    A real incident (2026-09-17) confirmed the retries were happening
+    with zero delay between them -- two Gemini calls both hit an
+    identical transient 503 "high demand" error within the same second,
+    because an instant retry has no real chance of landing after a
+    provider-side overload actually clears. Now waits _RETRY_DELAY_S
+    between attempts (not after the last one -- no point delaying right
+    before raising) so a genuinely transient blip has room to pass.
+    """
     last_err: Exception | None = None
     for attempt in range(retries + 1):
+        if attempt > 0:
+            time.sleep(_RETRY_DELAY_S)
         for fn in (_call_gemini, _call_groq):
             try:
                 result = fn(prompt, schema)
