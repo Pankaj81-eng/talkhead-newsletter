@@ -65,6 +65,18 @@ def _call_groq(prompt: str, schema: type[T]) -> T | None:
                 {"role": "user", "content": prompt},
             ],
             response_format={"type": "json_object"},
+            # Real incident (2026-09-17): with no explicit cap, Groq
+            # truncated the response at exactly 3072 completion tokens on
+            # two separate calls -- valid JSON, but missing the LAST
+            # schema field (EditorialPick.decision_reason), since a long
+            # candidate-scoring response (many stories x 5 dimensions +
+            # reasoning text each) ran out of room before reaching it.
+            # This surfaced as a pydantic "field required" error, not an
+            # obvious truncation signal, so it silently killed the whole
+            # daily run rather than degrading gracefully. A generous
+            # explicit cap, well above what even a full ~40-candidate
+            # editorial pool needs, removes the model-default guess.
+            max_completion_tokens=8000,
         )
         usage = getattr(resp, "usage", None)
         if usage:
