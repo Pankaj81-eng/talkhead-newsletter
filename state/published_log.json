@@ -551,5 +551,36 @@
       "linkedin_post_id": "173673007397470208",
       "facebook_error": "Facebook Page video upload failed: 400: {\"error\":{\"message\":\"Error validating access token: Session has expired on Friday, 11-Sep-26 11:00:00 PDT. The current time is Tuesday, 15-Sep-26 22:54:32 PDT.\",\"type\":\"OAuthException\",\"code\":190,\"error_subcode\":463,\"fbtrace_id\":\"AMUN5QSndEAf75MY1DUKAjz\"}}"
     }
+  },
+  {
+    "date": "2026-09-17",
+    "run_id": "7aadef1592a7",
+    "story": "Emerald AI, Google and NVIDIA Launch Alliance to Advance Flexible AI Data Centers",
+    "source_url": "https://blogs.nvidia.com/blog/ai-energy-management-alliance/",
+    "title": "AI Data Centers That Can Turn Power On and Off Like a Dimmer",
+    "description": "How are new AI data centers learning to flexibly manage electricity? Emerald AI, Google and NVIDIA have formed the AI Energy Management Alliance to let data centers adjust power use in real time, easing grid strain and cutting waste. Learn what this means for the future of AI and energy.",
+    "full_narration": "Imagine a massive AI data center that can turn its power usage up or down like a dimmer switch, helping the electricity grid stay stable. Today Emerald AI, Google and NVIDIA announced the AI Energy Management Alliance, a coalition that will set rules so data centers can respond to the grid in real time. Instead of pulling a constant amount of electricity, a flexible data center can shift its computing jobs, discharge batteries, or even use on\u2011site generators when the grid is stressed. This ability means we can get more AI work out of the same wires, delaying costly new power lines and cutting the environmental impact per watt. The alliance will define clear performance goals\u2014like how quickly a center must cut power during a short outage\u2014so utilities trust they won\u2019t cause blackouts. By treating AI factories as controllable resources, we keep the lights on for homes while still letting AI grow fast.",
+    "hashtags": [
+      "ai",
+      "datacenters",
+      "energy",
+      "google",
+      "nvidia",
+      "emeraldai",
+      "gridflexibility"
+    ],
+    "video_path": "runs/7aadef1592a7/final.mp4",
+    "thumbnail_path": "runs/7aadef1592a7/thumbnail.jpg",
+    "metadata_path": "runs/7aadef1592a7/metadata.txt",
+    "used_hero_image": true,
+    "status": "published_partial",
+    "generated_at": "2026-09-17T06:59:21.071730",
+    "decided_at": "2026-09-17T07:07:14.539119",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/S4JptrlNViY",
+      "instagram_media_id": "18114831001792943",
+      "linkedin_post_id": "174053692574531584",
+      "facebook_error": "Facebook Page video upload failed: 400: {\"error\":{\"message\":\"Error validating access token: Session has expired on Friday, 11-Sep-26 11:00:00 PDT. The current time is Thursday, 17-Sep-26 00:07:14 PDT.\",\"type\":\"OAuthException\",\"code\":190,\"error_subcode\":463,\"fbtrace_id\":\"AVg_eUxdoQ6LhKCB2TbnvXk\"}}"
+    }
   }
 ]
