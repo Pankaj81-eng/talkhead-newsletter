@@ -39,6 +39,27 @@ def _still_image_clip(img_path: Path, duration: float, out: Path) -> None:
     ])
 
 
+_MAX_CARD_WORDS = 14
+
+
+def _truncate_for_card(text: str) -> str:
+    """
+    Caps a full narration sentence down to something card-sized when it's
+    used as the broll-beat text-card fallback (see build_beat_clip()'s own
+    comment for the real incident this fixes). A plain word-count cap
+    rather than splitting at the first comma/semicolon -- a narration
+    sentence's internal punctuation doesn't reliably land somewhere
+    meaningful on its own (e.g. "With Amazon Bedrock you can pick
+    OpenSearch," reads like a dangling fragment, not a complete on-screen
+    thought), so a fixed word budget with a trailing ellipsis is more
+    predictable than trying to be clever about clause boundaries.
+    """
+    words = text.split()
+    if len(words) <= _MAX_CARD_WORDS:
+        return text
+    return " ".join(words[:_MAX_CARD_WORDS]) + "…"
+
+
 def build_beat_clip(beat, duration: float, idx: int, run_dir: Path) -> Path:
     """
     Three-tier visual fallback, best-first: real B-ROLL VIDEO -> real STILL
@@ -81,7 +102,16 @@ def build_beat_clip(beat, duration: float, idx: int, run_dir: Path) -> Path:
     # unaffected -- its `query` IS the intended short on-screen phrase
     # (see script_agent.py's generation prompt and `[text_card: ...]`
     # tag), so that path keeps preferring `query` over the full line.
-    card_text = beat.text if is_broll else (beat.query or beat.text)
+    #
+    # Real bug, fixed 2026-09-18: `beat.text` for a broll beat is the
+    # full spoken narration line, completely unbounded -- confirmed live
+    # (Pankaj's screenshot) a long multi-clause sentence rendered as a
+    # wall of on-screen text that overflowed the frame's top/bottom
+    # edges. Truncate this specific fallback to something card-sized;
+    # a `visual == "text_card"` beat's own `query` is unaffected (the
+    # LLM is already instructed to keep that <=6 words, this only
+    # guards the narration-line fallback that has no such constraint).
+    card_text = _truncate_for_card(beat.text) if is_broll else (beat.query or beat.text)
     img = render_text_card(card_text, run_dir / f"card_{idx:02d}.png")
     _still_image_clip(img, duration, out)
     return out

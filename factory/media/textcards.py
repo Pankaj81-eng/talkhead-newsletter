@@ -49,24 +49,50 @@ def render_text_card(text: str, out_path: Path, bg=(15, 15, 20), fg=(255, 255, 2
     draw.rectangle([0, 0, W, bar_h], fill=ACCENT)
     draw.rectangle([0, H - bar_h, W, H], fill=ACCENT)
 
-    size = 92
-    font = _font(size)
     max_width = W - 180
+    # Vertical budget stays clear of the top/bottom accent bars with real
+    # margin either side, rather than the full frame height.
+    max_height = H - (bar_h * 2) - 160
 
-    # naive word-wrap
-    words = text.split()
-    lines, current = [], ""
-    for w in words:
-        trial = f"{current} {w}".strip()
-        if draw.textlength(trial, font=font) <= max_width:
-            current = trial
-        else:
+    def _wrap(font: ImageFont.FreeTypeFont) -> list[str]:
+        words = text.split()
+        lines, current = [], ""
+        for w in words:
+            trial = f"{current} {w}".strip()
+            if draw.textlength(trial, font=font) <= max_width:
+                current = trial
+            else:
+                lines.append(current)
+                current = w
+        if current:
             lines.append(current)
-            current = w
-    if current:
-        lines.append(current)
+        return lines
 
-    line_height = int(size * 1.3)
+    # Real bug, fixed 2026-09-18: this used a fixed 92px size regardless
+    # of text length -- confirmed live (Pankaj's screenshot) a long
+    # narration sentence wrapped into enough lines to overflow the frame's
+    # top/bottom edges entirely, unreadable. assemble.py now truncates the
+    # specific fallback that caused that, but this is the general,
+    # source-independent safety net: shrink the font in steps until
+    # whatever text is handed in actually fits the frame, rather than
+    # trusting every caller to pre-truncate correctly forever. Floors at
+    # 40px (still legible) -- past that point the text card design itself
+    # isn't right for this much content, not something more shrinking
+    # should paper over, but that's already unreachable in practice once
+    # assemble.py's own cap is in place.
+    size = 92
+    while size > 40:
+        font = _font(size)
+        lines = _wrap(font)
+        line_height = int(size * 1.3)
+        if line_height * len(lines) <= max_height:
+            break
+        size -= 4
+    else:
+        font = _font(size)
+        lines = _wrap(font)
+        line_height = int(size * 1.3)
+
     total_h = line_height * len(lines)
     y = (H - total_h) // 2
     shadow_offset = 4
