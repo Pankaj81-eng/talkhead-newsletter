@@ -227,6 +227,22 @@ def _ensure_clear_opening(description: str, topic: str) -> str:
     Heuristic: a first line ending in "?" or starting with a WH-word
     already reads as a standalone topic statement -- leave it alone.
     Otherwise prepend one, built from the topic itself.
+
+    Real bug, fixed 2026-09-18: `topic` here is generate_script()'s own
+    `topic` parameter, which is the ENTIRE multi-paragraph brief (headline
+    + Source: link + body +, when enriched, a "Full source article text"
+    appendix running thousands of characters) -- not just the headline,
+    despite the name. Using `topic.strip()` wholesale for the fallback
+    opener re-embedded that entire brief (leak-marker text included) back
+    into the description on any run where this fallback path actually
+    triggers (confirmed live: a run whose narration cited an unverified
+    percentage on every retry attempt gets a warning-prefixed description
+    whose first line reads as a warning, not a clear topic statement --
+    exactly the case that falls through to this fallback -- reintroducing
+    a ~6900-char leak that _clean_description() had *already* stripped
+    moments earlier in the very same function). Only the brief's own
+    first line (its headline, per story_to_brief()'s own line-1-is-
+    headline format) is ever appropriate to build an opener from.
     """
     first_line = description.strip().split("\n", 1)[0].strip()
     starts_clear = first_line.endswith("?") or first_line.split(" ", 1)[0].lower() in (
@@ -234,7 +250,7 @@ def _ensure_clear_opening(description: str, topic: str) -> str:
     )
     if starts_clear:
         return description
-    topic_line = topic.strip()
+    topic_line = topic.strip().split("\n", 1)[0].strip()
     if topic_line.lower().startswith(("what", "how", "why")):
         opener = topic_line if topic_line.endswith("?") else f"{topic_line.rstrip('.!')}?"
     else:
@@ -285,7 +301,15 @@ def generate_script(topic: str, max_regeneration_attempts: int = 3) -> Script:
         too_generic = bool(topic_pcts) and not narration_pcts
 
         if lo <= wc <= hi and not bad_pcts and not too_generic:
-            script.description = _ensure_clear_opening(_clean_description(script.description), topic)
+            # Clean, add an opener if needed, then clean again -- the
+            # opener is built from `topic` (see _ensure_clear_opening's
+            # own docstring for the real incident this guards against),
+            # so a final pass here is cheap insurance against a future
+            # regression re-leaking brief text via that path, not just
+            # today's already-fixed one.
+            script.description = _clean_description(
+                _ensure_clear_opening(_clean_description(script.description), topic)
+            )
             return script
 
         if bad_pcts:
@@ -344,7 +368,7 @@ def generate_script(topic: str, max_regeneration_attempts: int = 3) -> Script:
     script.description = _clean_description(script.description)
     if warnings:
         script.description = "\n".join(warnings) + "\n\n" + script.description
-    script.description = _ensure_clear_opening(script.description, topic)
+    script.description = _clean_description(_ensure_clear_opening(script.description, topic))
     return script
 
 
