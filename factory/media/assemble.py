@@ -227,7 +227,20 @@ def burn_captions(video_path: Path, caption_images: list[dict], out_path: Path) 
         # stream that can always supply a frame, reconfigure or not.
         inputs += ["-loop", "1", "-i", str(c["path"])]
 
-    y_pos = H - 380
+    # Real issue, fixed 2026-09-18 (Pankaj's screenshot): captions.py's
+    # caption band is 340px tall with text vertically centered inside it,
+    # so the OLD y_pos=H-380 put the actual visible text around 89% down
+    # the frame -- landing right on top of Instagram's own Reels overlay
+    # (username, caption text, "Liked by..." row, algorithm feedback
+    # pills), which occupies roughly the bottom ~20% of the viewport and
+    # can push higher still if IG's own caption wraps to 2+ lines.
+    # Moved up ~420px so the band's bottom edge clears that zone with
+    # real margin -- can't pixel-verify against Instagram's own rendering
+    # locally (that overlay's exact height isn't under our control and
+    # varies with caption length/device), so treat this as a strong
+    # first pass and confirm on a real published Reel, nudging further if
+    # any of it is still covered.
+    y_pos = H - 800
     prev = "0:v"
     parts = []
     for idx, c in enumerate(caption_images, start=1):
