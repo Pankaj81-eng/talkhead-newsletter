@@ -612,5 +612,36 @@
       "linkedin_post_id": "174401685555249152",
       "facebook_error": "Facebook Page video upload failed: 400: {\"error\":{\"message\":\"Error validating access token: The session is invalid because the user logged out.\",\"type\":\"OAuthException\",\"code\":190,\"error_subcode\":467,\"fbtrace_id\":\"ATB2LpVDlx1udx_4snZ-0Wt\"}}"
     }
+  },
+  {
+    "date": "2026-09-19",
+    "run_id": "da2bb7abc963",
+    "story": "Researchers used Anthropic\u2019s Claude to hack into OpenAI",
+    "source_url": "https://techcrunch.com/2026/09/18/researchers-used-anthropics-claude-to-hack-into-openai/",
+    "title": "How a $200 AI Model Hacked OpenAI",
+    "description": "What is Researchers used Anthropic\u2019s Claude to hack into OpenAI?\n\nCan a $200\u2011a\u2011month AI tool break into OpenAI\u2019s systems? Security researchers used Anthropic\u2019s Claude to exploit a simple image\u2011upload bug, steal employee accounts, and access internal code. Learn what this means for AI security and why even the biggest labs aren\u2019t immune.",
+    "full_narration": "A $200\u2011a\u2011month AI tool cracked OpenAI\u2019s own defenses and stole employee accounts. The team started by uploading a regular iPhone photo in HEIC format to OpenAI\u2019s community forum, which triggered a conversion tool that mis\u2011handled the file and let them insert malicious instructions. That foothold let them hijack several ChatGPT and Codex accounts belonging to OpenAI staff, giving them a backdoor into the company\u2019s internal GitHub code repository. When Anthropic released Claude Opus\u202f5, the model\u2014priced at $200 per month\u2014automatically generated a working exploit, something the older Opus\u202f4.8 version could not do. OpenAI patched the flaws, thanked the researchers and awarded them a $6,500 bug\u2011bounty, highlighting that even the biggest AI labs can be vulnerable. The episode shows that off\u2011the\u2011shelf AI can perform advanced hacking, meaning anyone willing to spend a few hundred dollars could potentially breach high\u2011profile services like OpenAI. In short, a cheap AI model found a simple image bug, stole accounts, and forced OpenAI to tighten security.",
+    "hashtags": [
+      "ai",
+      "security",
+      "hack",
+      "openai",
+      "anthropic",
+      "claude",
+      "cybersecurity"
+    ],
+    "video_path": "runs/da2bb7abc963/final.mp4",
+    "thumbnail_path": "runs/da2bb7abc963/thumbnail.jpg",
+    "metadata_path": "runs/da2bb7abc963/metadata.txt",
+    "used_hero_image": true,
+    "status": "published_partial",
+    "generated_at": "2026-09-19T05:53:58.299311",
+    "decided_at": "2026-09-19T06:19:43.560661",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/kjpQQhe8pvA",
+      "instagram_media_id": "18144131137569372",
+      "linkedin_post_id": "174766510370193408",
+      "facebook_error": "Facebook Page video upload failed: 400: {\"error\":{\"message\":\"Error validating access token: The session is invalid because the user logged out.\",\"type\":\"OAuthException\",\"code\":190,\"error_subcode\":467,\"fbtrace_id\":\"AmUDeC-UKrRtXHTKMLv8Fd2\"}}"
+    }
   }
 ]
