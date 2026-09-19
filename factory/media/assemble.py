@@ -16,7 +16,7 @@ from .captions import render_caption_images
 W, H, FPS = config.OUT_WIDTH, config.OUT_HEIGHT, config.OUT_FPS
 
 
-def _still_image_clip(img_path: Path, duration: float, out: Path) -> None:
+def _still_image_clip(img_path: Path, duration: float, out: Path, zoom_out: bool = False) -> None:
     """
     Slow zoom (Ken Burns) on a still image -- a real photo or, as a last
     resort, a rendered text card. `scale=...:force_original_aspect_ratio=
@@ -27,16 +27,62 @@ def _still_image_clip(img_path: Path, duration: float, out: Path) -> None:
     there is any, stays put.
     """
     frames = max(1, round(duration * FPS))
+    # zoom_out starts at the max zoom and eases back to 1.0 -- used to vary
+    # repeated hero-image beats so the same still doesn't zoom the same
+    # direction every time it appears.
+    zexpr = (f"max(1.06-0.0008*on,1.0)" if zoom_out else "min(zoom+0.0008,1.06)")
     run_ffmpeg([
         "-i", str(img_path),
         "-vf", f"scale={W}:{H}:force_original_aspect_ratio=increase,"
                f"crop={W}:{H},scale={W*2}:{H*2},"
-               f"zoompan=z='min(zoom+0.0008,1.06)':d={frames}:s={W}x{H}:fps={FPS},"
+               f"zoompan=z='{zexpr}':d={frames}:s={W}x{H}:fps={FPS},"
                f"format=yuv420p",
         "-t", f"{duration:.3f}",
         "-c:v", "libx264",
         str(out),
     ])
+
+
+def _hero_frame(run_dir: Path) -> Path | None:
+    """
+    The story's own og:image (fetched by daily_run.py into
+    config.OFFICIAL_BROLL_DIR, see news/hero_image.py) as a full 9:16 frame:
+    the whole image fitted to the frame width over a blurred, enlarged
+    copy of itself. Hero images are almost always landscape (~1200x630),
+    so a plain center-crop to vertical would keep a thin, blurry slice of
+    it. Cached per run. None when there's no hero image (no source link,
+    fetch failed, or a manual run) -- callers fall through to a text card.
+    """
+    if not config.OFFICIAL_BROLL_DIR:
+        return None
+    folder = Path(config.OFFICIAL_BROLL_DIR)
+    manifest_path = folder / "manifest.json"
+    if not manifest_path.exists():
+        return None
+    import json
+    try:
+        entries = json.loads(manifest_path.read_text())
+    except (OSError, ValueError):
+        return None
+    src = next((folder / e["file"] for e in entries
+                if e.get("type") == "image" and (folder / e["file"]).exists()), None)
+    if src is None:
+        return None
+    out = run_dir / "hero_frame.png"
+    if out.exists():
+        return out
+    from PIL import Image, ImageFilter
+    img = Image.open(src).convert("RGB")
+    bg_scale = max(W / img.width, H / img.height)
+    bg = img.resize((round(img.width * bg_scale), round(img.height * bg_scale)))
+    left, top = (bg.width - W) // 2, (bg.height - H) // 2
+    bg = bg.crop((left, top, left + W, top + H)).filter(ImageFilter.GaussianBlur(40))
+    bg = Image.blend(bg, Image.new("RGB", (W, H), (10, 10, 16)), 0.45)  # dim so the fg pops
+    fg_h = round(img.height * W / img.width)
+    fg = img.resize((W, fg_h))
+    bg.paste(fg, (0, (H - fg_h) // 2))
+    bg.save(out)
+    return out
 
 
 _MAX_CARD_WORDS = 14
@@ -62,8 +108,8 @@ def _truncate_for_card(text: str) -> str:
 
 def build_beat_clip(beat, duration: float, idx: int, run_dir: Path) -> Path:
     """
-    Three-tier visual fallback, best-first: real B-ROLL VIDEO -> real STILL
-    PHOTO -> rendered TEXT CARD. Every tier before text card costs one more
+    Visual fallback, best-first: real B-ROLL VIDEO -> real STILL PHOTO ->
+    the story's own HERO IMAGE -> rendered TEXT CARD. Every tier before text card costs one more
     Pexels/Pixabay call (same free tier as video B-roll) but reads far
     better on screen -- text cards are the last resort now, not the
     default, so a beat only ever shows plain text when nothing relevant
@@ -90,7 +136,21 @@ def build_beat_clip(beat, duration: float, idx: int, run_dir: Path) -> Path:
         _still_image_clip(photo_path, duration, out)
         return out
 
-    # Free fallback: text card. Also what happens with no Pexels/Pixabay
+    # Hero image tier (2026-09-19, Pankaj): before ever falling to a text
+    # card, show the story's own hero image (og:image). Previously it was
+    # only reachable through _search_official()'s >=2-shared-keyword match
+    # against a beat's stock-search query, which almost never fires -- so
+    # in practice it was fetched every run and used nowhere. Applies to
+    # authored `text_card` beats too: their text just repeated the
+    # narration the burned-in captions already show, and the two
+    # overlapped into an unreadable mess (confirmed on 2026-09-19's reel).
+    hero = _hero_frame(run_dir)
+    if hero:
+        _still_image_clip(hero, duration, out, zoom_out=bool(idx % 2))
+        return out
+
+    # Last resort: text card, now only when there is no stock match AND no
+    # hero image. Also what happens with no Pexels/Pixabay
     # keys configured at all — the pipeline stays runnable at $0.
     #
     # For a broll beat, `query` is ALWAYS a search phrase (e.g. "person
