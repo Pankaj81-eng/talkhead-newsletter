@@ -104,6 +104,13 @@ TIKTOK_REFRESH_TOKEN = os.getenv("TIKTOK_REFRESH_TOKEN", "")
 # is a Page Access Token derived from a long-lived User token (obtained
 # via Graph API Explorer, not a refresh-token flow like TikTok/YouTube --
 # revisit if it ever expires).
+# Master switch, OFF by default (2026-09-21, Pankaj): the token above can't
+# actually publish (Business-Portfolio-owned Page, see memory), so every
+# daily run failed here and marked the whole run "published_partial" with a
+# "Facebook FAILED" line in the Telegram summary. Pankaj shares to Facebook
+# by hand from Instagram instead. Set FB_PUBLISH_ENABLED=1 (env / workflow)
+# to turn the step back on once a working Page token exists.
+FB_PUBLISH_ENABLED = os.getenv("FB_PUBLISH_ENABLED", "").strip().lower() in ("1", "true", "yes")
 FB_PAGE_ID = os.getenv("FB_PAGE_ID", "")
 FB_PAGE_ACCESS_TOKEN = os.getenv("FB_PAGE_ACCESS_TOKEN", "")
 

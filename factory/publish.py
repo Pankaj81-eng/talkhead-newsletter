@@ -471,7 +471,7 @@ def publish_video(script, video_path: Path, thumbnail_path: Path | None = None) 
         except Exception as e:  # noqa: BLE001
             result["tiktok_error"] = str(e)
 
-    if config.FB_PAGE_ID and config.FB_PAGE_ACCESS_TOKEN:
+    if config.FB_PUBLISH_ENABLED and config.FB_PAGE_ID and config.FB_PAGE_ACCESS_TOKEN:
         try:
             caption = (
                 f"{script.title}\n\n{script.description}\n\n{FOLLOW_FOOTER}"
