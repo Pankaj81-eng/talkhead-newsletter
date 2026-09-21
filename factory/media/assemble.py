@@ -258,6 +258,48 @@ def mux_audio(video_path: Path, audio_path: Path, out_path: Path) -> None:
     ])
 
 
+def _level_clip_audio(clip: Path, target_i: float, out: Path) -> Path:
+    """
+    Brings an intro/outro clip's baked-in audio up (or down) to `target_i`
+    LUFS -- the measured loudness of THIS video's narration -- and returns
+    the leveled copy, or `clip` itself when no change is needed/possible.
+
+    Real issue, 2026-09-21 (Pankaj): after mux_audio() started loudness-
+    normalizing the narration to about -19.4 LUFS, the fixed outro clip was
+    left at its recorded level of -34.5 LUFS -- ~15 dB quieter than
+    everything before it. The intro clips (-19.6 to -21.4 LUFS) happened to
+    be close already. Only clips more than 3 LU off target are touched, so
+    the intros pass through unchanged (no needless re-encode). Video is
+    stream-copied; only the audio track is re-encoded, to the same spec
+    (aac/48k/stereo) every other clip uses so the final concat can still
+    stream-copy. Never raises: a failure here must not lose the whole run
+    over a volume nicety -- falls back to the clip as-is.
+    """
+    try:
+        stats = _measure_loudness(clip)
+        if not stats:
+            return clip
+        current = float(stats["input_i"])
+        if current < -70 or abs(current - target_i) <= 3.0:
+            return clip
+        af = (
+            f"loudnorm=I={target_i:.1f}:TP=-1.5:LRA=11:"
+            f"measured_I={stats['input_i']}:measured_TP={stats['input_tp']}:"
+            f"measured_LRA={stats['input_lra']}:measured_thresh={stats['input_thresh']}:"
+            f"linear=true"
+        )
+        run_ffmpeg([
+            "-i", str(clip), "-af", af,
+            "-c:v", "copy",
+            "-c:a", "aac", "-b:a", "128k", "-ar", "48000", "-ac", "2",
+            str(out),
+        ])
+        return out
+    except Exception as exc:  # noqa: BLE001
+        print(f"[assemble] couldn't level {clip.name}'s audio ({exc}); using it as-is")
+        return clip
+
+
 def burn_captions(video_path: Path, caption_images: list[dict], out_path: Path) -> None:
     """
     Composite each caption PNG onto the video only during its time window,
@@ -488,6 +530,15 @@ def assemble_reel(
 
     intro = prepare_intro_vertical(date)
     outro = prepare_outro_vertical()
+
+    # Match the fixed intro/outro clips' audio to this video's own narration
+    # level (see _level_clip_audio()'s docstring for the incident).
+    body_stats = _measure_loudness(body_with_audio)
+    if body_stats:
+        body_lufs = float(body_stats["input_i"])
+        if intro:
+            intro = _level_clip_audio(intro, body_lufs, run_dir / "intro_leveled.mp4")
+        outro = _level_clip_audio(outro, body_lufs, run_dir / "outro_leveled.mp4")
 
     final_path = run_dir / "final.mp4"
     sequence = ([intro] if intro else []) + [body_captioned, outro]
