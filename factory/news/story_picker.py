@@ -66,6 +66,15 @@ _SOURCES = [
 ]
 
 _LOOKBACK_HOURS = 36
+# Second-chance window, only used when the normal 36h pass finds nothing
+# above the bar (see fetch_top_story()). Real incident 2026-09-20/21: on a
+# Sunday and Monday morning, every official lab feed had zero posts inside
+# 36h (labs don't publish on weekends), so the pool collapsed to 2
+# consumer-press stories and the gate correctly rejected both -- while
+# Thursday/Friday had a 7.6-scoring story (Kimi K3 on Bedrock) sitting just
+# outside the window. "Already covered" is still enforced against the last
+# 14 days of published headlines, so a wider window can't re-pick old news.
+_FALLBACK_LOOKBACK_HOURS = 96
 _CANDIDATE_POOL_SIZE = 40  # matches ai-daily's own editorial_pool_size
 
 
@@ -85,14 +94,14 @@ def _clean_summary(html_ish: str) -> str:
     return text[:800]
 
 
-def _fetch_feed(source: dict) -> list[dict]:
+def _fetch_feed(source: dict, lookback_hours: int = _LOOKBACK_HOURS) -> list[dict]:
     try:
         parsed = feedparser.parse(source["url"])
     except Exception as e:  # noqa: BLE001
         print(f"[story_picker] fetch failed for {source['name']}: {e}")
         return []
 
-    cutoff = datetime.now(timezone.utc) - timedelta(hours=_LOOKBACK_HOURS)
+    cutoff = datetime.now(timezone.utc) - timedelta(hours=lookback_hours)
     entries = []
     for entry in parsed.entries:
         published = _entry_time(entry)
@@ -167,10 +176,10 @@ def _dedupe_and_filter(entries: list[dict]) -> list[dict]:
     return kept
 
 
-def _fetch_all_candidates() -> list[dict]:
+def _fetch_all_candidates(lookback_hours: int = _LOOKBACK_HOURS) -> list[dict]:
     all_entries: list[dict] = []
     for source in _SOURCES:
-        all_entries.extend(_fetch_feed(source))
+        all_entries.extend(_fetch_feed(source, lookback_hours))
     filtered = _dedupe_and_filter(all_entries)
     return filtered[:_CANDIDATE_POOL_SIZE]
 
@@ -303,20 +312,34 @@ def fetch_top_story(date: str | None = None) -> dict:
     "no newsletter today" handling covers this the same way it already
     covers AiDailyBridgeError.
     """
-    candidates = _fetch_all_candidates()
-    if not candidates:
-        raise NoStoryTodayError("No candidate stories fetched from any source today.")
+    last_reason = "No candidate stories fetched from any source."
+    for window in (_LOOKBACK_HOURS, _FALLBACK_LOOKBACK_HOURS):
+        candidates = _fetch_all_candidates(window)
+        if not candidates:
+            last_reason = f"No candidate stories fetched from any source in the last {window}h."
+            print(f"[story_picker] {last_reason}")
+            continue
 
-    pick = _score_candidates(candidates)
-    for s in pick.scores:
-        print(f"[story_picker] candidate {s.index}: avg={s.average}  {s.reasoning}")
+        pick = _score_candidates(candidates)
+        for s in pick.scores:
+            print(f"[story_picker] candidate {s.index}: avg={s.average}  {s.reasoning}")
 
-    if pick.chosen_index is None:
-        raise NoStoryTodayError(f"Editorial gate: no story cleared the bar -- {pick.decision_reason}")
+        idx = pick.chosen_index
+        if idx is None:
+            last_reason = f"Editorial gate: no story cleared the bar in the last {window}h -- {pick.decision_reason}"
+            print(f"[story_picker] {last_reason}")
+            continue
+        if not (isinstance(idx, int) and 0 <= idx < len(candidates)):
+            last_reason = f"Editorial gate returned an out-of-range index ({idx}) -- treating as no pick."
+            print(f"[story_picker] {last_reason}")
+            continue
 
-    idx = pick.chosen_index
-    if not (isinstance(idx, int) and 0 <= idx < len(candidates)):
-        raise NoStoryTodayError(f"Editorial gate returned an out-of-range index ({idx}) -- treating as no pick.")
+        if window != _LOOKBACK_HOURS:
+            print(f"[story_picker] normal {_LOOKBACK_HOURS}h window had nothing above the bar; "
+                  f"picked from the {window}h fallback window instead.")
+        break
+    else:
+        raise NoStoryTodayError(last_reason)
 
     chosen = candidates[idx]
     score = next((s for s in pick.scores if s.index == idx), None)
