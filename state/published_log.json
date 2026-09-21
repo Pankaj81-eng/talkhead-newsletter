@@ -643,5 +643,35 @@
       "linkedin_post_id": "174766510370193408",
       "facebook_error": "Facebook Page video upload failed: 400: {\"error\":{\"message\":\"Error validating access token: The session is invalid because the user logged out.\",\"type\":\"OAuthException\",\"code\":190,\"error_subcode\":467,\"fbtrace_id\":\"AmUDeC-UKrRtXHTKMLv8Fd2\"}}"
     }
+  },
+  {
+    "date": "2026-09-21",
+    "run_id": "f5423df1f273",
+    "story": "Introducing Amazon SageMaker HyperPod Inference Gateway",
+    "source_url": "https://aws.amazon.com/blogs/machine-learning/introducing-amazon-sagemaker-hyperpod-inference-gateway/",
+    "title": "How Amazon Fixed Slow AI Chatbot Response Times",
+    "description": "How does Amazon make AI chatbots respond so much faster? Amazon introduced a smart traffic router that sends AI requests to idle chips, cutting wait times significantly. Subscribe to TalkHead for daily plain-language AI updates.",
+    "full_narration": "Amazon just launched a smart traffic controller for AI systems that can cut the waiting time for a response by up to 82%. When you ask a large AI model a question, your request gets sent to massive clusters of specialized computer chips called GPUs. Normally, standard traffic systems send questions out randomly, causing requests to pile up behind overloaded chips while other chips sit completely idle. This smart system acts like a hyper-aware air traffic controller, checking real-time memory and workload signals to send your question to the precise chip best ready to answer. In real tests, a user waiting 4.4 seconds for an AI to start typing its answer saw that wait drop to under 800 ms. Because companies spend huge fortunes renting these chips, keeping them evenly busy means fewer wasted dollars and much faster answers for everyone. It works with existing infrastructure without forcing engineers to rewrite their software code or rebuild their underlying AI models.",
+    "hashtags": [
+      "ai",
+      "techexplainers",
+      "amazon",
+      "cloudcomputing",
+      "machinelearning",
+      "technews"
+    ],
+    "video_path": "runs/f5423df1f273/final.mp4",
+    "thumbnail_path": "runs/f5423df1f273/thumbnail.jpg",
+    "metadata_path": "runs/f5423df1f273/metadata.txt",
+    "used_hero_image": true,
+    "status": "published_partial",
+    "generated_at": "2026-09-21T06:58:21.228376",
+    "decided_at": "2026-09-21T07:01:02.876064",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/lWg3LKPJezI",
+      "instagram_media_id": "18221197378342330",
+      "linkedin_post_id": "175501684062027776",
+      "facebook_error": "Facebook Page video upload failed: 400: {\"error\":{\"message\":\"Error validating access token: The session is invalid because the user logged out.\",\"type\":\"OAuthException\",\"code\":190,\"error_subcode\":467,\"fbtrace_id\":\"AQi3y_ePeGANYVwKIOrPzA2\"}}"
+    }
   }
 ]
