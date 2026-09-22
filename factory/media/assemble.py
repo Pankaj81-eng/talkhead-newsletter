@@ -53,19 +53,8 @@ def _hero_frame(run_dir: Path) -> Path | None:
     it. Cached per run. None when there's no hero image (no source link,
     fetch failed, or a manual run) -- callers fall through to a text card.
     """
-    if not config.OFFICIAL_BROLL_DIR:
-        return None
-    folder = Path(config.OFFICIAL_BROLL_DIR)
-    manifest_path = folder / "manifest.json"
-    if not manifest_path.exists():
-        return None
-    import json
-    try:
-        entries = json.loads(manifest_path.read_text())
-    except (OSError, ValueError):
-        return None
-    src = next((folder / e["file"] for e in entries
-                if e.get("type") == "image" and (folder / e["file"]).exists()), None)
+    from ..news.hero_image import find_hero_file
+    src = find_hero_file(config.OFFICIAL_BROLL_DIR)
     if src is None:
         return None
     out = run_dir / "hero_frame.png"

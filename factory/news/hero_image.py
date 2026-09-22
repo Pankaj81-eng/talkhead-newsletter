@@ -14,6 +14,34 @@ from pathlib import Path
 
 import requests
 
+
+def find_hero_file(official_dir: str) -> Path | None:
+    """
+    The raw hero image file this run's daily_run.py fetched into
+    config.OFFICIAL_BROLL_DIR (see fetch_hero_image() below), read back
+    via its own manifest.json. Shared by assemble.py's in-video hero
+    frame and thumbnail.py's cover-image use (2026-09-22) so both read
+    the same file the same way rather than duplicating this lookup.
+    None when there's no configured dir, no manifest, or nothing tagged
+    "image" in it (a missing/failed fetch, or a manual run).
+    """
+    if not official_dir:
+        return None
+    folder = Path(official_dir)
+    manifest_path = folder / "manifest.json"
+    if not manifest_path.exists():
+        return None
+    import json
+    try:
+        entries = json.loads(manifest_path.read_text())
+    except (OSError, ValueError):
+        return None
+    return next(
+        (folder / e["file"] for e in entries
+         if e.get("type") == "image" and (folder / e["file"]).exists()),
+        None,
+    )
+
 _META_RE = re.compile(
     r'<meta[^>]+(?:property|name)=["\'](?:og:image|twitter:image)["\'][^>]+content=["\']([^"\']+)["\']',
     re.IGNORECASE,

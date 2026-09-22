@@ -58,23 +58,47 @@ def _draw_headline(img: Image.Image, text: str, w: int, h: int) -> None:
     bar_h = max(6, h // 90)
     draw.rectangle([0, h - bar_h, w, h], fill=ACCENT)
 
-    size = int(h * 0.13)
-    font = _font(size)
     max_width = w - int(w * 0.12)
+    max_block_h = scrim_h - int(h * 0.08)  # stay inside the scrim with margin
 
-    words = text.upper().split()
-    lines, current = [], ""
-    for word in words:
-        trial = f"{current} {word}".strip()
-        if draw.textlength(trial, font=font) <= max_width:
-            current = trial
-        else:
+    def _wrap(font: ImageFont.FreeTypeFont) -> list[str]:
+        words = text.upper().split()
+        lines, current = [], ""
+        for word in words:
+            trial = f"{current} {word}".strip()
+            if draw.textlength(trial, font=font) <= max_width:
+                current = trial
+            else:
+                lines.append(current)
+                current = word
+        if current:
             lines.append(current)
-            current = word
-    if current:
-        lines.append(current)
+        return lines
 
-    line_h = int(size * 1.15)
+    # Real bug, fixed 2026-09-22: font size was `int(h * 0.13)` -- fine
+    # for the landscape 1280x720 thumbnail this was written for, but on
+    # the vertical 1080x1920 one the same formula gives a ~250px font
+    # (h is 2.7x bigger, w only slightly bigger), so a single word like
+    # "CHEAPER" is wider than the whole frame -- the word-wrap loop above
+    # can't fix that, it only prevents multi-word lines, not an
+    # individual word overflowing on its own. Width-based starting size,
+    # shrunk in steps until every wrapped line actually fits both the
+    # width budget and the vertical scrim budget, same shrink-to-fit
+    # pattern textcards.py's render_text_card() already uses.
+    size = int(w * 0.11)
+    while size > 28:
+        font = _font(size)
+        lines = _wrap(font)
+        line_h = int(size * 1.15)
+        fits_width = all(draw.textlength(ln, font=font) <= max_width for ln in lines)
+        if fits_width and line_h * len(lines) <= max_block_h:
+            break
+        size -= 4
+    else:
+        font = _font(size)
+        lines = _wrap(font)
+        line_h = int(size * 1.15)
+
     total_h = line_h * len(lines)
     y = h - bar_h - int(h * 0.06) - total_h
     outline = 4
@@ -89,7 +113,7 @@ def _draw_headline(img: Image.Image, text: str, w: int, h: int) -> None:
         y += line_h
 
 
-def _compose(frame_path: Path, text: str, w: int, h: int, out_path: Path) -> Path:
+def _compose(frame_path: Path, text: str | None, w: int, h: int, out_path: Path) -> Path:
     src = Image.open(frame_path).convert("RGB")
     sw, sh = src.size
     src_ratio, dst_ratio = sw / sh, w / h
@@ -108,7 +132,8 @@ def _compose(frame_path: Path, text: str, w: int, h: int, out_path: Path) -> Pat
     top = (new_h - h) // 2
     cropped = resized.crop((left, top, left + w, top + h))
 
-    _draw_headline(cropped, text, w, h)
+    if text:
+        _draw_headline(cropped, text, w, h)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     cropped.save(out_path, quality=92)
     return out_path
@@ -136,10 +161,37 @@ def _best_source_beat_index(script) -> int:
 
 def generate_thumbnail(script, run_dir: Path) -> dict:
     """
-    Returns {"landscape": Path, "vertical": Path}. Picks whichever beat
-    clip (beat_NN.mp4, see assemble.py's build_beat_clip) is real footage
-    rather than a rendered text card -- see _best_source_beat_index().
+    Returns {"landscape": Path, "vertical": Path}.
+
+    Prefers the story's own hero image (og:image) as the cover art
+    (2026-09-22, Pankaj's suggestion) -- it's real key art from the
+    actual source, not whichever stock clip a beat's search happened to
+    land on, and it's the same "real key art" logic already used for
+    in-video hero beats (see assemble.py's build_beat_clip()). The
+    landscape thumbnail crops the RAW hero image directly (hero images
+    are almost always already close to 16:9, so this crops cleanly);
+    the vertical one reuses assemble.py's own blurred-fill 9:16 hero
+    composite (already generated once per run and cached) rather than
+    a harsh center-crop of a landscape image into a tall frame.
+
+    Falls back to today's original behavior -- a real frame grabbed
+    from whichever beat clip is real footage rather than a rendered
+    text card (see _best_source_beat_index()) -- when there's no hero
+    image (fetch failed, no source link, or a manual run).
     """
+    from ..news.hero_image import find_hero_file
+    hero_raw = find_hero_file(config.OFFICIAL_BROLL_DIR)
+
+    if hero_raw:
+        from .assemble import _hero_frame
+        hero_vertical = _hero_frame(run_dir)  # cached; may already exist from a beat
+        landscape = _compose(hero_raw, None, THUMB_W, THUMB_H,
+                              run_dir / "thumbnail.jpg")
+        vertical = _compose(hero_vertical, None,
+                             config.OUT_WIDTH, config.OUT_HEIGHT,
+                             run_dir / "thumbnail_vertical.jpg")
+        return {"landscape": landscape, "vertical": vertical}
+
     idx = _best_source_beat_index(script)
     beat_clip = run_dir / f"beat_{idx:02d}.mp4"
     raw_frame = run_dir / "thumbnail_source_frame.png"
