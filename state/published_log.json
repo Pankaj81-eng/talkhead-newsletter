@@ -673,5 +673,34 @@
       "linkedin_post_id": "175501684062027776",
       "facebook_error": "Facebook Page video upload failed: 400: {\"error\":{\"message\":\"Error validating access token: The session is invalid because the user logged out.\",\"type\":\"OAuthException\",\"code\":190,\"error_subcode\":467,\"fbtrace_id\":\"AQi3y_ePeGANYVwKIOrPzA2\"}}"
     }
+  },
+  {
+    "date": "2026-09-22",
+    "run_id": "7b6c5eb9c3f6",
+    "story": "xAI\u2019s Grok 4.6 is now available in Amazon Bedrock",
+    "source_url": "https://aws.amazon.com/blogs/machine-learning/xais-grok-4-6-is-now-available-in-amazon-bedrock/",
+    "title": "Why xAI's Grok 4.6 Double-Checks Its Own Work",
+    "description": "How does xAI's Grok 4.6 use self-testing to improve automated work? xAI has launched Grok 4.6 on Amazon Bedrock, bringing self-verification and flexible reasoning levels to complex tasks. Subscribe to TalkHead for daily plain-English AI news breakdowns.",
+    "full_narration": "Most artificial intelligence models just guess the next word as fast as possible, but xAI's new model, Grok 4.6, actually pauses to check its own work before giving you an answer. When working on long, complicated tasks like building software or researching a huge topic, it runs self-testing checks to fix its own mistakes along the way. To handle those giant projects, it can look at a 500K context window, which means reading through hundreds of pages of information in a single go. Users can also dial its deep-thinking effort across 4 different levels, depending on whether they need a rapid response or maximum problem-solving power. Amazon has made this available on its Bedrock cloud service starting at $2.00 per million input tokens, letting companies put self-checking AI straight into their automated tools. Instead of rushing out a bad first draft, the system focuses on double-checking its own steps so human users do not have to clean up preventable mistakes.",
+    "hashtags": [
+      "ai",
+      "grok",
+      "xai",
+      "amazonbedrock",
+      "tech",
+      "talkhead"
+    ],
+    "video_path": "runs/7b6c5eb9c3f6/final.mp4",
+    "thumbnail_path": "runs/7b6c5eb9c3f6/thumbnail.jpg",
+    "metadata_path": "runs/7b6c5eb9c3f6/metadata.txt",
+    "used_hero_image": true,
+    "status": "published",
+    "generated_at": "2026-09-22T05:51:09.422608",
+    "decided_at": "2026-09-22T06:06:42.162016",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/r85yy1mPqwk",
+      "instagram_media_id": "17886951045477656",
+      "linkedin_post_id": "175850398190403584"
+    }
   }
 ]
