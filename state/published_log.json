@@ -702,5 +702,33 @@
       "instagram_media_id": "17886951045477656",
       "linkedin_post_id": "175850398190403584"
     }
+  },
+  {
+    "date": "2026-09-23",
+    "run_id": "1dbb2afe2400",
+    "story": "Better prompt caching for GPT-6",
+    "source_url": "https://openai.com/index/better-prompt-caching-for-gpt-6",
+    "title": "GPT\u20116\u2019s Cache Cuts AI Costs by Up to 90%",
+    "description": "How does GPT\u20116\u2019s new prompt\u2011caching slash AI costs? OpenAI\u2019s latest model reuses shared instructions to speed up responses and dramatically lower expenses. Learn the simple tricks developers can use to make AI cheaper and faster. #",
+    "full_narration": "GPT\u20116\u2019s new prompt\u2011caching can shave up to 90% off the cost of re\u2011using the same instructions. When an AI assistant repeats the same background info across many requests, the model can store that part and reuse it instead of recomputing each time. OpenAI\u2019s updates lifted the cache hit rate from around 85% to consistently above 90% in just a week. Across billions of calls they cut the share of tokens that need fresh processing by more than 50%. Those higher hit rates translated into about a 20% drop in inference costs for developers. Developers can now set explicit breakpoints, telling the system exactly which part of the prompt to keep cached while letting new details change freely. They can also pre\u2011warm shared instructions before a user asks anything, moving the heavy computation out of the visible waiting time, so responses are faster and the service costs less for everyone.",
+    "hashtags": [
+      "openai",
+      "gpt6",
+      "promptcaching",
+      "ai",
+      "costreduction"
+    ],
+    "video_path": "runs/1dbb2afe2400/final.mp4",
+    "thumbnail_path": "runs/1dbb2afe2400/thumbnail.jpg",
+    "metadata_path": "runs/1dbb2afe2400/metadata.txt",
+    "used_hero_image": true,
+    "status": "published",
+    "generated_at": "2026-09-23T05:50:02.831509",
+    "decided_at": "2026-09-23T05:59:20.765756",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/UgNoKkaHQ3w",
+      "instagram_media_id": "18081461573364480",
+      "linkedin_post_id": "176210934610526208"
+    }
   }
 ]
