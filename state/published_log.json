@@ -730,5 +730,34 @@
       "instagram_media_id": "18081461573364480",
       "linkedin_post_id": "176210934610526208"
     }
+  },
+  {
+    "date": "2026-09-24",
+    "run_id": "0883a6bacb6d",
+    "story": "Introducing GPT-6 Sol and Luna",
+    "source_url": "https://openai.com/index/introducing-gpt-6-sol-and-luna",
+    "title": "GPT\u20116 Sol costs only 9% of top AI and cuts errors in half",
+    "description": "What is Introducing GPT-6 Sol and Luna?\n\nWhat\u2019s new with OpenAI\u2019s GPT\u20116 Sol and Luna models? The latest AI releases promise dramatically lower costs while boosting reliability. Learn the key details and why they matter for everyday work.",
+    "full_narration": "OpenAI just released GPT\u20116 Sol, which can finish the same work for only 9% of the cost of the leading Claude Opus\u202f5 model. OpenAI also cut the API price for Sol and Luna in half, a 50% reduction compared with the previous GPT\u20115.6 pricing, so developers pay far less per request. Even at that low price, Sol outperforms Claude Opus\u202f5 on tough business workflows, delivering better results while costing just 9% of what Opus\u202f5 charges, and it runs faster too. On coding tasks, Sol achieved similar scores to top models but at about 80% lower cost per task, making large\u2011scale code projects much cheaper. Reliability also improved: Sol makes about half as many factual mistakes as its GPT\u20115.6 predecessor, moving closer to the best\u2011in\u2011class Astra accuracy. Bottom line: GPT\u20116 Sol gives you high\u2011level AI power for a tiny fraction of the price and with far fewer errors.",
+    "hashtags": [
+      "gpt6",
+      "openai",
+      "ai",
+      "machinelearning",
+      "technews",
+      "costefficiency"
+    ],
+    "video_path": "runs/0883a6bacb6d/final.mp4",
+    "thumbnail_path": "runs/0883a6bacb6d/thumbnail.jpg",
+    "metadata_path": "runs/0883a6bacb6d/metadata.txt",
+    "used_hero_image": true,
+    "status": "published",
+    "generated_at": "2026-09-24T05:50:37.301464",
+    "decided_at": "2026-09-24T06:20:35.016501",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/1S9MGc8yGz0",
+      "instagram_media_id": "18104227364359198",
+      "linkedin_post_id": "176578666963140608"
+    }
   }
 ]
