@@ -759,5 +759,36 @@
       "instagram_media_id": "18104227364359198",
       "linkedin_post_id": "176578666963140608"
     }
+  },
+  {
+    "date": "2026-09-25",
+    "run_id": "95e40ab9a47e",
+    "story": "Use open weight models as your AI coding agent with Amazon Bedrock",
+    "source_url": "https://aws.amazon.com/blogs/machine-learning/use-open-weight-models-as-your-ai-coding-agent-with-amazon-bedrock/",
+    "title": "Open\u2011Weight AI Coding Assistant on AWS Beats GPT\u20114o",
+    "description": "What is Use open weight models as your AI coding agent with Amazon Bedrock?\n\nCan an open\u2011weight AI coding assistant on Amazon Bedrock outperform big models like GPT\u20114o? Learn how OpenCode paired with Bedrock gives you a private, flexible, and cost\u2011effective coding helper. Dive in for the key details and see why it matters for developers.",
+    "full_narration": "A fine\u2011tuned open\u2011weight model scored 96% on a coding accuracy test, while the well\u2011known GPT\u20114o only managed 61%. OpenCode is a terminal\u2011native AI assistant that can read, edit, and run your code right from the command line. When you connect it to Amazon Bedrock, the model runs inside your own AWS account, so none of your proprietary code leaves the cloud you control. You can pick a fast, cheap model for simple autocomplete and swap to a more thoughtful model for tough debugging, just by changing one setting. Because Bedrock charges only per token, big coding projects end up cheaper than paying flat subscription fees. Some Bedrock models, like Kimi\u202fK3, can look at a whole codebase of up to 1M-token \u2013 that's tens of thousands of lines \u2013 so they can reason across many files. All data stays in your AWS region, meeting compliance programs like HIPAA and GDPR, so you don\u2019t have to worry about data leaks.",
+    "hashtags": [
+      "ai",
+      "coding",
+      "aws",
+      "openweight",
+      "bedrock",
+      "opensource",
+      "devtools",
+      "ml"
+    ],
+    "video_path": "runs/95e40ab9a47e/final.mp4",
+    "thumbnail_path": "runs/95e40ab9a47e/thumbnail.jpg",
+    "metadata_path": "runs/95e40ab9a47e/metadata.txt",
+    "used_hero_image": true,
+    "status": "published",
+    "generated_at": "2026-09-25T05:48:53.958069",
+    "decided_at": "2026-09-25T05:59:38.652438",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/_L_QQvru5Ds",
+      "instagram_media_id": "18132793639589584",
+      "linkedin_post_id": "176935785260384256"
+    }
   }
 ]
