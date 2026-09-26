@@ -790,5 +790,35 @@
       "instagram_media_id": "18132793639589584",
       "linkedin_post_id": "176935785260384256"
     }
+  },
+  {
+    "date": "2026-09-26",
+    "run_id": "a090131effbd",
+    "story": "The Biggest News From Connect 2026",
+    "source_url": "https://about.fb.com/news/2026/09/the-biggest-news-from-connect-2026/",
+    "title": "Meta's 100\u2011Gram VR Glasses Bring IMAX Home",
+    "description": "What are Meta's new 100\u2011gram VR glasses and why they matter?\nMeta announced VR glasses that weigh only a deck of cards and can stream IMAX movies. Learn how these specs could change home entertainment.",
+    "full_narration": "Meta just unveiled VR glasses that weigh only 100\u202fgrams\u2014about the size of a deck of cards\u2014and can stream IMAX movies right to your eyes. These glasses are the first to earn IMAX Enhanced certification, meaning you\u2019ll see movies in the wider IMAX aspect ratio at home. Meta says they\u2019ll offer more than 100 different styles of AI glasses\u2014like Ray\u2011Ban and Oakley\u2014by the end of the year. The new Muse integration lets you simply say the name of an item you\u2019re looking at\u2014like a product on a shelf\u2014and the AI will act on it without you describing the scene. A hearing\u2011enhancement add\u2011on, FDA\u2011cleared and priced at $149.99, can be set up at home in minutes to help users with mild hearing loss. You\u2019ll also get audio glasses that combine earbuds and AI, so you can listen to music and talk to Muse hands\u2011free while staying aware of the world around you.",
+    "hashtags": [
+      "meta",
+      "vr",
+      "ai",
+      "glasses",
+      "technews",
+      "imac",
+      "hearingaid"
+    ],
+    "video_path": "runs/a090131effbd/final.mp4",
+    "thumbnail_path": "runs/a090131effbd/thumbnail.jpg",
+    "metadata_path": "runs/a090131effbd/metadata.txt",
+    "used_hero_image": true,
+    "status": "published",
+    "generated_at": "2026-09-26T05:48:32.538451",
+    "decided_at": "2026-09-26T06:01:24.888008",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/FGtmpot-C6c",
+      "instagram_media_id": "18104558402193315",
+      "linkedin_post_id": "177298618804338688"
+    }
   }
 ]
