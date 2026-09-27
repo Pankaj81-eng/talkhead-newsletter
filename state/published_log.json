@@ -820,5 +820,27 @@
       "instagram_media_id": "18104558402193315",
       "linkedin_post_id": "177298618804338688"
     }
+  },
+  {
+    "date": "2026-09-27",
+    "run_id": "7adc6bd83641",
+    "story": "Build a multi-account AI agent with AgentCore Gateway and MCP",
+    "source_url": "https://aws.amazon.com/blogs/machine-learning/build-a-multi-account-ai-agent-with-agentcore-gateway-and-mcp/",
+    "title": "AI Agent Queries Across Separate AWS Accounts Without Moving Data",
+    "description": "How can an AI agent access data across multiple AWS accounts without copying it? This video shows the simple architecture that lets each team keep its data at home while a single AI sees everything it needs. Learn the key pieces and why it matters for security and cost.",
+    "full_narration": "Imagine an AI assistant that can answer questions using data that lives in dozens of separate company accounts, without ever copying that data elsewhere. Each team stores its data in its own AWS account, which keeps ownership clear and lets them deploy updates independently. A central platform account runs the AI agent using Amazon Bedrock, and it talks to a single gateway that knows how to reach every team\u2019s data. When the agent needs information, the gateway securely fetches only the exact answer from the right account, leaving the raw files untouched. All the communication uses short\u2011lived machine\u2011to\u2011machine credentials, so each request is authorized exactly for what it needs. Because the data never leaves its home account, companies get the benefit of a unified AI view while still controlling costs and security per team. The platform team also sees all usage in one bill, making it easy to track spending across the whole organization.",
+    "hashtags": [
+      "aws",
+      "ai",
+      "cloud",
+      "security",
+      "datamanagement"
+    ],
+    "video_path": "runs/7adc6bd83641/final.mp4",
+    "thumbnail_path": "runs/7adc6bd83641/thumbnail.jpg",
+    "metadata_path": "runs/7adc6bd83641/metadata.txt",
+    "used_hero_image": true,
+    "status": "awaiting_decision",
+    "generated_at": "2026-09-27T05:51:34.541325"
   }
 ]
