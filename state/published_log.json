@@ -842,5 +842,34 @@
     "used_hero_image": true,
     "status": "awaiting_decision",
     "generated_at": "2026-09-27T05:51:34.541325"
+  },
+  {
+    "date": "2026-09-28",
+    "run_id": "754fed5ac25c",
+    "story": "Proaction boosts sales 60% and saves 75+ hours with Codex",
+    "source_url": "https://openai.com/index/proaction",
+    "title": "Proaction's AI Demo Tool Cranked Sales 60% and Saved 75+ Hours",
+    "description": "How did Proaction use OpenAI's Codex to increase sales by 60% and save over 75 hours of work? By letting a non\u2011technical co\u2011founder build custom demos in minutes, they freed up engineering time and closed more deals. Watch to see how AI can transform everyday sales work.",
+    "full_narration": "Proaction saw its sales jump 60% after letting a non\u2011technical co\u2011founder build custom demos with Codex. Before Codex, each demo needed about 10 hours of engineering, but now Colin creates a personalized demo in just 30 to 45 minutes. That saves roughly 40 to 60 engineering hours every month and over 75+ total hours of work across the team. Because prospects now see a demo that uses their own fleet data, the chance of moving from a first call to a real solution rose by about 50% to 60%, driving the overall 60% sales boost. The biggest win is that Colin can juggle sales, support and product tasks in one place, freeing up 25\u201333 hours a month for real business work. Proaction also uses GPT\u2011Live\u20111 voice agents like \u201cMarty\u201d to call drivers and repair shops, letting the AI handle routine tasks while humans step in only when needed.",
+    "hashtags": [
+      "ai",
+      "openai",
+      "codex",
+      "sales",
+      "productivity",
+      "fleetmanagement"
+    ],
+    "video_path": "runs/754fed5ac25c/final.mp4",
+    "thumbnail_path": "runs/754fed5ac25c/thumbnail.jpg",
+    "metadata_path": "runs/754fed5ac25c/metadata.txt",
+    "used_hero_image": true,
+    "status": "published",
+    "generated_at": "2026-09-28T05:49:00.157560",
+    "decided_at": "2026-09-28T05:53:12.985677",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/SGZ9s6BW3RI",
+      "instagram_media_id": "18066878243785547",
+      "linkedin_post_id": "178021331286097920"
+    }
   }
 ]
