@@ -11,6 +11,13 @@ from pydantic import BaseModel, ValidationError
 from . import config
 
 _RETRY_DELAY_S = 5.0
+# Groq's on-demand free tier enforces an 8000 tokens-PER-MINUTE cap, shared
+# across every call in the same rolling 60s window -- see the real
+# incident below _call_groq()'s max_output_tokens default. A rate-limit
+# rejection needs real time for that window to clear, not the short retry
+# delay used for a generic transient failure (a Gemini 503 or similar).
+_RATE_LIMIT_DELAY_S = 65.0
+_DEFAULT_MAX_OUTPUT_TOKENS = 3000
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -55,7 +62,16 @@ def _call_gemini(prompt: str, schema: type[T]) -> T | None:
         return None
 
 
-def _call_groq(prompt: str, schema: type[T]) -> T | None:
+class _RateLimited(Exception):
+    """Raised internally when Groq's response is unambiguously a
+    tokens-per-minute rate-limit rejection, not a schema/validation issue
+    or a generic transient failure -- lets generate_structured()'s retry
+    loop apply a real backoff (_RATE_LIMIT_DELAY_S) instead of the short
+    delay meant for something like a one-off 503. See _call_groq()'s
+    max_output_tokens docstring for the real incident this exists for."""
+
+
+def _call_groq(prompt: str, schema: type[T], max_output_tokens: int = _DEFAULT_MAX_OUTPUT_TOKENS) -> T | None:
     if not config.GROQ_API_KEY:
         return None
     try:
@@ -76,10 +92,35 @@ def _call_groq(prompt: str, schema: type[T]) -> T | None:
             # reasoning text each) ran out of room before reaching it.
             # This surfaced as a pydantic "field required" error, not an
             # obvious truncation signal, so it silently killed the whole
-            # daily run rather than degrading gracefully. A generous
-            # explicit cap, well above what even a full ~40-candidate
-            # editorial pool needs, removes the model-default guess.
-            max_completion_tokens=8000,
+            # daily run rather than degrading gracefully.
+            #
+            # Fixed that day with a flat max_completion_tokens=8000 for
+            # EVERY caller -- generous enough for EditorialPick's up-to-
+            # 40-candidate output, but a real SECOND incident (2026-09-29)
+            # showed that's too generous as a blanket default: Groq's
+            # on-demand free tier caps usage at 8000 tokens PER MINUTE,
+            # shared across every call. On a morning Gemini was down, the
+            # editorial-pick call alone used ~9064 tokens (already over
+            # the per-minute cap on its own), and generate_script()'s very
+            # next Groq call -- reusing the same flat 8000 cap it never
+            # needed, Script's real output is a few hundred words, nowhere
+            # near EditorialPick's -- got rejected: "tokens per minute
+            # (TPM): Limit 8000, Requested 8482". Now caller-specific
+            # (story_picker.py passes 8000 explicitly for EditorialPick
+            # only; every other schema uses the much smaller
+            # _DEFAULT_MAX_OUTPUT_TOKENS), so a normal run's other calls
+            # don't reserve headroom they don't need and won't use.
+            max_completion_tokens=max_output_tokens,
+            # openai/gpt-oss-120b is a reasoning model: part of
+            # max_completion_tokens goes to an invisible reasoning pass
+            # before the actual JSON answer, and that split isn't fixed --
+            # a real test against a normal script-generation prompt spent
+            # 2577 of 3000 completion tokens on reasoning, leaving ~423 for
+            # the visible answer and truncating it mid-object
+            # (finish_reason: "length", only "topic"/"hook" written).
+            # "low" cut reasoning usage to ~193 tokens on the same prompt,
+            # finishing normally well under the cap.
+            reasoning_effort="low",
         )
         usage = getattr(resp, "usage", None)
         if usage:
@@ -88,14 +129,26 @@ def _call_groq(prompt: str, schema: type[T]) -> T | None:
         raw = resp.choices[0].message.content
         return schema.model_validate_json(_extract_json(raw))
     except Exception as e:  # noqa: BLE001
+        msg = str(e)
+        if "rate_limit_exceeded" in msg or "tokens per minute" in msg.lower():
+            print(f"[llm] Groq rate-limited (will back off longer before retrying): {e}")
+            raise _RateLimited(msg) from e
         print(f"[llm] Groq failed, falling back: {e}")
         return None
 
 
-def generate_structured(prompt: str, schema: type[T], retries: int = 1) -> T:
+def generate_structured(
+    prompt: str, schema: type[T], retries: int = 1,
+    max_output_tokens: int = _DEFAULT_MAX_OUTPUT_TOKENS,
+) -> T:
     """
     Try Gemini free tier, then Groq free tier. Retry once on validation
-    failure.
+    failure. `max_output_tokens` only affects the Groq call (Gemini has no
+    equivalent truncation issue seen so far) -- pass a larger value for a
+    schema whose real output can be large (see story_picker.py's
+    EditorialPick call); the default is sized for a normal script/metadata
+    call, see _call_groq()'s own docstring for why a flat large default
+    for every caller caused a real incident.
 
     A real incident (2026-09-17) confirmed the retries were happening
     with zero delay between them -- two Gemini calls both hit an
@@ -103,17 +156,26 @@ def generate_structured(prompt: str, schema: type[T], retries: int = 1) -> T:
     because an instant retry has no real chance of landing after a
     provider-side overload actually clears. Now waits _RETRY_DELAY_S
     between attempts (not after the last one -- no point delaying right
-    before raising) so a genuinely transient blip has room to pass.
+    before raising) so a genuinely transient blip has room to pass --
+    except after a Groq _RateLimited rejection specifically, which waits
+    the much longer _RATE_LIMIT_DELAY_S instead, since a tokens-per-minute
+    cap needs real time to refill, not a few seconds.
     """
     last_err: Exception | None = None
+    rate_limited = False
     for attempt in range(retries + 1):
         if attempt > 0:
-            time.sleep(_RETRY_DELAY_S)
+            time.sleep(_RATE_LIMIT_DELAY_S if rate_limited else _RETRY_DELAY_S)
+            rate_limited = False
         for fn in (_call_gemini, _call_groq):
             try:
-                result = fn(prompt, schema)
+                result = fn(prompt, schema, max_output_tokens) if fn is _call_groq else fn(prompt, schema)
             except ValidationError as e:
                 last_err = e
+                continue
+            except _RateLimited as e:
+                last_err = e
+                rate_limited = True
                 continue
             if result is not None:
                 return result

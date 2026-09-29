@@ -298,7 +298,12 @@ def _score_candidates(candidates: list[dict]) -> EditorialPick:
         _RUBRIC + "\n\n" + recent_block + "\n"
         + "\n".join(_candidate_block(i, c) for i, c in enumerate(candidates))
     )
-    return generate_structured(prompt, EditorialPick, retries=1)
+    # EditorialPick can legitimately need a large output (scoring up to
+    # ~40 candidates) -- explicit here so this call keeps the generous
+    # budget while other callers (script_agent.py's Script/Metadata/
+    # _FormattedBeats) use llm.py's much smaller default. See
+    # llm.py:_call_groq()'s docstring for the real incident this avoids.
+    return generate_structured(prompt, EditorialPick, retries=1, max_output_tokens=8000)
 
 
 # --- Public entry point -----------------------------------------------------
