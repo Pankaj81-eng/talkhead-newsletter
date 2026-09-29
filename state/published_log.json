@@ -702,5 +702,174 @@
       "instagram_media_id": "17886951045477656",
       "linkedin_post_id": "175850398190403584"
     }
+  },
+  {
+    "date": "2026-09-23",
+    "run_id": "1dbb2afe2400",
+    "story": "Better prompt caching for GPT-6",
+    "source_url": "https://openai.com/index/better-prompt-caching-for-gpt-6",
+    "title": "GPT\u20116\u2019s Cache Cuts AI Costs by Up to 90%",
+    "description": "How does GPT\u20116\u2019s new prompt\u2011caching slash AI costs? OpenAI\u2019s latest model reuses shared instructions to speed up responses and dramatically lower expenses. Learn the simple tricks developers can use to make AI cheaper and faster. #",
+    "full_narration": "GPT\u20116\u2019s new prompt\u2011caching can shave up to 90% off the cost of re\u2011using the same instructions. When an AI assistant repeats the same background info across many requests, the model can store that part and reuse it instead of recomputing each time. OpenAI\u2019s updates lifted the cache hit rate from around 85% to consistently above 90% in just a week. Across billions of calls they cut the share of tokens that need fresh processing by more than 50%. Those higher hit rates translated into about a 20% drop in inference costs for developers. Developers can now set explicit breakpoints, telling the system exactly which part of the prompt to keep cached while letting new details change freely. They can also pre\u2011warm shared instructions before a user asks anything, moving the heavy computation out of the visible waiting time, so responses are faster and the service costs less for everyone.",
+    "hashtags": [
+      "openai",
+      "gpt6",
+      "promptcaching",
+      "ai",
+      "costreduction"
+    ],
+    "video_path": "runs/1dbb2afe2400/final.mp4",
+    "thumbnail_path": "runs/1dbb2afe2400/thumbnail.jpg",
+    "metadata_path": "runs/1dbb2afe2400/metadata.txt",
+    "used_hero_image": true,
+    "status": "published",
+    "generated_at": "2026-09-23T05:50:02.831509",
+    "decided_at": "2026-09-23T05:59:20.765756",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/UgNoKkaHQ3w",
+      "instagram_media_id": "18081461573364480",
+      "linkedin_post_id": "176210934610526208"
+    }
+  },
+  {
+    "date": "2026-09-24",
+    "run_id": "0883a6bacb6d",
+    "story": "Introducing GPT-6 Sol and Luna",
+    "source_url": "https://openai.com/index/introducing-gpt-6-sol-and-luna",
+    "title": "GPT\u20116 Sol costs only 9% of top AI and cuts errors in half",
+    "description": "What is Introducing GPT-6 Sol and Luna?\n\nWhat\u2019s new with OpenAI\u2019s GPT\u20116 Sol and Luna models? The latest AI releases promise dramatically lower costs while boosting reliability. Learn the key details and why they matter for everyday work.",
+    "full_narration": "OpenAI just released GPT\u20116 Sol, which can finish the same work for only 9% of the cost of the leading Claude Opus\u202f5 model. OpenAI also cut the API price for Sol and Luna in half, a 50% reduction compared with the previous GPT\u20115.6 pricing, so developers pay far less per request. Even at that low price, Sol outperforms Claude Opus\u202f5 on tough business workflows, delivering better results while costing just 9% of what Opus\u202f5 charges, and it runs faster too. On coding tasks, Sol achieved similar scores to top models but at about 80% lower cost per task, making large\u2011scale code projects much cheaper. Reliability also improved: Sol makes about half as many factual mistakes as its GPT\u20115.6 predecessor, moving closer to the best\u2011in\u2011class Astra accuracy. Bottom line: GPT\u20116 Sol gives you high\u2011level AI power for a tiny fraction of the price and with far fewer errors.",
+    "hashtags": [
+      "gpt6",
+      "openai",
+      "ai",
+      "machinelearning",
+      "technews",
+      "costefficiency"
+    ],
+    "video_path": "runs/0883a6bacb6d/final.mp4",
+    "thumbnail_path": "runs/0883a6bacb6d/thumbnail.jpg",
+    "metadata_path": "runs/0883a6bacb6d/metadata.txt",
+    "used_hero_image": true,
+    "status": "published",
+    "generated_at": "2026-09-24T05:50:37.301464",
+    "decided_at": "2026-09-24T06:20:35.016501",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/1S9MGc8yGz0",
+      "instagram_media_id": "18104227364359198",
+      "linkedin_post_id": "176578666963140608"
+    }
+  },
+  {
+    "date": "2026-09-25",
+    "run_id": "95e40ab9a47e",
+    "story": "Use open weight models as your AI coding agent with Amazon Bedrock",
+    "source_url": "https://aws.amazon.com/blogs/machine-learning/use-open-weight-models-as-your-ai-coding-agent-with-amazon-bedrock/",
+    "title": "Open\u2011Weight AI Coding Assistant on AWS Beats GPT\u20114o",
+    "description": "What is Use open weight models as your AI coding agent with Amazon Bedrock?\n\nCan an open\u2011weight AI coding assistant on Amazon Bedrock outperform big models like GPT\u20114o? Learn how OpenCode paired with Bedrock gives you a private, flexible, and cost\u2011effective coding helper. Dive in for the key details and see why it matters for developers.",
+    "full_narration": "A fine\u2011tuned open\u2011weight model scored 96% on a coding accuracy test, while the well\u2011known GPT\u20114o only managed 61%. OpenCode is a terminal\u2011native AI assistant that can read, edit, and run your code right from the command line. When you connect it to Amazon Bedrock, the model runs inside your own AWS account, so none of your proprietary code leaves the cloud you control. You can pick a fast, cheap model for simple autocomplete and swap to a more thoughtful model for tough debugging, just by changing one setting. Because Bedrock charges only per token, big coding projects end up cheaper than paying flat subscription fees. Some Bedrock models, like Kimi\u202fK3, can look at a whole codebase of up to 1M-token \u2013 that's tens of thousands of lines \u2013 so they can reason across many files. All data stays in your AWS region, meeting compliance programs like HIPAA and GDPR, so you don\u2019t have to worry about data leaks.",
+    "hashtags": [
+      "ai",
+      "coding",
+      "aws",
+      "openweight",
+      "bedrock",
+      "opensource",
+      "devtools",
+      "ml"
+    ],
+    "video_path": "runs/95e40ab9a47e/final.mp4",
+    "thumbnail_path": "runs/95e40ab9a47e/thumbnail.jpg",
+    "metadata_path": "runs/95e40ab9a47e/metadata.txt",
+    "used_hero_image": true,
+    "status": "published",
+    "generated_at": "2026-09-25T05:48:53.958069",
+    "decided_at": "2026-09-25T05:59:38.652438",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/_L_QQvru5Ds",
+      "instagram_media_id": "18132793639589584",
+      "linkedin_post_id": "176935785260384256"
+    }
+  },
+  {
+    "date": "2026-09-26",
+    "run_id": "a090131effbd",
+    "story": "The Biggest News From Connect 2026",
+    "source_url": "https://about.fb.com/news/2026/09/the-biggest-news-from-connect-2026/",
+    "title": "Meta's 100\u2011Gram VR Glasses Bring IMAX Home",
+    "description": "What are Meta's new 100\u2011gram VR glasses and why they matter?\nMeta announced VR glasses that weigh only a deck of cards and can stream IMAX movies. Learn how these specs could change home entertainment.",
+    "full_narration": "Meta just unveiled VR glasses that weigh only 100\u202fgrams\u2014about the size of a deck of cards\u2014and can stream IMAX movies right to your eyes. These glasses are the first to earn IMAX Enhanced certification, meaning you\u2019ll see movies in the wider IMAX aspect ratio at home. Meta says they\u2019ll offer more than 100 different styles of AI glasses\u2014like Ray\u2011Ban and Oakley\u2014by the end of the year. The new Muse integration lets you simply say the name of an item you\u2019re looking at\u2014like a product on a shelf\u2014and the AI will act on it without you describing the scene. A hearing\u2011enhancement add\u2011on, FDA\u2011cleared and priced at $149.99, can be set up at home in minutes to help users with mild hearing loss. You\u2019ll also get audio glasses that combine earbuds and AI, so you can listen to music and talk to Muse hands\u2011free while staying aware of the world around you.",
+    "hashtags": [
+      "meta",
+      "vr",
+      "ai",
+      "glasses",
+      "technews",
+      "imac",
+      "hearingaid"
+    ],
+    "video_path": "runs/a090131effbd/final.mp4",
+    "thumbnail_path": "runs/a090131effbd/thumbnail.jpg",
+    "metadata_path": "runs/a090131effbd/metadata.txt",
+    "used_hero_image": true,
+    "status": "published",
+    "generated_at": "2026-09-26T05:48:32.538451",
+    "decided_at": "2026-09-26T06:01:24.888008",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/FGtmpot-C6c",
+      "instagram_media_id": "18104558402193315",
+      "linkedin_post_id": "177298618804338688"
+    }
+  },
+  {
+    "date": "2026-09-27",
+    "run_id": "7adc6bd83641",
+    "story": "Build a multi-account AI agent with AgentCore Gateway and MCP",
+    "source_url": "https://aws.amazon.com/blogs/machine-learning/build-a-multi-account-ai-agent-with-agentcore-gateway-and-mcp/",
+    "title": "AI Agent Queries Across Separate AWS Accounts Without Moving Data",
+    "description": "How can an AI agent access data across multiple AWS accounts without copying it? This video shows the simple architecture that lets each team keep its data at home while a single AI sees everything it needs. Learn the key pieces and why it matters for security and cost.",
+    "full_narration": "Imagine an AI assistant that can answer questions using data that lives in dozens of separate company accounts, without ever copying that data elsewhere. Each team stores its data in its own AWS account, which keeps ownership clear and lets them deploy updates independently. A central platform account runs the AI agent using Amazon Bedrock, and it talks to a single gateway that knows how to reach every team\u2019s data. When the agent needs information, the gateway securely fetches only the exact answer from the right account, leaving the raw files untouched. All the communication uses short\u2011lived machine\u2011to\u2011machine credentials, so each request is authorized exactly for what it needs. Because the data never leaves its home account, companies get the benefit of a unified AI view while still controlling costs and security per team. The platform team also sees all usage in one bill, making it easy to track spending across the whole organization.",
+    "hashtags": [
+      "aws",
+      "ai",
+      "cloud",
+      "security",
+      "datamanagement"
+    ],
+    "video_path": "runs/7adc6bd83641/final.mp4",
+    "thumbnail_path": "runs/7adc6bd83641/thumbnail.jpg",
+    "metadata_path": "runs/7adc6bd83641/metadata.txt",
+    "used_hero_image": true,
+    "status": "awaiting_decision",
+    "generated_at": "2026-09-27T05:51:34.541325"
+  },
+  {
+    "date": "2026-09-28",
+    "run_id": "754fed5ac25c",
+    "story": "Proaction boosts sales 60% and saves 75+ hours with Codex",
+    "source_url": "https://openai.com/index/proaction",
+    "title": "Proaction's AI Demo Tool Cranked Sales 60% and Saved 75+ Hours",
+    "description": "How did Proaction use OpenAI's Codex to increase sales by 60% and save over 75 hours of work? By letting a non\u2011technical co\u2011founder build custom demos in minutes, they freed up engineering time and closed more deals. Watch to see how AI can transform everyday sales work.",
+    "full_narration": "Proaction saw its sales jump 60% after letting a non\u2011technical co\u2011founder build custom demos with Codex. Before Codex, each demo needed about 10 hours of engineering, but now Colin creates a personalized demo in just 30 to 45 minutes. That saves roughly 40 to 60 engineering hours every month and over 75+ total hours of work across the team. Because prospects now see a demo that uses their own fleet data, the chance of moving from a first call to a real solution rose by about 50% to 60%, driving the overall 60% sales boost. The biggest win is that Colin can juggle sales, support and product tasks in one place, freeing up 25\u201333 hours a month for real business work. Proaction also uses GPT\u2011Live\u20111 voice agents like \u201cMarty\u201d to call drivers and repair shops, letting the AI handle routine tasks while humans step in only when needed.",
+    "hashtags": [
+      "ai",
+      "openai",
+      "codex",
+      "sales",
+      "productivity",
+      "fleetmanagement"
+    ],
+    "video_path": "runs/754fed5ac25c/final.mp4",
+    "thumbnail_path": "runs/754fed5ac25c/thumbnail.jpg",
+    "metadata_path": "runs/754fed5ac25c/metadata.txt",
+    "used_hero_image": true,
+    "status": "published",
+    "generated_at": "2026-09-28T05:49:00.157560",
+    "decided_at": "2026-09-28T05:53:12.985677",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/SGZ9s6BW3RI",
+      "instagram_media_id": "18066878243785547",
+      "linkedin_post_id": "178021331286097920"
+    }
   }
 ]
