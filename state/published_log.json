@@ -899,5 +899,33 @@
       "instagram_media_id": "18128726608698008",
       "linkedin_post_id": "178407832649990144"
     }
+  },
+  {
+    "date": "2026-09-30",
+    "run_id": "bd7437ab4156",
+    "story": "Introducing GPT-6.1 Sol",
+    "source_url": "https://openai.com/index/introducing-gpt-6-1-sol",
+    "title": "GPT\u20116.1\u202fSol: Near\u2011Astra Power at 1/5 the Cost",
+    "description": "What is GPT\u20116.1\u202fSol and why does it matter? OpenAI's newest model delivers Astra\u2011level intelligence for coding and professional tasks while slashing costs dramatically. Learn the key numbers and what they mean for everyday AI use. #AI #OpenAI #GPT6 #TechNews #Automation",
+    "full_narration": "GPT\u20116.1\u202fSol can do almost the same work as the high\u2011cost Astra model while costing about one\u2011fifth as much \u2013 that\u2019s a 95% drop in input price and a 6.4\u2011point boost over the previous Sol version. Think of it like hiring a junior developer who writes and debugs code just as well as a senior, but you only pay a fraction of the salary \u2013 here the price per million input tokens is $2 instead of $40. In real\u2011world tests on complex business documents \u2013 finance reports, legal PDFs, medical charts \u2013 GPT\u20116.1\u202fSol answered questions with a lower error rate, dropping factual mistakes from 11.4% to 7.7%, a 32% reduction. When asked to run scientific workflows like data analysis and simulations, it completed tasks for just $5.47 each, compared with $23\u2011plus for competing models, saving over 75% in cost. All this is now available to ChatGPT Work, Codex, and developers via the API, so anyone can build smarter agents without breaking the budget.",
+    "hashtags": [
+      "ai",
+      "openai",
+      "gpt6",
+      "technews",
+      "automation"
+    ],
+    "video_path": "runs/bd7437ab4156/final.mp4",
+    "thumbnail_path": "runs/bd7437ab4156/thumbnail.jpg",
+    "metadata_path": "runs/bd7437ab4156/metadata.txt",
+    "used_hero_image": true,
+    "status": "published",
+    "generated_at": "2026-09-30T05:58:54.563790",
+    "decided_at": "2026-09-30T06:26:01.805165",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/cqpwZBHAdYM",
+      "instagram_media_id": "18106283723579047",
+      "linkedin_post_id": "178754364914008064"
+    }
   }
 ]
