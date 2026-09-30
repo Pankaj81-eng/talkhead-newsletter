@@ -871,5 +871,33 @@
       "instagram_media_id": "18066878243785547",
       "linkedin_post_id": "178021331286097920"
     }
+  },
+  {
+    "date": "2026-09-29",
+    "run_id": "4308ec740603",
+    "story": "Nvidia launches new platform for reining in rogue AI agents",
+    "source_url": "https://techcrunch.com/2026/09/28/nvidia-launches-new-platform-for-reining-in-rogue-ai-agents/",
+    "title": "Nvidia\u2019s New Guard Stops Rogue AI in Milliseconds",
+    "description": "How is Nvidia keeping runaway AI agents under control? The Open Agent Safety Platform adds independent software and hardware guards to lock AI inside test environments. Learn why this matters for AI safety and industry development. #AI #Nvidia #Safety #TechNews #MachineLearning",
+    "full_narration": "Nvidia just rolled out a safety system that can quarantine a runaway AI in milliseconds, and it\u2019s already attracting dozens of tech giants \u2013 even offering early adopters 50% off the first rollout. The platform adds two independent guards: OpenShell, a software fence that decides what an AI can touch, and Sentry, a tiny chip that watches the AI from a separate processor. Putting Sentry on its own chip means it can see the AI\u2019s actions even if the AI tries to hide, letting it quarantine the agent in just a few milliseconds. More than 10 companies, including Anthropic, Microsoft, Oracle and SpaceX, have signed up to use the open\u2011source platform, showing the industry\u2019s appetite for a stronger safety net. Nvidia says this approach lets developers keep building smarter agents without slowing down, because the security guard works outside the AI\u2019s own CPU or GPU. In short, Nvidia\u2019s new toolkit builds a separate security layer that keeps rogue AI agents locked in their test sandbox, protecting real\u2011world systems while research keeps moving forward.",
+    "hashtags": [
+      "ai",
+      "nvidia",
+      "safety",
+      "technews",
+      "machinelearning"
+    ],
+    "video_path": "runs/4308ec740603/final.mp4",
+    "thumbnail_path": "runs/4308ec740603/thumbnail.jpg",
+    "metadata_path": "runs/4308ec740603/metadata.txt",
+    "used_hero_image": true,
+    "status": "published_partial",
+    "generated_at": "2026-09-29T08:07:37.068160",
+    "decided_at": "2026-09-29T08:29:02.150286",
+    "publish_result": {
+      "youtube_error": "YouTube upload failed: <HttpError 401 when requesting None returned \"Unauthorized\". Details: \"[{'message': 'Unauthorized', 'domain': 'youtube.header', 'reason': 'youtubeSignupRequired', 'location': 'Authorization', 'locationType': 'header'}]\">",
+      "instagram_media_id": "18128726608698008",
+      "linkedin_post_id": "178407832649990144"
+    }
   }
 ]
