@@ -927,5 +927,33 @@
       "instagram_media_id": "18106283723579047",
       "linkedin_post_id": "178754364914008064"
     }
+  },
+  {
+    "date": "2026-10-01",
+    "run_id": "02e82c46900d",
+    "story": "Bring near-Astra intelligence to everyday work with GPT-6.1 Sol on Amazon Bedrock",
+    "source_url": "https://aws.amazon.com/blogs/machine-learning/bring-near-astra-intelligence-to-everyday-work-with-gpt-6-1-sol-on-amazon-bedrock/",
+    "title": "Amazon Bedrock Adds GPT-6.1 Sol for Cheaper AI Workflows",
+    "description": "How does GPT-6.1 Sol lower the cost of AI coding tasks on Amazon Bedrock? Amazon Bedrock now hosts GPT-6.1 Sol, giving companies high-level reasoning for coding and document work at a fraction of the price. Learn how lower cost per task makes AI agents more practical for everyday work.",
+    "full_narration": "Amazon just launched a new AI model on its cloud service that handles complex coding tasks at roughly 1/5th the cost of OpenAI's top-tier model. When an AI agent tries to fix software, write code, or use business apps, every wrong guess forces extra steps that quickly drive up the total bill. This update, named GPT-6.1 Sol, was put through a rigorous software engineering test where it outperformed the previous version by 6.4 percentage points. It matches the performance of higher-end models on tough coding jobs while requiring less computing power and reasoning effort to get the work done. It is also better at following boundaries, analyzing long documents, and respecting strict security rules inside corporate networks so prompt data isn't used for training. By cutting costs without sacrificing reliability, this makes using smart AI helpers for daily office tasks far more affordable for companies.",
+    "hashtags": [
+      "ai",
+      "amazonbedrock",
+      "tech",
+      "softwareengineering",
+      "coding"
+    ],
+    "video_path": "runs/02e82c46900d/final.mp4",
+    "thumbnail_path": "runs/02e82c46900d/thumbnail.jpg",
+    "metadata_path": "runs/02e82c46900d/metadata.txt",
+    "used_hero_image": true,
+    "status": "published",
+    "generated_at": "2026-10-01T05:49:55.796127",
+    "decided_at": "2026-10-01T06:01:58.216984",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/elermXxVy3M",
+      "instagram_media_id": "18416559988156053",
+      "linkedin_post_id": "179110698012377088"
+    }
   }
 ]
