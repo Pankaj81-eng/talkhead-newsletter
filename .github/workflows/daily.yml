@@ -26,11 +26,11 @@ jobs:
   run:
     runs-on: ubuntu-latest
     # Generation (~45 min on the CPU-only runner) + a bounded Publish/Discard
-    # wait (3 hours, passed to daily_run.py below) + headroom. The run ends
+    # wait (4 hours, passed to daily_run.py below) + headroom. The run ends
     # as soon as a decision arrives, so the long window only costs runner
     # minutes on days the decision is actually slow. GitHub's hosted-runner
     # ceiling is 360 min.
-    timeout-minutes: 270
+    timeout-minutes: 330
 
     steps:
       - uses: actions/checkout@v4
@@ -109,7 +109,7 @@ jobs:
         run: |
           uv run python scripts/daily_run.py \
             ${{ inputs.date && format('--date {0}', inputs.date) || '' }} \
-            --decision-timeout 10800
+            --decision-timeout 14400
 
       - name: Upload run artifacts
         if: always()
