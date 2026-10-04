@@ -1009,5 +1009,34 @@
     "status": "decision_timed_out",
     "generated_at": "2026-10-03T05:41:34.620590",
     "decided_at": "2026-10-03T06:36:47.722899"
+  },
+  {
+    "date": "2026-10-04",
+    "run_id": "948b90ad36cf",
+    "story": "Gemini 4 Argon: our next era of frontier intelligence",
+    "source_url": "https://deepmind.google/blog/gemini-4-argon-our-next-era-of-frontier-intelligence/",
+    "title": "Google Unveils Gemini 4 Argon for Cybersecurity and Complex Work",
+    "description": "What is Google Gemini 4 Argon? Google revealed a new AI model capable of patching software flaws, optimizing memory in data centers, and tackling multi-step technical tasks. Learn how Argon works and where Google is using it first. Subscribe to TalkHead for daily plain-English AI news.",
+    "full_narration": "Google just unveiled a new AI model named Gemini 4 Argon that can automatically hunt down software bugs, fix them, and run without traditional safety guardrails for cyber defense teams. Instead of just answering simple questions, this tool is built to handle huge multi-step projects. Inside Google, it analyzed data center systems and freed up over 300 TiB of computer memory all on its own. It also rewrote parts of Google's video playback code, running continuous tests until the new software ran 2.7x faster than the previous version. On a test evaluating how well AI understands long videos, Argon scored 91.7%, while scoring 51.3% on an evaluation measuring real-world business automation tasks. To help it solve these deep problems in a single pass, Google increased its maximum output limit to 1M tokens, up from 64K tokens. It is launching for early enterprise users at an introductory price of $2 per million input tokens and $10 per million output tokens.",
+    "hashtags": [
+      "google",
+      "gemini",
+      "ai",
+      "cybersecurity",
+      "tech news",
+      "software"
+    ],
+    "video_path": "runs/948b90ad36cf/final.mp4",
+    "thumbnail_path": "runs/948b90ad36cf/thumbnail.jpg",
+    "metadata_path": "runs/948b90ad36cf/metadata.txt",
+    "used_hero_image": true,
+    "status": "published_partial",
+    "generated_at": "2026-10-04T09:01:56.685746",
+    "decided_at": "2026-10-04T09:07:11.781000",
+    "publish_result": {
+      "youtube_error": "YouTube upload failed: <HttpError 401 when requesting None returned \"Unauthorized\". Details: \"[{'message': 'Unauthorized', 'domain': 'youtube.header', 'reason': 'youtubeSignupRequired', 'location': 'Authorization', 'locationType': 'header'}]\">",
+      "instagram_media_id": "17975567730127208",
+      "linkedin_post_id": "180229375747162112"
+    }
   }
 ]
