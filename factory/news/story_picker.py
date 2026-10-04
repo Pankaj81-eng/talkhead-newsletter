@@ -22,7 +22,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 import feedparser
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from .. import config
 from ..llm import generate_structured
@@ -198,6 +198,18 @@ class _CandidateScore(BaseModel):
     long_term_importance: int = Field(..., ge=1, le=10)
     average: float
     reasoning: str
+
+    # Real incident (2026-10-04): with Gemini down, Groq scored one junk
+    # candidate 0 on every dimension, the 1-10 bound rejected the WHOLE
+    # response on both attempts, and the daily run died. A 0 just means
+    # "worst", so clamp instead of failing.
+    @field_validator(
+        "engineering_impact", "business_impact", "adoption_potential",
+        "practical_usefulness", "long_term_importance", mode="before",
+    )
+    @classmethod
+    def _clamp_score(cls, v):
+        return max(1, min(10, v)) if isinstance(v, (int, float)) else v
 
 
 class EditorialPick(BaseModel):
