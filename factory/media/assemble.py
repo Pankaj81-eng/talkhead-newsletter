@@ -43,14 +43,29 @@ def _still_image_clip(img_path: Path, duration: float, out: Path, zoom_out: bool
     ])
 
 
+def _fill_frame(src: Path, out: Path) -> Path:
+    """Fit a still (any aspect) inside a 9:16 frame over a blurred, dimmed,
+    enlarged copy of itself. Landscape stories keep their full width instead
+    of a thin blurry center-crop slice."""
+    from PIL import Image, ImageFilter
+    img = Image.open(src).convert("RGB")
+    bg_scale = max(W / img.width, H / img.height)
+    bg = img.resize((round(img.width * bg_scale), round(img.height * bg_scale)))
+    left, top = (bg.width - W) // 2, (bg.height - H) // 2
+    bg = bg.crop((left, top, left + W, top + H)).filter(ImageFilter.GaussianBlur(40))
+    bg = Image.blend(bg, Image.new("RGB", (W, H), (10, 10, 16)), 0.45)  # dim so the fg pops
+    fg_scale = min(W / img.width, H / img.height)
+    fg = img.resize((round(img.width * fg_scale), round(img.height * fg_scale)))
+    bg.paste(fg, ((W - fg.width) // 2, (H - fg.height) // 2))
+    bg.save(out)
+    return out
+
+
 def _hero_frame(run_dir: Path) -> Path | None:
     """
     The story's own og:image (fetched by daily_run.py into
-    config.OFFICIAL_BROLL_DIR, see news/hero_image.py) as a full 9:16 frame:
-    the whole image fitted to the frame width over a blurred, enlarged
-    copy of itself. Hero images are almost always landscape (~1200x630),
-    so a plain center-crop to vertical would keep a thin, blurry slice of
-    it. Cached per run. None when there's no hero image (no source link,
+    config.OFFICIAL_BROLL_DIR, see news/hero_image.py) as a full 9:16 frame.
+    Cached per run. None when there's no hero image (no source link,
     fetch failed, or a manual run) -- callers fall through to a text card.
     """
     from ..news.hero_image import find_hero_file
@@ -60,18 +75,26 @@ def _hero_frame(run_dir: Path) -> Path | None:
     out = run_dir / "hero_frame.png"
     if out.exists():
         return out
-    from PIL import Image, ImageFilter
-    img = Image.open(src).convert("RGB")
-    bg_scale = max(W / img.width, H / img.height)
-    bg = img.resize((round(img.width * bg_scale), round(img.height * bg_scale)))
-    left, top = (bg.width - W) // 2, (bg.height - H) // 2
-    bg = bg.crop((left, top, left + W, top + H)).filter(ImageFilter.GaussianBlur(40))
-    bg = Image.blend(bg, Image.new("RGB", (W, H), (10, 10, 16)), 0.45)  # dim so the fg pops
-    fg_h = round(img.height * W / img.width)
-    fg = img.resize((W, fg_h))
-    bg.paste(fg, (0, (H - fg_h) // 2))
-    bg.save(out)
-    return out
+    return _fill_frame(src, out)
+
+
+def _next_article_frame(run_dir: Path) -> Path | None:
+    """
+    Next not-yet-used real image from the source article (see
+    news/article_images.py), framed as 9:16. Each image is used at most once
+    per video (tracked in _used.txt). None when the run has none left.
+    """
+    folder = run_dir / "article_images"
+    if not folder.is_dir():
+        return None
+    used_file = folder / "_used.txt"
+    used = set(used_file.read_text().split()) if used_file.exists() else set()
+    for img in sorted(folder.glob("img_*.jpg")):
+        if img.name in used:
+            continue
+        used_file.write_text("\n".join(sorted(used | {img.name})))
+        return _fill_frame(img, folder / f"{img.stem}_frame.png")
+    return None
 
 
 _MAX_CARD_WORDS = 14
@@ -107,6 +130,16 @@ def build_beat_clip(beat, duration: float, idx: int, run_dir: Path) -> Path:
     out = run_dir / f"beat_{idx:02d}.mp4"
     is_broll = beat.visual == "broll"
     run_id = run_dir.name  # runs live at runs/<run_id>/ -- see config.RUNS_DIR
+
+    # Real images from the story's own source page (2026-10-05, Pankaj: stock
+    # footage felt generic). Every other broll beat shows one while they last,
+    # so the video mixes real story visuals with stock instead of all-stock.
+    if is_broll and idx % 2 == 1:
+        art = _next_article_frame(run_dir)
+        if art:
+            _still_image_clip(art, duration, out, zoom_out=bool(idx % 4 == 3))
+            return out
+
     broll_path = fetch_broll(beat.query, run_id) if is_broll else None
 
     if broll_path:
@@ -133,6 +166,11 @@ def build_beat_clip(beat, duration: float, idx: int, run_dir: Path) -> Path:
     # authored `text_card` beats too: their text just repeated the
     # narration the burned-in captions already show, and the two
     # overlapped into an unreadable mess (confirmed on 2026-09-19's reel).
+    art = _next_article_frame(run_dir)
+    if art:
+        _still_image_clip(art, duration, out, zoom_out=bool(idx % 2))
+        return out
+
     hero = _hero_frame(run_dir)
     if hero:
         _still_image_clip(hero, duration, out, zoom_out=bool(idx % 2))

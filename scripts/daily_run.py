@@ -43,6 +43,7 @@ from factory.media.metadata_export import write_metadata
 from factory.news.story_picker import fetch_top_story, story_to_brief, NoStoryTodayError
 from factory.news.article_fetch import fetch_article_text
 from factory.news.hero_image import fetch_hero_image
+from factory.news.article_images import fetch_article_images
 from factory.news.telegram_notify import send_daily_video, await_decision, send_error, send_text
 
 PUBLISHED_LOG = config.ROOT / "state" / "published_log.json"
@@ -119,6 +120,16 @@ def main() -> None:
         else:
             config.OFFICIAL_BROLL_DIR = ""
             print("[daily_run] no hero image found -- stock b-roll only")
+
+        stage = "article_images"
+        if story.get("link"):
+            try:
+                fetch_article_images(
+                    story["link"], run_dir / "article_images",
+                    hero["file"] if hero else None,
+                )
+            except Exception as e:  # noqa: BLE001 -- a nice-to-have, never blocks the run
+                print(f"[daily_run] article images skipped: {e}")
 
         stage = "generate_script"
         script = generate_script(brief)
