@@ -1038,5 +1038,34 @@
       "instagram_media_id": "17975567730127208",
       "linkedin_post_id": "180229375747162112"
     }
+  },
+  {
+    "date": "2026-10-05",
+    "run_id": "0879692ca5ef",
+    "story": "Chatham scales its capital markets expertise with OpenAI",
+    "source_url": "https://openai.com/index/chatham-financial",
+    "title": "How AI Cut This Finance Task from 30 Minutes to Under 4",
+    "description": "How is AI changing trade validation in finance? Chatham Financial used OpenAI models like GPT-5.6 and Codex to cut routine paperwork checks down from 30 minutes to under 4 minutes. Subscribe to TalkHead for daily plain-English AI updates.",
+    "full_narration": "A major financial firm just used AI to cut a complex paperwork check from 30 minutes down to under 4 minutes. Chatham Financial advises big companies on complex market deals, where accuracy is everything and mistakes can cost millions of dollars. Verifying transaction records used to mean experienced human reviewers sitting down to compare files, dig through legal documents, and double-check key terms by hand. Now, the firm uses specialized software powered by OpenAI models like Codex and GPT-5.6 to do the heavy lifting automatically. The software gathers supporting evidence, compares the important terms, and immediately flags any strange discrepancies for human review. Instead of spending 30 minutes reading through paper trails for each deal, human advisors can now review and approve everything in under 4 minutes. More than 1 million businesses are already using AI like this to eliminate tedious tasks so their human experts can focus on actual client advice.",
+    "hashtags": [
+      "ai",
+      "fintech",
+      "openai",
+      "business",
+      "automation",
+      "tech"
+    ],
+    "video_path": "runs/0879692ca5ef/final.mp4",
+    "thumbnail_path": "runs/0879692ca5ef/thumbnail.jpg",
+    "metadata_path": "runs/0879692ca5ef/metadata.txt",
+    "used_hero_image": true,
+    "status": "published",
+    "generated_at": "2026-10-05T05:54:36.502179",
+    "decided_at": "2026-10-05T06:04:54.032454",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/E6Jh5-5ef_w",
+      "instagram_media_id": "18189413143397905",
+      "linkedin_post_id": "180560986690813952"
+    }
   }
 ]
