@@ -196,6 +196,8 @@ class _CandidateScore(BaseModel):
     adoption_potential: int = Field(..., ge=1, le=10)
     practical_usefulness: int = Field(..., ge=1, le=10)
     long_term_importance: int = Field(..., ge=1, le=10)
+    # Defaulted so a response that omits it still parses (neutral 5).
+    audience_pull: int = Field(5, ge=1, le=10)
     average: float
     reasoning: str
 
@@ -205,7 +207,8 @@ class _CandidateScore(BaseModel):
     # "worst", so clamp instead of failing.
     @field_validator(
         "engineering_impact", "business_impact", "adoption_potential",
-        "practical_usefulness", "long_term_importance", mode="before",
+        "practical_usefulness", "long_term_importance", "audience_pull",
+        mode="before",
     )
     @classmethod
     def _clamp_score(cls, v):
@@ -242,8 +245,24 @@ significant funding/acquisition deals; important open-source releases;
 AI regulation/policy moves; enterprise AI adoption and developer tools.
 
 Score every candidate 1-10 on: engineering_impact, business_impact,
-adoption_potential, practical_usefulness, long_term_importance. Average the
-five. A story is only eligible if that average is >= {SCORE_THRESHOLD}.
+adoption_potential, practical_usefulness, long_term_importance, and
+audience_pull. Average the six. A story is only eligible if that average is
+>= {SCORE_THRESHOLD}.
+
+audience_pull asks: would a smart person OUTSIDE this field stop scrolling
+for this? High (8-10): a major model/product launch, a surprising result or
+capability, a big acquisition/funding deal, a safety incident or conflict,
+a regulatory move, a first-of-its-kind demo. Low (1-3): customer case
+studies ("how company X saved N% using Y"), how-to/tutorial posts,
+architecture deep-dives, a model merely becoming available on another
+cloud/platform, regional rollouts, cost/latency tuning tips, benchmark
+recaps. Those low-pull types are not banned -- they are fine occasionally
+and on a slow day the best of them can still win -- they just must not beat
+a genuinely newsworthy story.
+
+VARIETY: if any of the last 7 days' headlines (shown below) was a customer
+case study or how-to, treat another one as a poor choice unless nothing
+else clears the bar.
 Pick the single highest-scoring eligible story as chosen_index (or null if
 none clear the bar).
 
@@ -259,8 +278,8 @@ these EXACT key names, do not rename or nest them differently:
     {{"index": 0,
      "engineering_impact": 1-10, "business_impact": 1-10,
      "adoption_potential": 1-10, "practical_usefulness": 1-10,
-     "long_term_importance": 1-10,
-     "average": <mean of the five, one decimal place>,
+     "long_term_importance": 1-10, "audience_pull": 1-10,
+     "average": <mean of the six, one decimal place>,
      "reasoning": "one short sentence on why this does or does not clear the bar"}}
   ],
   "chosen_index": <the single highest-scoring eligible candidate's index, or null if none clear the bar>,
