@@ -1096,5 +1096,35 @@
       "instagram_media_id": "18028207385911907",
       "linkedin_post_id": "180922628599447552"
     }
+  },
+  {
+    "date": "2026-10-07",
+    "run_id": "e12cfdd04454",
+    "story": "OpenAI will start watermarking ChatGPT\u2019s text in the EU",
+    "source_url": "https://techcrunch.com/2026/10/05/openai-will-start-watermarking-chatgpts-text-in-the-eu/",
+    "title": "OpenAI\u2019s Invisible AI Tag Can Be Scrubbed With Simple Edits",
+    "description": "What is OpenAI will start watermarking ChatGPT\u2019s text in the EU?\n\nCan OpenAI\u2019s new AI watermark be removed by just tweaking a few words? OpenAI is adding an invisible tag to ChatGPT text in the EU to meet new regulations, but a tiny edit can drop detection from 92% to 66%. Learn what this means for AI\u2011generated content and why it matters. Subscribe for more AI updates.",
+    "full_narration": "OpenAI says you can erase the hidden AI tag on its own words just by swapping a few synonyms \u2013 detection falls from 92% to 66% with only 10% of the words changed. The EU\u2019s AI Act now forces AI makers to mark machine\u2011written content so anyone can spot it, and OpenAI is meeting that rule with a covert watermark built into the word choices. The watermark isn\u2019t a visible logo; it\u2019s a subtle pattern of word nudges that only a special detector, using a secret key, can read. OpenAI will roll it out to all ChatGPT and Codex users in Europe over the next weeks, while developers worldwide can turn it on for select models, but it stays off by default elsewhere. Because the watermark lives in the text itself, it travels when you copy\u2011paste, yet the company warns that a missing mark doesn\u2019t prove a human wrote it \u2013 short snippets or heavy editing can hide it.",
+    "hashtags": [
+      "ai",
+      "openai",
+      "watermark",
+      "eu",
+      "aiact",
+      "technews",
+      "chatgpt"
+    ],
+    "video_path": "runs/e12cfdd04454/final.mp4",
+    "thumbnail_path": "runs/e12cfdd04454/thumbnail.jpg",
+    "metadata_path": "runs/e12cfdd04454/metadata.txt",
+    "used_hero_image": true,
+    "status": "published",
+    "generated_at": "2026-10-07T05:50:50.519222",
+    "decided_at": "2026-10-07T05:53:54.984225",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/hDJk1DnwwoU",
+      "instagram_media_id": "18136927492725238",
+      "linkedin_post_id": "181282997834612736"
+    }
   }
 ]
