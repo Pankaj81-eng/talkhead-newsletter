@@ -78,6 +78,25 @@ def _hero_frame(run_dir: Path) -> Path | None:
     return _fill_frame(src, out)
 
 
+def _record_credit(run_dir: Path, folder: Path, name: str) -> None:
+    """Wikimedia photos need a credit line; daily_run.py appends everything in
+    image_credits.txt to the description."""
+    import json
+    credits_file = folder / "credits.json"
+    if not credits_file.exists():
+        return
+    try:
+        credit = json.loads(credits_file.read_text()).get(name)
+    except (OSError, ValueError):
+        return
+    if not credit:
+        return
+    out = run_dir / "image_credits.txt"
+    existing = out.read_text().splitlines() if out.exists() else []
+    if credit not in existing:
+        out.write_text("\n".join(existing + [credit]))
+
+
 def _next_article_frame(run_dir: Path) -> Path | None:
     """
     Next not-yet-used real image from the source article (see
@@ -93,6 +112,7 @@ def _next_article_frame(run_dir: Path) -> Path | None:
         if img.name in used:
             continue
         used_file.write_text("\n".join(sorted(used | {img.name})))
+        _record_credit(run_dir, folder, img.name)
         return _fill_frame(img, folder / f"{img.stem}_frame.png")
     return None
 

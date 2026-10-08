@@ -44,6 +44,7 @@ from factory.news.story_picker import fetch_top_story, story_to_brief, NoStoryTo
 from factory.news.article_fetch import fetch_article_text
 from factory.news.hero_image import fetch_hero_image
 from factory.news.article_images import fetch_article_images
+from factory.news.wikimedia_images import fetch_wikimedia_images
 from factory.news.telegram_notify import send_daily_video, await_decision, send_error, send_text
 
 PUBLISHED_LOG = config.ROOT / "state" / "published_log.json"
@@ -131,6 +132,17 @@ def main() -> None:
             except Exception as e:  # noqa: BLE001 -- a nice-to-have, never blocks the run
                 print(f"[daily_run] article images skipped: {e}")
 
+        stage = "wikimedia_images"
+        try:
+            art_dir = run_dir / "article_images"
+            have = sorted(art_dir.glob("img_*.jpg")) if art_dir.is_dir() else []
+            if len(have) < 3:  # page gave few/no images (e.g. CNBC blocks them): top up
+                fetch_wikimedia_images(
+                    story["headline"], story.get("body", ""), art_dir, count=3 - len(have), existing=have,
+                )
+        except Exception as e:  # noqa: BLE001 -- a nice-to-have, never blocks the run
+            print(f"[daily_run] wikimedia images skipped: {e}")
+
         stage = "generate_script"
         script = generate_script(brief)
         print(f"[daily_run] script: {script.word_count} words, title={script.title!r}")
@@ -151,6 +163,10 @@ def main() -> None:
 
         stage = "thumbnail"
         thumbs = generate_thumbnail(script, run_dir)
+
+        credits_file = run_dir / "image_credits.txt"
+        if credits_file.exists() and credits_file.read_text().strip():
+            script.description += "\n\nPhotos: " + "; ".join(credits_file.read_text().splitlines())
 
         stage = "metadata"
         metadata_path = write_metadata(script, run_dir)
