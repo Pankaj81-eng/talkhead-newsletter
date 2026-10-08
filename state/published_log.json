@@ -1185,5 +1185,35 @@
       "linkedin_post_id": "181693405854695424"
     },
     "note": "Instagram originally showed the 10-07 video (stale reused temp URL, fixed f23d526); wrong post 18130906384784643 deleted by hand and the correct video reposted as 17970983265157539 on 2026-10-08."
+  },
+  {
+    "date": "2026-10-08",
+    "run_id": "93ab5ff57b77",
+    "story": "NVIDIA, Microsoft Kick Off a New Beginning for Windows PCs With RTX Spark and AI Agents",
+    "source_url": "https://blogs.nvidia.com/blog/local-ai-rtx-spark-microsoft-windows-event/",
+    "title": "Why Your Next Laptop Might Run a 125\u2011Billion\u2011Parameter AI Model",
+    "description": "What is NVIDIA, Microsoft Kick Off a New Beginning for Windows PCs With RTX Spark and AI Agents?\n\nCan a consumer laptop really run a 125\u2011billion\u2011parameter AI model without the cloud? NVIDIA and Microsoft say yes, with RTX\u202fSpark and new Windows security tech. Learn how this changes what your PC can do at home and work. Stay tuned for more tech breakdowns!\n\nCredits: Video: ZMASLO / Wikimedia Commons (CC BY 3.0); Anderseidesvik / Wikimedia Commons (CC BY-SA 4.0); Brian Smale and Microsoft / Wikimedia Commons (CC BY-SA 4.0); \u6781\u5ba2\u6e7eGeekerwan / Wikimedia Commons (CC BY 3.0)",
+    "full_narration": "Imagine a laptop that can run a 125\u2011billion\u2011parameter AI model locally, without sending anything to the cloud \u2013 that\u2019s what NVIDIA\u2019s new RTX\u202fSpark can do. RTX\u202fSpark packs a Blackwell GPU with up to 6,144 cores and a Grace CPU linked at 600\u202fGB/s, giving a full petaflop of AI compute \u2013 enough to crunch data at speeds once only seen in data\u2011center servers. The system offers up to 128\u202fGB of unified memory, so huge models like Qwen\u202f3.8 Flash Next (125B parameters) fit in memory and run instantly, just like any other app on your PC. Microsoft\u2019s new MXC (Microsoft Execution Containers) keeps these AI agents safe, letting them run in the background under Windows control, so you get a personal assistant that never leaves your device. Pre\u2011orders start now for Surface laptops built around RTX\u202fSpark, shipping Oct\u202f16, and desktop versions arrive in November, bringing this power to everyday users.",
+    "hashtags": [
+      "ai",
+      "nvidia",
+      "microsoft",
+      "windows",
+      "rtxspark",
+      "pcgaming",
+      "technews"
+    ],
+    "video_path": "runs/93ab5ff57b77/final.mp4",
+    "thumbnail_path": "runs/93ab5ff57b77/thumbnail.jpg",
+    "metadata_path": "runs/93ab5ff57b77/metadata.txt",
+    "used_hero_image": true,
+    "status": "published_partial",
+    "generated_at": "2026-10-08T10:42:34.101768",
+    "decided_at": "2026-10-08T12:59:11.130251",
+    "publish_result": {
+      "youtube_error": "YouTube upload failed: <HttpError 410 when requesting https://youtube.googleapis.com/upload/youtube/v3/videos?part=snippet%2Cstatus&alt=json&uploadType=resumable returned \"Gone\". Details: \"Gone\">",
+      "instagram_media_id": "17916714867461072",
+      "linkedin_post_id": "181752408538349568"
+    }
   }
 ]
