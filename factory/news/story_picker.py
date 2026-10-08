@@ -75,7 +75,8 @@ _LOOKBACK_HOURS = 36
 # outside the window. "Already covered" is still enforced against the last
 # 14 days of published headlines, so a wider window can't re-pick old news.
 _FALLBACK_LOOKBACK_HOURS = 96
-_CANDIDATE_POOL_SIZE = 40  # matches ai-daily's own editorial_pool_size
+_CANDIDATE_POOL_SIZE = 120  # scored in chunks of _CHUNK_SIZE, see _score_all()
+_CHUNK_SIZE = 20
 
 
 # --- Fetching -------------------------------------------------------------
@@ -198,8 +199,18 @@ class _CandidateScore(BaseModel):
     long_term_importance: int = Field(..., ge=1, le=10)
     # Defaulted so a response that omits it still parses (neutral 5).
     audience_pull: int = Field(5, ge=1, le=10)
+    # True when substantively the same story/subject as a recently published
+    # headline. Selection happens in code, so the model flags it here rather
+    # than relying on a single chosen_index (needed once pools are chunked).
+    already_covered: bool = False
     average: float
     reasoning: str
+
+    @property
+    def computed_average(self) -> float:
+        dims = (self.engineering_impact, self.business_impact, self.adoption_potential,
+                self.practical_usefulness, self.long_term_importance, self.audience_pull)
+        return round(sum(dims) / len(dims), 1)
 
     # Real incident (2026-10-04): with Gemini down, Groq scored one junk
     # candidate 0 on every dimension, the 1-10 bound rejected the WHOLE
@@ -220,7 +231,7 @@ class EditorialPick(BaseModel):
     chosen_index: Optional[int] = Field(
         None, description="Index of the single top eligible story, or null if none clear the bar."
     )
-    decision_reason: str
+    decision_reason: str = ""
 
 
 # Adapted from ai-daily's aidaily/editorial.py SYSTEM prompt (read-only
@@ -231,10 +242,10 @@ _RUBRIC = f"""You are the Editor-in-Chief of TalkHead, a daily AI-engineering
 news video channel. Our audience is a mix of AI/software engineers, QA
 engineers, engineering managers, tech founders, and serious AI learners.
 
-Our reputation depends on filtering signal from noise. Pick AT MOST ONE
-story from today's candidates -- the single one most worth a 60-90 second
-video for this audience. It is normal and correct to pick none if nothing
-clears the bar.
+Our reputation depends on filtering signal from noise. You are SCORING
+today's candidates (a selection step picks the winner from everyone's scores
+afterwards), so score each one honestly on how worth a 60-90 second video it
+is for this audience. Most candidates should score below the bar.
 
 Reject: minor research papers with no practical impact, incremental
 benchmark updates, small unfunded startup news, thin press releases.
@@ -263,13 +274,11 @@ a genuinely newsworthy story.
 VARIETY: if any of the last 7 days' headlines (shown below) was a customer
 case study or how-to, treat another one as a poor choice unless nothing
 else clears the bar.
-Pick the single highest-scoring eligible story as chosen_index (or null if
-none clear the bar).
 
 ALREADY COVERED: you will be shown TalkHead's recent published headlines
 (last 14 days). If a candidate is substantively the same story (a
 follow-up, a different outlet covering the same event/launch), reject it
-regardless of score and say so in its reasoning.
+set already_covered to true and say so in its reasoning.
 
 Return ONLY valid JSON, no markdown fence, in exactly this shape -- use
 these EXACT key names, do not rename or nest them differently:
@@ -279,11 +288,10 @@ these EXACT key names, do not rename or nest them differently:
      "engineering_impact": 1-10, "business_impact": 1-10,
      "adoption_potential": 1-10, "practical_usefulness": 1-10,
      "long_term_importance": 1-10, "audience_pull": 1-10,
+     "already_covered": true if it is substantively the same story/subject as an ALREADY COVERED headline, else false,
      "average": <mean of the six, one decimal place>,
      "reasoning": "one short sentence on why this does or does not clear the bar"}}
-  ],
-  "chosen_index": <the single highest-scoring eligible candidate's index, or null if none clear the bar>,
-  "decision_reason": "one sentence explaining the final call"
+  ]
 }}
 The "scores" array must have exactly one entry per candidate given, in the
 same order, indices starting at 0. "index" must be the candidate's
@@ -316,7 +324,7 @@ def _candidate_block(idx: int, c: dict) -> str:
     )
 
 
-def _score_candidates(candidates: list[dict]) -> EditorialPick:
+def _score_chunk(candidates: list[dict]) -> EditorialPick:
     recent = _recent_published()
     recent_block = (
         "ALREADY COVERED (last 14 days): nothing, fresh start.\n"
@@ -329,12 +337,42 @@ def _score_candidates(candidates: list[dict]) -> EditorialPick:
         _RUBRIC + "\n\n" + recent_block + "\n"
         + "\n".join(_candidate_block(i, c) for i, c in enumerate(candidates))
     )
-    # EditorialPick can legitimately need a large output (scoring up to
-    # ~40 candidates) -- explicit here so this call keeps the generous
-    # budget while other callers (script_agent.py's Script/Metadata/
-    # _FormattedBeats) use llm.py's much smaller default. See
-    # llm.py:_call_groq()'s docstring for the real incident this avoids.
-    return generate_structured(prompt, EditorialPick, retries=1, max_output_tokens=8000)
+    # One chunk is at most _CHUNK_SIZE candidates (~1.6k output tokens). Kept
+    # well under Groq's 8000 tokens-per-minute cap (prompt + this) so the
+    # fallback provider can serve a chunk; see llm.py:_call_groq() for the
+    # incidents behind these limits.
+    return generate_structured(prompt, EditorialPick, retries=1, max_output_tokens=3500)
+
+
+def _score_all(candidates: list[dict]) -> list[tuple[int, _CandidateScore]]:
+    """Score the whole pool in chunks (round-robin, so every chunk gets a mix
+    of sources) and return (index-in-candidates, score). A chunk that fails is
+    skipped; only if EVERY chunk fails is the last error raised, so a flaky
+    provider degrades the pick instead of killing the run."""
+    n_chunks = max(1, -(-len(candidates) // _CHUNK_SIZE))
+    scored: list[tuple[int, _CandidateScore]] = []
+    last_err: Exception | None = None
+    for c in range(n_chunks):
+        ids = list(range(c, len(candidates), n_chunks))
+        try:
+            pick = _score_chunk([candidates[i] for i in ids])
+        except RuntimeError as e:
+            last_err = e
+            print(f"[story_picker] chunk {c + 1}/{n_chunks} failed: {str(e)[:160]}")
+            continue
+        for sc in pick.scores:
+            if 0 <= sc.index < len(ids):
+                scored.append((ids[sc.index], sc))
+    if not scored and last_err is not None:
+        raise last_err
+    return scored
+
+
+def _eligible(scored: list[tuple[int, _CandidateScore]]) -> list[tuple[int, _CandidateScore]]:
+    """Best first: not already covered and at/above the bar."""
+    ok = [(i, sc) for i, sc in scored
+          if not sc.already_covered and sc.computed_average >= SCORE_THRESHOLD]
+    return sorted(ok, key=lambda t: -t[1].computed_average)
 
 
 # --- Public entry point -----------------------------------------------------
@@ -356,20 +394,22 @@ def fetch_top_story(date: str | None = None) -> dict:
             print(f"[story_picker] {last_reason}")
             continue
 
-        pick = _score_candidates(candidates)
-        for s in pick.scores:
-            print(f"[story_picker] candidate {s.index}: avg={s.average}  {s.reasoning}")
+        scored = _score_all(candidates)
+        print(f"[story_picker] scored {len(scored)} of {len(candidates)} candidates; top 15:")
+        for i, sc in sorted(scored, key=lambda t: -t[1].computed_average)[:15]:
+            c = candidates[i]
+            print(f"[story_picker] candidate {i}: avg={sc.computed_average} pull={sc.audience_pull}"
+                  f"{' COVERED' if sc.already_covered else ''} [{c['source_name']}] "
+                  f"{c['headline'][:80]} -- {sc.reasoning}")
 
-        idx = pick.chosen_index
-        if idx is None:
-            last_reason = f"Editorial gate: no story cleared the bar in the last {window}h -- {pick.decision_reason}"
+        ranked = _eligible(scored)
+        if not ranked:
+            last_reason = f"Editorial gate: no story cleared the bar in the last {window}h."
             print(f"[story_picker] {last_reason}")
             continue
-        if not (isinstance(idx, int) and 0 <= idx < len(candidates)):
-            last_reason = f"Editorial gate returned an out-of-range index ({idx}) -- treating as no pick."
-            print(f"[story_picker] {last_reason}")
-            continue
 
+        idx, score = ranked[0]
+        reason = score.reasoning
         if window != _LOOKBACK_HOURS:
             print(f"[story_picker] normal {_LOOKBACK_HOURS}h window had nothing above the bar; "
                   f"picked from the {window}h fallback window instead.")
@@ -378,15 +418,14 @@ def fetch_top_story(date: str | None = None) -> dict:
         raise NoStoryTodayError(last_reason)
 
     chosen = candidates[idx]
-    score = next((s for s in pick.scores if s.index == idx), None)
-    print(f"[story_picker] chosen: {chosen['headline']!r} (avg={score.average if score else '?'}) -- {pick.decision_reason}")
+    print(f"[story_picker] chosen: {chosen['headline']!r} (avg={score.computed_average}) -- {reason}")
 
     return {
         "headline": chosen["headline"],
         "link": chosen["link"],
         "body": chosen["body"],
         "why_bullets": [],
-        "score": score.average if score else None,
+        "score": score.computed_average,
         "sources": [chosen["source_name"]],
     }
 
