@@ -96,6 +96,16 @@ Hard requirements:
   everything," or "rolling out to a limited set of organizations" (that's
   scaffolding, not the story), and not a bare benchmark-name-and-number
   either. Do NOT start with "Hey guys" or "Welcome back".
+  For a story about people, places or machines in the real world (a
+  hospital, a school, a delivery driver, a robot, a car, a rocket), open
+  on the human or visible moment -- who is doing what, where -- before
+  any technology or company name. The viewer should be able to picture it
+  in the first sentence.
+- The LAST body beat ends with ONE short, natural question to the viewer
+  about the story (for example "Would you ride in one?" or "Would you want
+  this at your child's school?") -- at most 10 words, never "comment
+  below" or "like and subscribe". It invites people to answer in the
+  comments, so it must be about the story, not about the channel.
 - BODY is 3-6 beats. Each beat is one clear idea, one narration line,
   explained the way you'd explain it to a friend, not a list of
   capability claims or test names. At least one body beat should ground
@@ -259,7 +269,45 @@ def _ensure_clear_opening(description: str, topic: str) -> str:
     return f"{opener}\n\n{description.strip()}"
 
 
-_PERCENT_RE = re.compile(r"\d+(?:\.\d+)?\s?%")
+_PERCENT_RE = re.compile(r"\d+(?:\.\d+)?\s?(?:%|percent\b|per cent\b)", re.IGNORECASE)
+
+
+def _pcts(text: str) -> set[str]:
+    """Normalised percentages: '45 percent' and '45%' both -> '45%' (a real
+    article often spells it out, which used to look like a fabricated number)."""
+    return {re.sub(r"\s?(?:%|percent|per cent)$", "%", m.group().strip(), flags=re.IGNORECASE).replace(" ", "")
+            for m in _PERCENT_RE.finditer(text)}
+
+
+# Product/model names with a number (GPT-4, Claude 5.1, Gemini 4, H100): a
+# wrong one is a factual error in a public video, e.g. a script that said the
+# engineers asked "GPT-4" when the article never mentions it (2026-10-08).
+_NAME_NUM_RE = re.compile(r"\b([A-Z][A-Za-z]{1,12})[\s\-\u2011]?(\d+(?:\.\d+)?)\b")
+_NAME_STOP = {"Day", "Part", "Step", "Top", "Number", "Phase", "Level", "Round", "Chapter", "Page", "Version"}
+
+
+def _unverified_names(script: Script, topic: str) -> list[str]:
+    brief = topic.replace("\u2011", "-").replace("\u202f", " ")
+    bad = []
+    for m in _NAME_NUM_RE.finditer(script.full_narration.replace("\u2011", "-").replace("\u202f", " ")):
+        word, num = m.group(1), m.group(2)
+        if word in _NAME_STOP:
+            continue
+        if not re.search(rf"\b{re.escape(word)}\b[^.\n]{{0,25}}?\b{re.escape(num)}\b", brief, re.IGNORECASE):
+            bad.append(f"{word} {num}")
+    return sorted(set(bad))
+
+
+def _tidy_text(script: Script) -> None:
+    """The model sometimes writes non-breaking hyphens/spaces ('In\u2011N\u2011Out',
+    'A\u2011I'), which break brand names and TTS. Plain ASCII equivalents."""
+    fix = lambda t: t.replace("\u2011", "-").replace("\u202f", " ").replace("\u00a0", " ")
+    script.title = fix(script.title)
+    script.description = fix(script.description)
+    for beat in [script.hook, *script.body]:
+        beat.text = fix(beat.text)
+        if getattr(beat, "query", None):
+            beat.query = fix(beat.query)
 
 
 def _unverified_percentages(script: Script, topic: str) -> list[str]:
@@ -275,13 +323,11 @@ def _unverified_percentages(script: Script, topic: str) -> list[str]:
     words, or a fabricated non-numeric "fact", so it's a floor, not a
     complete guarantee. Gate 1's human review is still the real backstop.
     """
-    narration_pcts = {m.group().replace(" ", "") for m in _PERCENT_RE.finditer(script.full_narration)}
-    topic_pcts = {m.group().replace(" ", "") for m in _PERCENT_RE.finditer(topic)}
-    return sorted(narration_pcts - topic_pcts)
+    return sorted(_pcts(script.full_narration) - _pcts(topic))
 
 
 def _topic_percentages(topic: str) -> list[str]:
-    return sorted({m.group().replace(" ", "") for m in _PERCENT_RE.finditer(topic)})
+    return sorted(_pcts(topic))
 
 
 def generate_script(topic: str, max_regeneration_attempts: int = 3) -> Script:
@@ -292,8 +338,10 @@ def generate_script(topic: str, max_regeneration_attempts: int = 3) -> Script:
     for attempt in range(max_regeneration_attempts):
         script = generate_structured(prompt, Script)
         wc = script.word_count
+        _tidy_text(script)
         bad_pcts = _unverified_percentages(script, topic)
-        narration_pcts = {m.group().replace(" ", "") for m in _PERCENT_RE.finditer(script.full_narration)}
+        bad_names = _unverified_names(script, topic)
+        narration_pcts = _pcts(script.full_narration)
         # If the brief itself contains real percentages, the script should
         # use at least one -- confirmed on a live run (2026-09-05): with
         # nothing to catch as WRONG, the model just went fully generic and
@@ -301,7 +349,7 @@ def generate_script(topic: str, max_regeneration_attempts: int = 3) -> Script:
         # catch "suspiciously none" when real ones were available.
         too_generic = bool(topic_pcts) and not narration_pcts
 
-        if lo <= wc <= hi and not bad_pcts and not too_generic:
+        if lo <= wc <= hi and not bad_pcts and not bad_names and not too_generic:
             # Clean, add an opener if needed, then clean again -- the
             # opener is built from `topic` (see _ensure_clear_opening's
             # own docstring for the real incident this guards against),
@@ -323,6 +371,15 @@ def generate_script(topic: str, max_regeneration_attempts: int = 3) -> Script:
                 f"one. Every percentage you use must be copied exactly from "
                 f"the brief. If you can't find a specific percentage for a "
                 f"claim, describe it in the brief's own words instead."
+            )
+            continue
+
+        if bad_names:
+            print(f"[script_agent] attempt {attempt+1}: name(s) {bad_names} not in the brief -- regenerating")
+            prompt += (
+                f"\n\nYour previous attempt named {', '.join(bad_names)}, which do not appear in the "
+                f"brief above. Use ONLY product, model and company names exactly as the brief "
+                f"writes them; if the brief does not name something, describe it generically."
             )
             continue
 
@@ -352,8 +409,14 @@ def generate_script(topic: str, max_regeneration_attempts: int = 3) -> Script:
     # than relying on the reviewer to independently know every benchmark's
     # real score.
     remaining_bad = _unverified_percentages(script, topic)
-    remaining_narration_pcts = {m.group().replace(" ", "") for m in _PERCENT_RE.finditer(script.full_narration)}
+    remaining_narration_pcts = _pcts(script.full_narration)
+    remaining_names = _unverified_names(script, topic)
     warnings = []
+    if remaining_names:
+        warnings.append(
+            f"⚠️ UNVERIFIED NAMES: {', '.join(remaining_names)} not found in the source brief "
+            f"after {max_regeneration_attempts} attempts -- double-check before approving."
+        )
     if remaining_bad:
         warnings.append(
             f"⚠️ UNVERIFIED: {', '.join(remaining_bad)} could not be matched "
@@ -366,6 +429,7 @@ def generate_script(topic: str, max_regeneration_attempts: int = 3) -> Script:
             f"but the script cited none after {max_regeneration_attempts} attempts -- "
             f"consider rejecting and re-running."
         )
+    _tidy_text(script)
     script.description = _clean_description(script.description)
     if warnings:
         script.description = "\n".join(warnings) + "\n\n" + script.description

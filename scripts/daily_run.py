@@ -207,6 +207,7 @@ def main() -> None:
             "run_id": run_id,
             "story": story["headline"],
             "source_url": story.get("link", ""),
+            "category": story.get("category", ""),
             "title": script.title,
             "description": script.description,
             "full_narration": script.full_narration,
@@ -227,6 +228,11 @@ def main() -> None:
         if decision == "publish":
             stage = "publish"
             from factory.publish import publish_video
+            # Warning lines ("⚠️ UNVERIFIED ...") are for the reviewer on Telegram,
+            # never for the public caption.
+            script.description = "\n".join(
+                ln for ln in script.description.splitlines() if not ln.lstrip().startswith("⚠️")
+            ).strip()
             result = publish_video(script, final_path, thumbs["landscape"])
             ok = any(k in result for k in ("youtube_url", "instagram_media_id", "linkedin_post_id", "tiktok_publish_id", "facebook_video_id"))
             partial = any(k in result for k in ("youtube_error", "instagram_error", "linkedin_error", "tiktok_error", "facebook_error"))
