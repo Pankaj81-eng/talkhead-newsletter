@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import logging
 import mimetypes
+import uuid
 import time
 from pathlib import Path
 
@@ -84,7 +85,13 @@ class TempAssetHost:
         )
 
     def upload(self, path: Path) -> str:
-        key = f"{self.prefix}/{path.name}" if self.prefix else path.name
+        # Unique key per upload. Real incident (2026-10-08): the key used to be
+        # just "<prefix>/final.mp4" every day, and Instagram fetched an OLDER
+        # day's video from that same URL (a cached copy) -- the "dead zones"
+        # post showed the 10-07 watermark video, byte-for-byte. A fresh URL
+        # each time cannot hit anyone's cache.
+        name = f"{uuid.uuid4().hex[:12]}-{path.name}"
+        key = f"{self.prefix}/{name}" if self.prefix else name
         ctype = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
         self.client.upload_file(
             str(path), self.bucket, key,
@@ -101,12 +108,18 @@ class TempAssetHost:
             log.info("deleted temp-hosted object %s", self._key)
 
 
-def _verify_public(url: str, timeout: int = 15) -> bool:
-    """Instagram silently fails on an unreachable URL -- check first."""
+def _verify_public(url: str, timeout: int = 15, expected_size: int | None = None) -> bool:
+    """Instagram silently fails on an unreachable URL -- check first. With
+    expected_size, also require the hosted file to be exactly the file we just
+    uploaded, so a stale/wrong copy can never be sent to Instagram."""
     try:
         r = requests.head(url, timeout=timeout, allow_redirects=True)
-        return r.status_code < 400
-    except requests.RequestException:
+        if r.status_code >= 400:
+            return False
+        if expected_size is not None:
+            return int(r.headers.get("content-length", -1)) == expected_size
+        return True
+    except (requests.RequestException, ValueError):
         return False
 
 
@@ -222,8 +235,11 @@ def publish_instagram(video_path: Path, caption: str) -> str:
     host = TempAssetHost()
     try:
         video_url = host.upload(video_path)
-        if not _verify_public(video_url):
-            raise PublishError(f"Temp-hosted video URL isn't publicly reachable: {video_url}")
+        if not _verify_public(video_url, expected_size=video_path.stat().st_size):
+            raise PublishError(
+                "Temp-hosted video URL isn't reachable or doesn't match the local file "
+                f"({video_path.stat().st_size} bytes): {video_url}"
+            )
 
         container = _ig_post(
             f"{config.IG_USER_ID}/media",
