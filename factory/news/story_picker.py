@@ -272,47 +272,72 @@ class EditorialPick(BaseModel):
 # reference -- rewritten independently for this project, condensed for a
 # single-story pick rather than a 0-3 story edition, and pointed at Gemini
 # instead of Claude via factory.llm.generate_structured()).
-_RUBRIC = f"""You are the Editor-in-Chief of TalkHead, a daily AI-engineering
-news video channel. Our audience is a mix of AI/software engineers, QA
-engineers, engineering managers, tech founders, and serious AI learners.
+_RUBRIC = f"""You are the Editor-in-Chief of TalkHead, a daily short-video news
+channel about the technology changing the world: AI, robotics, new devices,
+chips, space, and the business and policy around them. Our audience is
+curious, smart people -- engineers and founders, but also anyone who follows
+tech. A great video leaves them thinking "huh, I didn't know that" or "that
+is a big deal".
 
 Our reputation depends on filtering signal from noise. You are SCORING
 today's candidates (a selection step picks the winner from everyone's scores
 afterwards), so score each one honestly on how worth a 60-90 second video it
 is for this audience. Most candidates should score below the bar.
 
-Reject: minor research papers with no practical impact, incremental
-benchmark updates, small unfunded startup news, thin press releases.
+What makes a great story -- be relaxed about fit, it does NOT have to be
+about AI software or engineering:
+- Breaking or market news: big funding rounds, valuations, IPOs, acquisitions,
+  chip/earnings numbers, major partnerships, outages, lawsuits, regulation.
+- New models and products from ANY lab or company (OpenAI, Anthropic,
+  Google, Meta, xAI, Mistral, DeepSeek, Qwen, NVIDIA, Apple, Microsoft...):
+  real launches, not tweaks.
+- Robots and machines changing the real world: humanoids, hospital/warehouse/
+  factory/farm robots, drones, self-driving cars, robots doing a real job
+  somewhere new.
+- Space and hardware: rocket or capsule launches (SpaceX, NASA, others), new
+  vehicles, satellites, big new chips.
+- New devices and gadgets: a new AI assistant gadget, smart glasses, a
+  product that does something people have not seen before.
+- Important open-source releases, AI policy, safety incidents, conflicts.
 
-Prioritize: OpenAI, Anthropic, Google/DeepMind, Microsoft, Meta, AWS,
-NVIDIA, Mistral, Cohere, Hugging Face and similar major labs/platforms;
-significant funding/acquisition deals; important open-source releases;
-AI regulation/policy moves; enterprise AI adoption and developer tools.
+Score low: minor research papers with no practical impact, incremental
+benchmark updates, small unfunded startup news, thin press releases,
+event/ticket/sponsor promos, stock-picking tips, routine product polish
+("faster", "cheaper", "UI tweak", "saves tokens") unless it is a major leap,
+deals and discounts, reviews of ordinary consumer products, opinion pieces.
 
 Score every candidate 1-10 on: engineering_impact, business_impact,
 adoption_potential, practical_usefulness, long_term_importance, and
-audience_pull. Average the six. A story is only eligible if that average is
->= {SCORE_THRESHOLD}.
+audience_pull. Read the first five broadly: engineering_impact = technical
+significance (a real first or breakthrough); business_impact = money and
+market impact; adoption_potential = how many people or organisations are
+affected soon; practical_usefulness = how much it matters to real people's
+lives or work (a robot working in a hospital counts); long_term_importance =
+whether it will still matter in a year. Average the six. A story is only
+eligible if that average is >= {SCORE_THRESHOLD}.
 
 audience_pull asks: would a smart person OUTSIDE this field stop scrolling
-for this? High (8-10): a major model/product launch, a surprising result or
-capability, a big acquisition/funding deal, a safety incident or conflict,
-a regulatory move, a first-of-its-kind demo. Low (1-3): customer case
-studies ("how company X saved N% using Y"), how-to/tutorial posts,
-architecture deep-dives, a model merely becoming available on another
-cloud/platform, regional rollouts, cost/latency tuning tips, benchmark
-recaps. Those low-pull types are not banned -- they are fine occasionally
-and on a slow day the best of them can still win -- they just must not beat
-a genuinely newsworthy story.
+for this? High (8-10): a major launch, a surprising result or capability, a
+big acquisition/funding/IPO number, a safety incident or conflict, a
+regulatory move, a first-of-its-kind demo, a robot or spacecraft doing
+something new, a new kind of gadget. Low (1-3): customer case studies ("how
+company X saved N% using Y"), how-to/tutorial posts, architecture
+deep-dives, a model merely becoming available on another cloud/platform,
+regional rollouts, cost/latency tuning tips, benchmark recaps. Those low-pull
+types are not banned -- on a slow day the best of them can still win -- they
+just must not beat a genuinely newsworthy story.
 
 VARIETY: if any of the last 7 days' headlines (shown below) was a customer
 case study or how-to, treat another one as a poor choice unless nothing
-else clears the bar.
+else clears the bar. If two or more of the last three headlines were about
+the same company, lower audience_pull by about 2 for another story about
+that company.
 
 ALREADY COVERED: you will be shown TalkHead's recent published headlines
-(last 14 days). If a candidate is substantively the same story (a
-follow-up, a different outlet covering the same event/launch), reject it
-set already_covered to true and say so in its reasoning.
+(last 14 days). If a candidate is substantively the same story or subject (a
+follow-up, a different outlet covering the same event/launch, the same
+product or policy again), set already_covered to true and say so in its
+reasoning.
 
 Return ONLY valid JSON, no markdown fence, in exactly this shape -- use
 these EXACT key names, do not rename or nest them differently:
@@ -330,6 +355,26 @@ these EXACT key names, do not rename or nest them differently:
 The "scores" array must have exactly one entry per candidate given, in the
 same order, indices starting at 0. "index" must be the candidate's
 position in that list -- never a different numbering scheme."""
+
+
+_FINAL_RUBRIC = """You are the Editor-in-Chief of TalkHead, a daily short-video news
+channel about AI, robotics, new devices, chips, space and the business around
+them. Below are today's finalists (already scored). Pick the ONE story for
+today's video, in this order of importance:
+1. Real news people will care about -- breaking or market news, a real launch,
+   a robot/spacecraft/gadget doing something new -- over product polish,
+   case studies and how-tos.
+2. VARIETY against the recent headlines: avoid the same company as two or
+   more of the last three days, and avoid the same kind of story (AI software,
+   robotics, devices, space, markets/funding) several days in a row.
+3. Otherwise the higher score.
+
+Return ONLY valid JSON: {"chosen": <the finalist's number>, "reason": "one sentence"}"""
+
+
+class _FinalPick(BaseModel):
+    chosen: int
+    reason: str = ""
 
 
 def _recent_published(limit_days: int = 14) -> list[dict]:
@@ -409,6 +454,38 @@ def _eligible(scored: list[tuple[int, _CandidateScore]]) -> list[tuple[int, _Can
     return sorted(ok, key=lambda t: -t[1].computed_average)
 
 
+_MAX_FINALISTS = 6
+
+
+def _final_pick(ranked: list[tuple[int, _CandidateScore]], candidates: list[dict]) -> tuple[int, _CandidateScore, str]:
+    """Second stage: of the top few stories by score, one small call applies
+    the 'real news first, then variety' judgement that per-chunk scoring can't
+    see. Any failure falls back to the plain top score, so this can never
+    leave a day without a story."""
+    top = ranked[:_MAX_FINALISTS]
+    best_i, best_sc = top[0]
+    if len(top) == 1:
+        return best_i, best_sc, best_sc.reasoning
+    recent = _recent_published()
+    recent_block = "RECENT HEADLINES (newest last):\n" + "\n".join(
+        f"  {e['date']}: {e['headline']}" for e in recent[-10:]
+    ) if recent else "RECENT HEADLINES: none."
+    lines = []
+    for n, (i, sc) in enumerate(top):
+        c = candidates[i]
+        lines.append(f"[{n}] ({sc.computed_average}) {c['headline']} -- {c['source_name']}\n    {c['body'][:300]}")
+    prompt = _FINAL_RUBRIC + "\n\n" + recent_block + "\n\nFINALISTS:\n" + "\n".join(lines)
+    try:
+        fp = generate_structured(prompt, _FinalPick, retries=1, max_output_tokens=600)
+        if 0 <= fp.chosen < len(top):
+            i, sc = top[fp.chosen]
+            return i, sc, fp.reason or sc.reasoning
+        print(f"[story_picker] final pick out of range ({fp.chosen}); using top score")
+    except RuntimeError as e:
+        print(f"[story_picker] final pick failed ({str(e)[:100]}); using top score")
+    return best_i, best_sc, best_sc.reasoning
+
+
 # --- Public entry point -----------------------------------------------------
 
 def fetch_top_story(date: str | None = None) -> dict:
@@ -442,8 +519,7 @@ def fetch_top_story(date: str | None = None) -> dict:
             print(f"[story_picker] {last_reason}")
             continue
 
-        idx, score = ranked[0]
-        reason = score.reasoning
+        idx, score, reason = _final_pick(ranked, candidates)
         if window != _LOOKBACK_HOURS:
             print(f"[story_picker] normal {_LOOKBACK_HOURS}h window had nothing above the bar; "
                   f"picked from the {window}h fallback window instead.")

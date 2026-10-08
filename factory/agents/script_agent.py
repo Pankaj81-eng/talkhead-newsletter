@@ -23,12 +23,13 @@ def build_prompt(topic: str) -> str:
     lo, hi = _word_budget()
     return f"""
 You are writing a short-form vertical video (YouTube Shorts / Instagram Reels)
-for a channel called TalkHead, which takes the day's biggest AI news story
+for a channel called TalkHead, which takes the day's biggest tech news story
+(AI, robotics, new devices, space, chips or the business around them)
 and explains it in simple, plain language for a general audience.
 
 AUDIENCE AND VOICE TEST (this is the most important thing about this
 channel, more important than any individual fact): the viewer is a smart
-friend who does not follow AI news and has never worked in tech -- not a
+friend who does not follow tech news and has never worked in tech -- not a
 developer, not someone who already knows what a "benchmark" is. Before
 finalizing, imagine reading the script out loud to that friend. If they
 would have to ask "wait, what does that mean?" or "what's that a score
@@ -432,8 +433,8 @@ def build_script_from_lines(topic: str, lines: list[str]) -> Script:
     meta_prompt = f"""
 Write ONLY title, description, hashtags, and thumbnail_text for a
 short-form vertical video (YouTube Shorts / Instagram Reels) on the
-TalkHead channel (the day's biggest AI news, explained simply for a
-general audience).
+TalkHead channel (the day's biggest tech news -- AI, robotics, devices,
+space -- explained simply for a general audience).
 
 The narration (already final, do not rewrite or reference it directly
 in the metadata -- just use it for context):
@@ -469,7 +470,7 @@ def _format_prompt(raw_text: str) -> str:
     return f"""
 You are converting a raw, informally-formatted voiceover script draft into
 this project's clean beat format, for a channel called TalkHead
-(AI/software engineering explained simply for developers).
+(the day's biggest tech news explained simply for a general audience).
 
 RAW SCRIPT (may contain markdown headers like "### [0-5 sec — Hook]",
 bold markers "**like this**", timestamp/section labels, and narration
