@@ -1181,8 +1181,9 @@
     "decided_at": "2026-10-08T09:04:43.806881",
     "publish_result": {
       "youtube_url": "https://youtube.com/shorts/fR69n6OHbEk",
-      "instagram_media_id": "18130906384784643",
+      "instagram_media_id": "17970983265157539",
       "linkedin_post_id": "181693405854695424"
-    }
+    },
+    "note": "Instagram originally showed the 10-07 video (stale reused temp URL, fixed f23d526); wrong post 18130906384784643 deleted by hand and the correct video reposted as 17970983265157539 on 2026-10-08."
   }
 ]
