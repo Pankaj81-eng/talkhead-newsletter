@@ -49,14 +49,17 @@ def video_rows(analytics, start: str, end: str) -> dict[str, dict]:
                    "likes": r[5], "comments": r[6], "shares": r[7], "subs": r[8]} for r in rows}
 
 
-def ad_split(analytics, video_id: str, start: str, end: str) -> tuple[int, float]:
-    """(ad views, ad minutes watched) for one video."""
+def source_split(analytics, video_id: str, start: str, end: str) -> tuple[int, int, float]:
+    """(ad views, organic views, organic average view duration in seconds) for one
+    video, from the traffic-source report. The average is the per-source
+    averageViewDuration weighted by views: YouTube's own watch-time total does not
+    match its average view duration for Shorts, and Studio shows the latter."""
     rows = _query(analytics, startDate=start, endDate=end, dimensions="insightTrafficSourceType",
-                  filters=f"video=={video_id}", metrics="views,estimatedMinutesWatched")
-    for r in rows:
-        if r[0] == "ADVERTISING":
-            return int(r[1]), float(r[2])
-    return 0, 0.0
+                  filters=f"video=={video_id}", metrics="views,averageViewDuration")
+    ad = sum(int(r[1]) for r in rows if r[0] == "ADVERTISING")
+    org = [(int(r[1]), float(r[2])) for r in rows if r[0] != "ADVERTISING" and int(r[1]) > 0]
+    org_views = sum(v for v, _ in org)
+    return ad, org_views, (round(sum(v * a for v, a in org) / org_views, 1) if org_views else 0.0)
 
 
 def channel_sources(analytics, start: str, end: str) -> dict[str, int]:
@@ -94,13 +97,11 @@ def snapshot(state_path: Path, today: str | None = None, services_=None, max_vid
     names = titles(data, [v for v in top if not state["videos"].get(v, {}).get("title")])
     for vid in top:
         m = vids[vid]
-        ad_views, ad_min = ad_split(analytics, vid, LIFETIME_START, end)
-        org_views = max(m["views"] - ad_views, 0)
-        org_min = max(m["minutes"] - ad_min, 0.0)
+        ad_views, org_views, org_avg_s = source_split(analytics, vid, LIFETIME_START, end)
         rec = state["videos"].setdefault(vid, {"title": names.get(vid, ""), "history": []})
         rec["title"] = rec["title"] or names.get(vid, "")
         snap = {"d": today, "views": m["views"], "ad_views": ad_views, "org_views": org_views,
-                "org_avg_s": round(org_min * 60 / org_views, 1) if org_views else 0.0,
+                "org_avg_s": org_avg_s,
                 "avg_pct": m["avg_pct"], "likes": m["likes"], "comments": m["comments"],
                 "shares": m["shares"], "subs": m["subs"]}
         rec["history"] = ([h for h in rec["history"] if h["d"] != today] + [snap])[-_HISTORY_PER_VIDEO:]
