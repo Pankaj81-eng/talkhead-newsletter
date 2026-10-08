@@ -1155,5 +1155,34 @@
       "instagram_media_id": "17971239834174949",
       "linkedin_post_id": "181648392307343360"
     }
+  },
+  {
+    "date": "2026-10-08",
+    "run_id": "2f721c035db0",
+    "story": "FCC to vote on auctioning 25MHz of 'prime spectrum' in move that could benefit Amazon, SpaceX",
+    "source_url": "https://www.cnbc.com/2026/10/07/fcc-spectrum-auction-spacex-amazon.html",
+    "title": "FCC Prepares to Auction Airwaves for Satellite Cell Service",
+    "description": "How will satellite-to-phone coverage eliminate mobile dead zones? The FCC is voting on key spectrum proposals that allow companies like SpaceX and Amazon to beam mobile signals directly to smart phones. Subscribe to TalkHead for daily tech news explained simply.",
+    "full_narration": "The government is opening up a slice of invisible airwaves that could soon let satellites beam cell service directly to your everyday phone. Right now, your mobile phone relies on ground towers to get service, which leaves massive dead zones in remote areas where towers cannot reach. To fix this, federal regulators are voting to auction off 25MHz of prime radio spectrum specifically designed for space-to-phone connections. They are also considering opening up an additional 482MHz of spectrum down the line to expand wireless coverage straight from orbit. This decision opens the door for massive projects, like Amazon applying to launch up to 5,105 satellites into space to reach unserved areas. With Amazon recently backing its space business with a deal worth more than $11.5 billion, satellite cell service is moving from a wild idea into reality. If these rules pass, you might soon get a steady mobile signal anywhere on Earth without ever needing a cell tower nearby.",
+    "hashtags": [
+      "tech",
+      "spacex",
+      "amazon",
+      "satellites",
+      "fcc",
+      "telecom"
+    ],
+    "video_path": "runs/2f721c035db0/final.mp4",
+    "thumbnail_path": "runs/2f721c035db0/thumbnail.jpg",
+    "metadata_path": "runs/2f721c035db0/metadata.txt",
+    "used_hero_image": false,
+    "status": "published",
+    "generated_at": "2026-10-08T08:34:52.035849",
+    "decided_at": "2026-10-08T09:04:43.806881",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/fR69n6OHbEk",
+      "instagram_media_id": "18130906384784643",
+      "linkedin_post_id": "181693405854695424"
+    }
   }
 ]
