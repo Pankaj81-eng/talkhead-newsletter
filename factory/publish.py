@@ -17,7 +17,9 @@ from __future__ import annotations
 
 import logging
 import mimetypes
+import re
 import uuid
+from datetime import date
 import time
 from pathlib import Path
 
@@ -84,13 +86,16 @@ class TempAssetHost:
             aws_secret_access_key=config.S3_SECRET_ACCESS_KEY,
         )
 
-    def upload(self, path: Path) -> str:
+    def upload(self, path: Path, label: str = "") -> str:
         # Unique key per upload. Real incident (2026-10-08): the key used to be
         # just "<prefix>/final.mp4" every day, and Instagram fetched an OLDER
         # day's video from that same URL (a cached copy) -- the "dead zones"
         # post showed the 10-07 watermark video, byte-for-byte. A fresh URL
         # each time cannot hit anyone's cache.
-        name = f"{uuid.uuid4().hex[:12]}-{path.name}"
+        # label (date + topic) only makes the address readable when debugging;
+        # the random part is what guarantees uniqueness.
+        stem = f"{label}-" if label else ""
+        name = f"{stem}{uuid.uuid4().hex[:8]}{path.suffix}"
         key = f"{self.prefix}/{name}" if self.prefix else name
         ctype = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
         self.client.upload_file(
@@ -229,12 +234,16 @@ def _ig_wait_ready(container_id: str) -> None:
     raise PublishError(f"Instagram container {container_id} never became ready")
 
 
-def publish_instagram(video_path: Path, caption: str) -> str:
+def _slug(text: str, limit: int = 40) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")[:limit].strip("-")
+
+
+def publish_instagram(video_path: Path, caption: str, label: str = "") -> str:
     """Returns the published media's id. Handles the temp-hosting dance
     internally -- uploads, publishes, deletes, regardless of outcome."""
     host = TempAssetHost()
     try:
-        video_url = host.upload(video_path)
+        video_url = host.upload(video_path, label=label)
         if not _verify_public(video_url, expected_size=video_path.stat().st_size):
             raise PublishError(
                 "Temp-hosted video URL isn't reachable or doesn't match the local file "
@@ -468,7 +477,10 @@ def publish_video(script, video_path: Path, thumbnail_path: Path | None = None) 
             f"{script.description}\n\n" + " ".join(f"#{h}" for h in script.hashtags)
             + f"\n\n{FOLLOW_FOOTER}"
         )
-        result["instagram_media_id"] = publish_instagram(video_path, caption)
+        result["instagram_media_id"] = publish_instagram(
+            video_path, caption,
+            label=f"{date.today():%Y-%m-%d}-{_slug(script.title)}",
+        )
     except Exception as e:  # noqa: BLE001
         result["instagram_error"] = str(e)
 
