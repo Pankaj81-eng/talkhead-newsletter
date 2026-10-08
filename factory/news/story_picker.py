@@ -66,15 +66,15 @@ _SOURCES = [
     # Added 2026-10-08 (Pankaj: wants robotics, new devices, space and market
     # news, not just AI-software posts). "broad" feeds cover all of tech, so
     # entries must match _TOPIC_RE before they reach the (token-limited) scorer.
-    {"name": "TechCrunch Robotics", "url": "https://techcrunch.com/category/robotics/feed/", "tier": 2},
-    {"name": "TechCrunch Hardware", "url": "https://techcrunch.com/category/hardware/feed/", "tier": 2},
-    {"name": "The Robot Report", "url": "https://www.therobotreport.com/feed/", "tier": 2},
-    {"name": "New Atlas", "url": "https://newatlas.com/index.rss", "tier": 2, "broad": True},
-    {"name": "Interesting Engineering", "url": "https://interestingengineering.com/feed", "tier": 2, "broad": True},
-    {"name": "Engadget", "url": "https://www.engadget.com/rss.xml", "tier": 2, "broad": True},
-    {"name": "The Verge Tech", "url": "https://www.theverge.com/rss/index.xml", "tier": 2, "broad": True},
-    {"name": "CNBC Technology", "url": "https://www.cnbc.com/id/19854910/device/rss/rss.html", "tier": 2, "broad": True},
-    {"name": "Ars Technica Space", "url": "https://arstechnica.com/space/feed/", "tier": 2, "broad": True},
+    {"name": "TechCrunch Robotics", "topic": "robots", "url": "https://techcrunch.com/category/robotics/feed/", "tier": 2},
+    {"name": "TechCrunch Hardware", "topic": "devices", "url": "https://techcrunch.com/category/hardware/feed/", "tier": 2},
+    {"name": "The Robot Report", "topic": "robots", "url": "https://www.therobotreport.com/feed/", "tier": 2},
+    {"name": "New Atlas", "topic": "science", "url": "https://newatlas.com/index.rss", "tier": 2, "broad": True},
+    {"name": "Interesting Engineering", "topic": "science", "url": "https://interestingengineering.com/feed", "tier": 2, "broad": True},
+    {"name": "Engadget", "topic": "devices", "url": "https://www.engadget.com/rss.xml", "tier": 2, "broad": True},
+    {"name": "The Verge Tech", "topic": "devices", "url": "https://www.theverge.com/rss/index.xml", "tier": 2, "broad": True},
+    {"name": "CNBC Technology", "topic": "markets", "url": "https://www.cnbc.com/id/19854910/device/rss/rss.html", "tier": 2, "broad": True},
+    {"name": "Ars Technica Space", "topic": "space", "url": "https://arstechnica.com/space/feed/", "tier": 2, "broad": True},
 ]
 
 _LOOKBACK_HOURS = 36
@@ -87,7 +87,8 @@ _LOOKBACK_HOURS = 36
 # outside the window. "Already covered" is still enforced against the last
 # 14 days of published headlines, so a wider window can't re-pick old news.
 _FALLBACK_LOOKBACK_HOURS = 96
-_CANDIDATE_POOL_SIZE = 120  # scored in chunks of _CHUNK_SIZE, see _score_all()
+_CANDIDATE_POOL_SIZE = 180  # scored in chunks of _CHUNK_SIZE, see _score_all()
+_PER_SOURCE_CAP = 6        # no single feed may crowd the pool
 _CHUNK_SIZE = 20
 
 
@@ -131,6 +132,8 @@ def _fetch_feed(source: dict, lookback_hours: int = _LOOKBACK_HOURS) -> list[dic
             "source_name": source["name"],
             "tier": source["tier"],
             "broad": source.get("broad", False),
+            "topic": source.get("topic") or ("ai-company" if source["tier"] == 1 else "ai-news"),
+            "age_hours": round((datetime.now(timezone.utc) - published).total_seconds() / 3600) if published else None,
         })
     return entries
 
@@ -211,12 +214,28 @@ def _dedupe_and_filter(entries: list[dict]) -> list[dict]:
     return unique
 
 
+def _cap_per_source(entries: list[dict], cap: int) -> list[dict]:
+    seen: dict[str, int] = {}
+    out = []
+    for e in entries:                       # feeds list newest first
+        seen[e["source_name"]] = seen.get(e["source_name"], 0) + 1
+        if seen[e["source_name"]] <= cap:
+            out.append(e)
+    return out
+
+
 def _fetch_all_candidates(lookback_hours: int = _LOOKBACK_HOURS) -> list[dict]:
+    """RSS feeds (company blogs, tech press, robotics/devices/space/markets) plus
+    topic searches for real-world AI and technology stories (topic_search.py)."""
+    from .topic_search import fetch_topic_candidates
     all_entries: list[dict] = []
     for source in _SOURCES:
         all_entries.extend(_fetch_feed(source, lookback_hours))
-    filtered = _dedupe_and_filter(all_entries)
-    return filtered[:_CANDIDATE_POOL_SIZE]
+    rss = _cap_per_source(_dedupe_and_filter(all_entries), _PER_SOURCE_CAP)
+    # Real-world AI stories are often features, not breaking news: allow ~4 days.
+    topical = fetch_topic_candidates(max(lookback_hours, 96))
+    merged = _dedupe_and_filter(rss + topical)   # merges the same story seen twice
+    return merged[:_CANDIDATE_POOL_SIZE]
 
 
 # --- Editorial scoring (Gemini, via factory.llm) ---------------------------
@@ -396,7 +415,8 @@ def _recent_published(limit_days: int = 14) -> list[dict]:
 def _candidate_block(idx: int, c: dict) -> str:
     return (
         f"--- CANDIDATE {idx} ---\n"
-        f"Source: {c['source_name']} (tier {c['tier']})\n"
+        f"Source: {c['source_name']} (tier {c['tier']}) | topic hint: {c.get('topic', '')}"
+        + (f" | age: {c['age_hours']}h" if c.get("age_hours") is not None else "") + "\n"
         f"URL: {c['link']}\n"
         f"Headline: {c['headline']}\n"
         f"Summary: {c['body']}\n"
