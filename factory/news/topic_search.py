@@ -43,6 +43,9 @@ TOPICS: dict[str, list[str]] = {
     "devices": ["new AI gadget smart glasses assistant", "smartphone AI new feature launch", "wearable AI device"],
     "science": ["AI scientists discovery breakthrough", "new technology breakthrough researchers"],
     "cities_energy": ["AI smart city traffic new", "AI energy grid batteries new technology"],
+    # Global English-speaking audience: US, UK, Europe and China all matter.
+    "china": ["China AI new technology", "China humanoid robots new", "Xiaomi Huawei BYD AI new"],
+    "uk_europe": ["UK AI new technology", "Europe AI new technology startup"],
 }
 
 # Publishers that are investing tips or press-release wires, not reporting.

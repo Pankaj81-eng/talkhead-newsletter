@@ -258,7 +258,7 @@ def _build_single_beat_clip(beat, duration: float, idx: int, run_dir: Path) -> P
 
 
 _TARGET_CUT_S = 3.0   # energetic pace: a new shot roughly every 3 seconds
-_MAX_CUTS = 4
+_MAX_CUTS = 5
 
 
 def _gray_frame(path: Path, t: float):

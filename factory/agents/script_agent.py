@@ -89,7 +89,13 @@ Hard requirements:
   checkable); "it aced a brutally hard science test" alone is not (no
   digits left to verify). This lets the number be mechanically
   double-checked against the brief before anyone approves it.
-- The HOOK is one beat, 1-2 sentences, spoken in the first 2-4 seconds.
+- The HOOK is ONE sentence of AT MOST 14 words, spoken in the first 2-3
+  seconds, and it decides whether the viewer stays or swipes away: payoff
+  first, setup later. Lead with the single most surprising or human moment
+  (an outcome, a number, a person or machine doing something unexpected).
+  NEVER open with a company name, "today", "a new", "breaking", "in this
+  video", or a scene-setting clause. Test it: if this were the first thing
+  you heard from a stranger, would you keep listening? If not, rewrite it.
   It must be built around the single most surprising fact you identified
   above, explained in plain words a total beginner would follow -- not a
   generic framing like "a big new AI model just launched," "this changes
@@ -106,7 +112,8 @@ Hard requirements:
   this at your child's school?") -- at most 10 words, never "comment
   below" or "like and subscribe". It invites people to answer in the
   comments, so it must be about the story, not about the channel.
-- BODY is 3-6 beats. Each beat is one clear idea, one narration line,
+- BODY is 3-4 beats (the whole video is short -- every beat earns its place),
+  each ONE idea in at most 25 words, so the picture changes often. Each beat is one clear idea, one narration line,
   explained the way you'd explain it to a friend, not a list of
   capability claims or test names. At least one body beat should ground
   the hook's claim with one more concrete, plainly-explained number or
@@ -150,12 +157,17 @@ Hard requirements:
     keyword (give the exact short text to render, <=6 words).
 - Video ends with a fixed outro clip that is NOT part of this script — do
   not write a sign-off or CTA line, the outro handles that.
-- title: punchy, <=100 chars. description: its very FIRST line must be a
-  standalone question or clear statement naming the exact topic (e.g.
-  "What is context in AI engineering?", "How does RAG actually work?")
-  -- so someone can tell what the video covers from that one line alone,
-  without watching. Then 1-2 more sentences of context, ending in a soft
-  CTA. hashtags: 5-8 lowercase tags, no '#' symbol.
+- title: at most 60 characters. A question or a curiosity statement that
+  names the concrete subject in plain words a person would TYPE into search
+  (e.g. "How are teachers in China using AI?", "Can an AI drive a car to a
+  drive-thru?"). No jargon, no version numbers, at most one emoji, and never
+  promise something the video does not deliver.
+  description: its very FIRST line must be a standalone question or clear
+  statement naming the exact topic -- so someone can tell what the video
+  covers from that one line alone, without watching. Then 1-2 more
+  sentences of context. The LAST line is the same short question the video
+  ends with, so people answer it in the comments. hashtags: 5-8 lowercase
+  tags, no '#' symbol.
 - thumbnail_text: 2-5 words, Title Case or ALL CAPS, for the video's
   THUMBNAIL image -- read at a glance, more dramatic/clickbait than the
   title (e.g. "IT FOUND A ZERO-DAY", "AI JUST PASSED THIS TEST"). Pull

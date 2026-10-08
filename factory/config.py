@@ -28,10 +28,12 @@ for p in (RUNS_DIR, CACHE_BROLL, CACHE_VOICE, OUTRO_DIR, INTRO_DIR, INTRO_LIBRAR
     p.mkdir(parents=True, exist_ok=True)
 
 # --- Duration budget ---
-MIN_SECONDS = float(os.getenv("FACTORY_MIN_SECONDS", 60))
-SAFE_MAX_SECONDS = float(os.getenv("FACTORY_SAFE_MAX_SECONDS", 85))
-HARD_MAX_SECONDS = float(os.getenv("FACTORY_HARD_MAX_SECONDS", 90))
-WORDS_PER_SECOND = float(os.getenv("FACTORY_WORDS_PER_SECOND", 2.4))
+# 2026-10-08: YouTube analytics showed viewers leave after ~20-30s of ~70s videos, so the
+# narration now targets 36-45s (+~10s intro/outro = 45-55s total). Real pace is ~2.6 words/s.
+MIN_SECONDS = float(os.getenv("FACTORY_MIN_SECONDS", 36))
+SAFE_MAX_SECONDS = float(os.getenv("FACTORY_SAFE_MAX_SECONDS", 45))
+HARD_MAX_SECONDS = float(os.getenv("FACTORY_HARD_MAX_SECONDS", 50))
+WORDS_PER_SECOND = float(os.getenv("FACTORY_WORDS_PER_SECOND", 2.6))
 
 # --- Output video spec (Instagram Reels + YouTube Shorts safe) ---
 OUT_WIDTH = 1080

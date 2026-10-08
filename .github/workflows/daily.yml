@@ -79,8 +79,13 @@ jobs:
           # happen to already be 85/90) rather than being a deliberate,
           # documented choice. Matches TikTok's own guidance that 60-90s
           # is their promoted range. Made explicit, not changed.
-          FACTORY_SAFE_MAX_SECONDS: "85"
-          FACTORY_HARD_MAX_SECONDS: "90"
+          # 2026-10-08: shorter narration (36-45s, ~95-117 words) after YouTube
+          # analytics showed most viewers leave within 20-30s; total video with
+          # intro/outro lands around 45-55s.
+          FACTORY_MIN_SECONDS: "36"
+          FACTORY_SAFE_MAX_SECONDS: "45"
+          FACTORY_HARD_MAX_SECONDS: "50"
+          FACTORY_WORDS_PER_SECOND: "2.6"
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}

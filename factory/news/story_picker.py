@@ -307,6 +307,9 @@ not know that" or "that affects me".
 You are SCORING today's candidates (a selection step picks the winner from
 everyone's scores afterwards). Most candidates should score below the bar.
 
+The audience is global and English-speaking: stories from the US, UK, Europe and
+China all matter equally.
+
 A story qualifies only if it is about AI or new technology AND it is:
   NEW (a first, a launch, a real change -- not a routine update),
   HUMAN (you can say who is affected and how), and
