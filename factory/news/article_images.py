@@ -29,7 +29,16 @@ _JUNK_HINTS = frozenset({
     "author", "headshot", "emoji", "tracking", "share", "social", "advert",
     "placeholder", "spinner", "loading", "profile", "gravatar", "newsletter",
     "subscribe", "nav",
+    # 2026-10-08: OpenAI pages embed video poster/first-frame stills (near-
+    # blank UI mockups) and abstract-gradient "cover" art for OTHER articles.
+    "poster", "frame", "cover", "covers", "thumbnail", "thumb", "related",
 })
+_JUNK_ALT_RE = re.compile(r"video post|poster|\bcover\b|[\u2014-] card\b", re.IGNORECASE)
+_RELATED_HEADING_RE = re.compile(
+    r"<h[2-4][^>]*>[^<]*\b(related|more (stories|articles|posts|from)|read next|"
+    r"keep reading|you (might|may) also|recommended|latest (news|stories|articles))\b",
+    re.IGNORECASE,
+)
 
 MIN_WIDTH = 700
 MIN_HEIGHT = 400
@@ -57,6 +66,10 @@ def _best_srcset_url(srcset: str) -> str | None:
 
 def _candidate_urls(page_html: str, base_url: str) -> list[str]:
     body = _STRIP_BLOCKS_RE.sub(" ", page_html)
+    # Everything after a "Related / Keep reading" heading is about OTHER stories.
+    m = _RELATED_HEADING_RE.search(body)
+    if m:
+        body = body[:m.start()]
     urls: list[str] = []
     for tag in _IMG_TAG_RE.findall(body):
         a = _attrs(tag)
@@ -64,6 +77,8 @@ def _candidate_urls(page_html: str, base_url: str) -> list[str]:
         # never substrings ("authorization" in a diagram's alt must not trip "author").
         blob = " ".join(a.get(k, "") for k in ("src", "data-src", "class", "id")).lower()
         if _JUNK_HINTS & set(re.split(r"[^a-z0-9]+", blob)):
+            continue
+        if _JUNK_ALT_RE.search(a.get("alt", "")):
             continue
         src = None
         for key in ("srcset", "data-srcset"):
@@ -87,6 +102,18 @@ def _ahash(img) -> int:
     px = list(small.getdata())
     avg = sum(px) / 64
     return sum(1 << i for i, p in enumerate(px) if p >= avg)
+
+
+def _too_plain(img) -> bool:
+    """True for gradients / near-blank mockups: almost no edges. Measured
+    2026-10-08: OpenAI gradient covers edge-mean 2.9-3.4 (1% edge pixels),
+    blank poster stills 4.5 (2.3%); real charts/photos/title cards >= 6.4 (3%+)."""
+    import numpy as np
+    from PIL import ImageFilter
+    g = img.convert("L")
+    g.thumbnail((400, 400))
+    e = np.asarray(g.filter(ImageFilter.FIND_EDGES), dtype=float)
+    return e.mean() < 5.0 and (e > 25).mean() * 100 < 2.5
 
 
 def _near_dup(h: int, seen: list[int]) -> bool:
@@ -132,6 +159,8 @@ def fetch_article_images(
             continue
         w, h = img.size
         if w < MIN_WIDTH or h < MIN_HEIGHT or not (0.5 <= w / h <= 2.6):
+            continue
+        if _too_plain(img):
             continue
         ah = _ahash(img)
         if _near_dup(ah, seen):
