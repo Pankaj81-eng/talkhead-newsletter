@@ -261,6 +261,9 @@ def main() -> None:
             if "facebook_error" in result:
                 summary_lines.append(f"Facebook FAILED: {result['facebook_error']}")
             send_text(token, chat_id, "\n".join(summary_lines))
+            if "youtube_url" in result:
+                from factory.engagement import pinned_comment
+                send_text(token, chat_id, pinned_comment(script.full_narration, result["youtube_url"]))
         else:
             final_status = {"discard": "discarded_by_pankaj", None: "decision_timed_out"}[decision]
             _update_log_status(run_id, final_status)
