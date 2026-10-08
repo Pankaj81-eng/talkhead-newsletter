@@ -143,6 +143,29 @@ def main() -> None:
         except Exception as e:  # noqa: BLE001 -- a nice-to-have, never blocks the run
             print(f"[daily_run] wikimedia images skipped: {e}")
 
+        stage = "story_clips"
+        try:
+            from factory.news.wikimedia_images import visual_subjects
+            from factory.media.video_sources import fetch_commons_clip
+            import shutil
+            clips_dir = run_dir / "story_clips"
+            clips_dir.mkdir(exist_ok=True)
+            credits, subjects = {}, {}
+            for subj in visual_subjects(story["headline"], story.get("body", ""))[:3]:
+                if len(credits) >= 2:
+                    break
+                c = fetch_commons_clip(subj, run_id)
+                if c:
+                    dest = clips_dir / f"clip_{len(credits):02d}{c['path'].suffix}"
+                    shutil.copy2(c["path"], dest)
+                    credits[dest.name], subjects[dest.name] = c["credit"], subj
+            if credits:
+                (clips_dir / "credits.json").write_text(json.dumps(credits))
+                (clips_dir / "subjects.json").write_text(json.dumps(subjects))
+            print(f"[daily_run] story clips: {len(credits)}")
+        except Exception as e:  # noqa: BLE001 -- a nice-to-have, never blocks the run
+            print(f"[daily_run] story clips skipped: {e}")
+
         stage = "generate_script"
         script = generate_script(brief)
         print(f"[daily_run] script: {script.word_count} words, title={script.title!r}")
@@ -166,7 +189,7 @@ def main() -> None:
 
         credits_file = run_dir / "image_credits.txt"
         if credits_file.exists() and credits_file.read_text().strip():
-            script.description += "\n\nPhotos: " + "; ".join(credits_file.read_text().splitlines())
+            script.description += "\n\nCredits: " + "; ".join(credits_file.read_text().splitlines())
 
         stage = "metadata"
         metadata_path = write_metadata(script, run_dir)

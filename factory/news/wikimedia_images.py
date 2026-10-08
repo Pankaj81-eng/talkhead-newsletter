@@ -66,7 +66,18 @@ def _regex_subjects(headline: str) -> list[str]:
     return out[:_MAX_SUBJECTS]
 
 
+_SUBJECT_CACHE: dict[str, list[str]] = {}
+
+
 def visual_subjects(headline: str, body: str) -> list[str]:
+    if headline in _SUBJECT_CACHE:
+        return _SUBJECT_CACHE[headline]
+    subs = _visual_subjects(headline, body)
+    _SUBJECT_CACHE[headline] = subs
+    return subs
+
+
+def _visual_subjects(headline: str, body: str) -> list[str]:
     prompt = (
         "Pick up to 3 search phrases for finding real PHOTOS on Wikimedia Commons that "
         "illustrate this news story. Use specific, unambiguous names (e.g. 'Amazon Kuiper "

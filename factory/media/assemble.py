@@ -7,9 +7,10 @@ from __future__ import annotations
 
 from pathlib import Path
 from .. import config
-from ..utils import run_ffmpeg
+from ..utils import run_ffmpeg, probe_duration
 from ..models import Script, BeatTiming
 from .broll import fetch_broll, fetch_broll_image
+from .video_sources import fetch_nasa_clip
 from .textcards import render_text_card
 from .captions import render_caption_images
 
@@ -78,9 +79,16 @@ def _hero_frame(run_dir: Path) -> Path | None:
     return _fill_frame(src, out)
 
 
+def _add_credit(run_dir: Path, credit: str) -> None:
+    """Credit lines (Wikimedia photos/videos, NASA) are appended to the
+    description by daily_run.py from image_credits.txt."""
+    out = run_dir / "image_credits.txt"
+    existing = out.read_text().splitlines() if out.exists() else []
+    if credit and credit not in existing:
+        out.write_text("\n".join(existing + [credit]))
+
+
 def _record_credit(run_dir: Path, folder: Path, name: str) -> None:
-    """Wikimedia photos need a credit line; daily_run.py appends everything in
-    image_credits.txt to the description."""
     import json
     credits_file = folder / "credits.json"
     if not credits_file.exists():
@@ -89,12 +97,37 @@ def _record_credit(run_dir: Path, folder: Path, name: str) -> None:
         credit = json.loads(credits_file.read_text()).get(name)
     except (OSError, ValueError):
         return
-    if not credit:
-        return
-    out = run_dir / "image_credits.txt"
-    existing = out.read_text().splitlines() if out.exists() else []
-    if credit not in existing:
-        out.write_text("\n".join(existing + [credit]))
+    if credit:
+        _add_credit(run_dir, credit)
+
+
+def _next_story_clip(run_dir: Path, beat_text: str) -> dict | None:
+    """Next unused real-footage clip of the story's subject (Wikimedia Commons
+    video, fetched by daily_run.py into runs/<id>/story_clips/) -- but only for
+    a line that actually mentions that subject, so e.g. Starship footage never
+    lands on a line about phone towers."""
+    import json, re
+    folder = run_dir / "story_clips"
+    if not folder.is_dir():
+        return None
+    try:
+        subjects = json.loads((folder / "subjects.json").read_text())
+    except (OSError, ValueError):
+        subjects = {}
+    generic = {"launch", "robot", "robots", "satellite", "rocket", "video", "footage", "photo"}
+    text = set(re.findall(r"[a-z0-9]+", beat_text.lower()))
+    used_file = folder / "_used.txt"
+    used = set(used_file.read_text().split()) if used_file.exists() else set()
+    for clip in sorted(folder.glob("clip_*")):
+        if clip.name in used or clip.suffix == ".json":
+            continue
+        words = {w for w in re.findall(r"[a-z0-9]+", subjects.get(clip.name, "").lower())
+                 if len(w) >= 4 and w not in generic}
+        if words and not (words & text):
+            continue
+        used_file.write_text("\n".join(sorted(used | {clip.name})))
+        return {"path": clip, "credit_name": clip.name, "folder": folder}
+    return None
 
 
 def _next_article_frame(run_dir: Path) -> Path | None:
@@ -138,7 +171,7 @@ def _truncate_for_card(text: str) -> str:
     return " ".join(words[:_MAX_CARD_WORDS]) + "…"
 
 
-def build_beat_clip(beat, duration: float, idx: int, run_dir: Path) -> Path:
+def _build_single_beat_clip(beat, duration: float, idx: int, run_dir: Path) -> Path:
     """
     Visual fallback, best-first: real B-ROLL VIDEO -> real STILL PHOTO ->
     the story's own HERO IMAGE -> rendered TEXT CARD. Every tier before text card costs one more
@@ -222,6 +255,151 @@ def build_beat_clip(beat, duration: float, idx: int, run_dir: Path) -> Path:
     img = render_text_card(card_text, run_dir / f"card_{idx:02d}.png")
     _still_image_clip(img, duration, out)
     return out
+
+
+_TARGET_CUT_S = 3.0   # energetic pace: a new shot roughly every 3 seconds
+_MAX_CUTS = 4
+
+
+def _gray_frame(path: Path, t: float):
+    import subprocess
+    r = subprocess.run(
+        ["ffmpeg", "-loglevel", "error", "-ss", f"{t:.2f}", "-i", str(path), "-frames:v", "1",
+         "-vf", "scale=64:-2,format=gray", "-f", "rawvideo", "-"],
+        capture_output=True, timeout=60,
+    )
+    return r.stdout if r.returncode == 0 and r.stdout else None
+
+
+def _motion_start(path: Path, seg: float, clip_len: float) -> float | None:
+    """Where in a long clip (NASA, Commons) there is real movement. Such clips
+    often open on a static title slate; compare frames ~1s apart at a few
+    positions and take the livest one. None if the clip never moves."""
+    best_t, best = None, 0.015
+    for frac in (0.1, 0.3, 0.5, 0.7):
+        t = min(clip_len * frac, max(clip_len - seg - 1.2, 0.0))
+        a, b = _gray_frame(path, t), _gray_frame(path, t + 1.0)
+        if not a or not b or len(a) != len(b):
+            continue
+        diff = sum(abs(x - y) for x, y in zip(a, b)) / (len(a) * 255)
+        if diff > best:
+            best_t, best = t, diff
+    return best_t
+
+
+def _video_shot(path: Path, frames: int, start: float, out: Path) -> None:
+    run_ffmpeg([
+        "-ss", f"{start:.2f}", "-stream_loop", "-1", "-i", str(path),
+        "-frames:v", str(frames),
+        "-vf", f"scale={W}:{H}:force_original_aspect_ratio=increase,"
+               f"crop={W}:{H},fps={FPS},format=yuv420p",
+        "-an", "-c:v", "libx264", str(out),
+    ])
+
+
+def _gather_shots(beat, idx: int, run_dir: Path, plan: dict, n: int, duration: float) -> list[dict]:
+    """Distinct footage for one beat, interleaving stock with the special
+    story-specific material (NASA, Commons footage, a real article image)."""
+    run_id = run_dir.name
+    specials: list[dict] = []
+    if idx % 2 == 1:                       # alternate beats show a real story image
+        art = _next_article_frame(run_dir)
+        if art:
+            specials.append({"kind": "still", "path": art})
+    if plan.get("space"):
+        try:
+            c = fetch_nasa_clip(plan["space"], run_id)
+        except Exception as e:  # noqa: BLE001
+            print(f"[assemble] NASA lookup failed: {e}")
+            c = None
+        if c:
+            specials.append({"kind": "video", "path": c["path"], "credit": c["credit"]})
+    sc = _next_story_clip(run_dir, f"{beat.text} {' '.join(plan.get('queries') or [])}")
+    if sc:
+        _record_credit(run_dir, sc["folder"], sc["credit_name"])
+        specials.insert(0, {"kind": "video", "path": sc["path"]})   # most specific first
+
+    stock: list[dict] = []
+    seen: set[str] = set()
+    want = max(-(-n // 2), n - len(specials))
+    for q in (plan.get("queries") or []) + [beat.query]:
+        if len(stock) >= want:
+            break
+        try:
+            p = fetch_broll(q, run_id)
+        except Exception as e:  # noqa: BLE001
+            print(f"[assemble] stock lookup failed for {q!r}: {e}")
+            continue
+        if p and str(p) not in seen:
+            seen.add(str(p))
+            stock.append({"kind": "video", "path": p})
+
+    # Long special clips: find a moving stretch, drop clips that never move.
+    seg = max(duration / n, 1.0)
+    live: list[dict] = []
+    for sp in specials:
+        if sp["kind"] == "video":
+            clip_len = probe_duration(sp["path"])
+            start = _motion_start(sp["path"], seg, clip_len) if clip_len > seg + 1.5 else 0.0
+            if start is None:
+                print(f"[assemble] skipping static clip {sp['path'].name}")
+                continue
+            sp = {**sp, "start": start}
+            if sp.get("credit"):
+                _add_credit(run_dir, sp["credit"])
+        live.append(sp)
+
+    shots: list[dict] = []
+    for i in range(max(len(stock), len(live))):
+        if i < len(live):
+            shots.append(live[i])           # the story-specific shot leads each pair
+        if i < len(stock):
+            shots.append(stock[i])
+    return shots[:n]
+
+
+def _build_multicut_beat(beat, duration: float, idx: int, run_dir: Path, plan: dict, n: int) -> Path | None:
+    shots = _gather_shots(beat, idx, run_dir, plan, n, duration)
+    if len(shots) < 2:
+        return None                         # nothing to cut between: keep the single-clip path
+    total = max(len(shots), round(duration * FPS))
+    base, extra = divmod(total, len(shots))
+    parts: list[Path] = []
+    uses: dict[str, int] = {}
+    for k, shot in enumerate(shots):
+        frames = base + (1 if k < extra else 0)
+        part = run_dir / f"beat_{idx:02d}_cut{k}.mp4"
+        if shot["kind"] == "still":
+            _still_image_clip(shot["path"], frames / FPS, part, zoom_out=bool(k % 2))
+        else:
+            clip_len = probe_duration(shot["path"])
+            u = uses.get(str(shot["path"]), 0)
+            uses[str(shot["path"])] = u + 1
+            seg = frames / FPS
+            start = shot.get("start", 0.0) + u * seg * 1.2
+            if clip_len > seg:
+                start = min(start, max(clip_len - seg, 0.0))
+            else:
+                start = 0.0
+            _video_shot(shot["path"], frames, start, part)
+        parts.append(part)
+    out = run_dir / f"beat_{idx:02d}.mp4"
+    concat_clips(parts, out)
+    return out
+
+
+def build_beat_clip(beat, duration: float, idx: int, run_dir: Path, plan: dict | None = None) -> Path:
+    """Cut a b-roll beat into several short shots (energetic pacing); any
+    problem or too little footage falls back to the original single-clip build."""
+    n = max(1, min(_MAX_CUTS, round(duration / _TARGET_CUT_S)))
+    if beat.visual == "broll" and n >= 2:
+        try:
+            out = _build_multicut_beat(beat, duration, idx, run_dir, plan or {}, n)
+            if out is not None:
+                return out
+        except Exception as e:  # noqa: BLE001
+            print(f"[assemble] multi-cut failed for beat {idx} ({e}); using a single clip")
+    return _build_single_beat_clip(beat, duration, idx, run_dir)
 
 
 def concat_clips(paths: list[Path], out_path: Path, faststart: bool = False) -> None:
@@ -560,8 +738,14 @@ def assemble_reel(
     _check_full_narration_covered(timings, voiceover_wav)
 
     beats = script.all_beats
+    try:
+        from .shotplan import plan_shots
+        plans = plan_shots(script.title, [b.text for b in beats])
+    except Exception as e:  # noqa: BLE001 -- planning is an upgrade, never a blocker
+        print(f"[assemble] shot planning skipped: {e}")
+        plans = {}
     clips = [
-        build_beat_clip(beat, timing.duration, i, run_dir)
+        build_beat_clip(beat, timing.duration, i, run_dir, plans.get(i))
         for i, (beat, timing) in enumerate(zip(beats, timings))
     ]
 
