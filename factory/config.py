@@ -63,6 +63,10 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
 YT_CLIENT_ID = os.getenv("YT_CLIENT_ID", "")
 YT_CLIENT_SECRET = os.getenv("YT_CLIENT_SECRET", "")
 YT_REFRESH_TOKEN = os.getenv("YT_REFRESH_TOKEN", "")
+# Separate READ-ONLY token for the analytics scorecard (yt-analytics.readonly +
+# youtube.readonly); kept apart from the upload token so a problem with one can
+# never affect publishing. Made with scripts/get_analytics_token.py.
+YT_ANALYTICS_REFRESH_TOKEN = os.getenv("YT_ANALYTICS_REFRESH_TOKEN", "")
 IG_USER_ID = os.getenv("IG_USER_ID", "")
 IG_ACCESS_TOKEN = os.getenv("IG_ACCESS_TOKEN", "")
 

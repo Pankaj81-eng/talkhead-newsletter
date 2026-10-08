@@ -148,9 +148,10 @@ def build_report(state: dict, log_path: Path, today: str | None = None) -> str:
         for r in ranked[:3]:
             out.append(f"  {r['views']} views, {r['avg_watch_s']}s watched{'/' + str(r['est_len']) + 's' if r['est_len'] else ''}"
                        f" [{r['category'] or '?'}] {r['title'][:55]}")
-        out.append("Weakest:")
-        for r in ranked[-3:][::-1]:
-            out.append(f"  {r['views']} views, {r['avg_watch_s']}s watched [{r['category'] or '?'}] {r['title'][:55]}")
+        if len(ranked) > 3:
+            out.append("Weakest:")
+            for r in ranked[-3:][::-1]:
+                out.append(f"  {r['views']} views, {r['avg_watch_s']}s watched [{r['category'] or '?'}] {r['title'][:55]}")
         out.append("")
 
     cats: dict[str, list[int]] = {}
