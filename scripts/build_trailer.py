@@ -20,6 +20,7 @@ from factory.utils import run_ffmpeg
 
 W, H, FPS = 1920, 1080, 30
 GAP, END_TAIL = 0.30, 1.0
+GAPS = [0.30, 0.65, 0.30, 0.30]       # pause after each line; a longer breath after "TechTales"
 FONT = str(config.ASSETS_DIR / "fonts" / "Poppins-Bold.ttf")
 PURPLE, WHITE = (150, 120, 255), (255, 255, 255)
 
@@ -86,7 +87,7 @@ def face_card(work: Path) -> Path:
     img.paste(logo, (150, 200))
     d.text((150, 390), "I'm Pankaj", font=font(128), fill=WHITE)
     d.text((150, 550), "AI engineer", font=font(86), fill=PURPLE)
-    d.text((150, 680), "TechTales", font=font(60), fill=(210, 206, 235))
+    d.text((150, 680), "TechTales Engineering", font=font(60), fill=(210, 206, 235))
     out = work / "face_card.png"; img.save(out); return out
 
 
@@ -105,14 +106,14 @@ def main(work: Path, final: Path) -> None:
     lines = [work / "voice" / f"line{i}.wav" for i in range(5)]
     durs = []
     for i, p in enumerate(lines):
-        info = sf.info(str(p)); durs.append(info.duration + (GAP if i < 4 else END_TAIL))
+        info = sf.info(str(p)); durs.append(info.duration + (GAPS[i] if i < 4 else END_TAIL))
     print("segment lengths:", [round(x, 2) for x in durs], "total", round(sum(durs), 1))
 
     # narration with exact gaps
     sr = sf.info(str(lines[0])).samplerate; chunks = []
     for i, p in enumerate(lines):
         a, rate = sf.read(str(p)); a = a if a.ndim == 1 else a.mean(axis=1)
-        chunks += [a, np.zeros(int(sr * (GAP if i < 4 else END_TAIL)))]
+        chunks += [a, np.zeros(int(sr * (GAPS[i] if i < 4 else END_TAIL)))]
         assert rate == sr
     narr = work / "narration.wav"; sf.write(str(narr), np.concatenate(chunks), sr)
 
