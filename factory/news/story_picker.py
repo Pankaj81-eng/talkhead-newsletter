@@ -63,6 +63,18 @@ _SOURCES = [
     {"name": "MIT Technology Review", "url": "https://www.technologyreview.com/feed/", "tier": 2},
     {"name": "IEEE Spectrum AI", "url": "https://spectrum.ieee.org/feeds/topic/artificial-intelligence.rss", "tier": 2},
     {"name": "Wired AI", "url": "https://www.wired.com/feed/tag/ai/latest/rss", "tier": 2},
+    # Added 2026-10-08 (Pankaj: wants robotics, new devices, space and market
+    # news, not just AI-software posts). "broad" feeds cover all of tech, so
+    # entries must match _TOPIC_RE before they reach the (token-limited) scorer.
+    {"name": "TechCrunch Robotics", "url": "https://techcrunch.com/category/robotics/feed/", "tier": 2},
+    {"name": "TechCrunch Hardware", "url": "https://techcrunch.com/category/hardware/feed/", "tier": 2},
+    {"name": "The Robot Report", "url": "https://www.therobotreport.com/feed/", "tier": 2},
+    {"name": "New Atlas", "url": "https://newatlas.com/index.rss", "tier": 2, "broad": True},
+    {"name": "Interesting Engineering", "url": "https://interestingengineering.com/feed", "tier": 2, "broad": True},
+    {"name": "Engadget", "url": "https://www.engadget.com/rss.xml", "tier": 2, "broad": True},
+    {"name": "The Verge Tech", "url": "https://www.theverge.com/rss/index.xml", "tier": 2, "broad": True},
+    {"name": "CNBC Technology", "url": "https://www.cnbc.com/id/19854910/device/rss/rss.html", "tier": 2, "broad": True},
+    {"name": "Ars Technica Space", "url": "https://arstechnica.com/space/feed/", "tier": 2, "broad": True},
 ]
 
 _LOOKBACK_HOURS = 36
@@ -118,6 +130,7 @@ def _fetch_feed(source: dict, lookback_hours: int = _LOOKBACK_HOURS) -> list[dic
             "body": _clean_summary(entry.get("summary") or entry.get("description") or ""),
             "source_name": source["name"],
             "tier": source["tier"],
+            "broad": source.get("broad", False),
         })
     return entries
 
@@ -145,36 +158,57 @@ def _similar(a: str, b: str) -> float:
     return len(ta & tb) / min(len(ta), len(tb))
 
 
+# Event/ticket/sponsor posts are never stories.
+_PROMO_RE = re.compile(
+    r"disrupt 20\d\d|save on your pass|breakout session|roundtable|"
+    r"\bregister now\b|\bwebinar\b|\bsponsored\b|\bticket|"
+    r"\bcramer\b|best ways to invest|stocks? to buy",  # stock-tip fluff, not news
+    re.IGNORECASE,
+)
+# Broad tech feeds (Engadget, CNBC, The Verge...) are mostly TVs, EVs and deals.
+# Only entries touching our beat get through to the scorer.
+_TOPIC_RE = re.compile(
+    r"\bai\b|artificial intelligence|machine learning|\bllm\b|chatbot|openai|anthropic|"
+    r"gemini|chatgpt|robot|humanoid|\bdrones?\b|autonomous|self-driving|robotaxi|waymo|"
+    r"\bspace\b|rocket|spacex|starship|starlink|satellite|orbit|\bmoon\b|\bmars\b|nasa|"
+    r"\bchips?\b|\bgpu\b|semiconductor|tsmc|nvidia|wearable|smart glasses|"
+    r"assistant|alexa|siri|\bdevice\b|gadget|raises|funding|valuation|\bipo\b|acquir|"
+    r"billion",
+    re.IGNORECASE,
+)
+
+
 def _dedupe_and_filter(entries: list[dict]) -> list[dict]:
     """
-    v1 simplification of ai-daily's real credibility-tiering system
-    (verify.py, ~374 lines of hand-tuned clustering + corroboration
-    counting): dedupe by exact URL, then keep every tier-1 (official lab
-    blog) entry unconditionally, and keep a tier-2 (press) entry only if a
-    similar headline (overlap >= 0.5) shows up from another source too --
-    a rough proxy for "independent corroboration", not the real thing.
-    No tier-3/aggregator sources are fetched at all in this version.
+    Drops exact-URL duplicates, event/ticket promos, and off-beat entries from
+    broad tech feeds; merges the same story reported by several outlets (keeping
+    the official tier-1 copy when there is one).
+
+    No longer requires press stories to be corroborated by a second feed
+    (changed 2026-10-08): on a typical day that rule threw away ~60% of
+    TechCrunch/Verge/Ars/Wired stories -- exactly the single-outlet breaking
+    news, funding rounds and model launches we want -- while company blogs
+    bypassed it and came to dominate the picks. The scorer, not a headline
+    overlap test, decides what is worth a video.
     """
     seen_urls: set[str] = set()
-    unique = []
+    unique: list[dict] = []
     for e in entries:
         if e["link"] in seen_urls:
             continue
         seen_urls.add(e["link"])
-        unique.append(e)
-
-    kept = []
-    for e in unique:
-        if e["tier"] == 1:
-            kept.append(e)
+        if _PROMO_RE.search(e["headline"]):
             continue
-        corroborated = any(
-            other is not e and _similar(e["headline"], other["headline"]) >= 0.5
-            for other in unique
-        )
-        if corroborated:
-            kept.append(e)
-    return kept
+        if e.get("broad") and not _TOPIC_RE.search(f"{e['headline']} {e['body']}"):
+            continue
+        dup = next((k for k in unique
+                    if len(_tokens(e["headline"]) & _tokens(k["headline"])) >= 4
+                    and _similar(e["headline"], k["headline"]) >= 0.6), None)
+        if dup is None:
+            unique.append(e)
+        elif e["tier"] < dup["tier"]:
+            unique[unique.index(dup)] = e
+    return unique
 
 
 def _fetch_all_candidates(lookback_hours: int = _LOOKBACK_HOURS) -> list[dict]:
