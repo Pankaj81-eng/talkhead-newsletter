@@ -58,6 +58,15 @@ _BLOCKLIST = {
 }
 
 
+# Words that describe a place or a vague scene and fit almost any footage.
+_GENERIC_WORDS = {
+    "factory", "building", "machine", "machines", "equipment", "technology", "industrial",
+    "interior", "inside", "exterior", "people", "worker", "workers", "view", "scene", "shot",
+    "close", "aerial", "modern", "large", "production", "assembly", "line", "indoor", "outdoor",
+    "engineers", "engineer", "testing", "work", "working",
+}
+
+
 def _has_blocklisted_mismatch(query_words: set[str], candidate_words: set[str]) -> bool:
     return bool((candidate_words & _BLOCKLIST) - query_words)
 
@@ -110,7 +119,14 @@ def _is_relevant(query: str, candidate_text: str) -> bool:
     c = _keywords(candidate_text)
     if _has_blocklisted_mismatch(q, c):
         return False
-    return bool(q & c)
+    shared = q & c
+    # One shared word is often a generic one ("factory", "building"): a satellite-factory
+    # query then matched a textile loom. Generic words never count alone, and a query with
+    # two or more specific words must match two of them.
+    specific_q = q - _GENERIC_WORDS
+    if len(specific_q) >= 2:
+        return len(shared & specific_q) >= 2
+    return bool(shared & specific_q) if specific_q else bool(shared)
 
 
 def _pick_fresh(urls: list[str], recent_ids: set[str]) -> str | None:
