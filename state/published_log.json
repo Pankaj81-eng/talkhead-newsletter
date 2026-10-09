@@ -1215,5 +1215,34 @@
       "instagram_media_id": "17916714867461072",
       "linkedin_post_id": "181752408538349568"
     }
+  },
+  {
+    "date": "2026-10-09",
+    "run_id": "7180c95c911a",
+    "story": "Amazon builds 1,000th satellite, will launch space internet service by end of year",
+    "source_url": "https://arstechnica.com/space/2026/10/amazon-builds-1000th-satellite-is-weeks-away-from-space-internet-rollout/",
+    "category": "space",
+    "title": "Amazon's 1,000th Satellite: Space Internet Is Coming",
+    "description": "Is Amazon\u2019s space internet the next big thing?\nAmazon just built its 1,000th satellite and is gearing up to launch a broadband service that could compete with Starlink. Delta Airlines has already signed on.\nIs Amazon\u2019s space internet the next big thing?\n\nCredits: Video: NASA; U.S. Space Force photo by Gwendolyn Kurzen / Wikimedia Commons (Public domain); Video: U.S. Space Force video by Robert Mason / Wikimedia Commons (Public domain)",
+    "full_narration": "Amazon just finished its 1,000th space internet satellite. In a 170,000-square-foot building they turned an empty space into a factory that now builds 27 satellites each week, after only six months to make the first 27. These Leo satellites will hitch a ride on United Launch Alliance\u2019s Vulcan rocket, slated for a return-to-flight launch later this year. Delta Airlines has already signed a deal to use Amazon\u2019s broadband on its flights, giving the airline an alternative to Elon Musk\u2019s Starlink. So, will you choose Amazon\u2019s space internet over Starlink when it finally launches?",
+    "hashtags": [
+      "amazon",
+      "satellite",
+      "spaceinternet",
+      "vulcan",
+      "deltaairlines"
+    ],
+    "video_path": "runs/7180c95c911a/final.mp4",
+    "thumbnail_path": "runs/7180c95c911a/thumbnail.jpg",
+    "metadata_path": "runs/7180c95c911a/metadata.txt",
+    "used_hero_image": true,
+    "status": "published",
+    "generated_at": "2026-10-09T05:45:28.126319",
+    "decided_at": "2026-10-09T06:26:05.837279",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/4BUwdZ1tTVM",
+      "instagram_media_id": "17973639539942886",
+      "linkedin_post_id": "182015872452263936"
+    }
   }
 ]
