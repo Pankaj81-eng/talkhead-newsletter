@@ -236,3 +236,9 @@ OFFICIAL_BROLL_DIR = os.getenv("FACTORY_OFFICIAL_BROLL_DIR", "")
 # still show up, lower it if too many beats fall back to text cards on a
 # genuinely narrow-topic query.
 BROLL_RECENCY_RUNS = int(os.getenv("FACTORY_BROLL_RECENCY_RUNS", 12))
+
+# Intro A/B test (started 2026-10-10): on odd calendar ordinals the daily video opens with the
+# rotating intro clip, on even ones it opens straight on the story hook. Set to 0 to always use
+# the intro again. The variant is recorded in state/published_log.json as "intro_variant".
+INTRO_AB_TEST = os.getenv("INTRO_AB_TEST", "1") != "0"
+INTRO_AB_START = os.getenv("INTRO_AB_START", "2026-10-10")

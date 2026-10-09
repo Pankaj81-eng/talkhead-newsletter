@@ -660,6 +660,17 @@ def _select_intro_source(date: str | None) -> Path | None:
     return config.INTRO_SOURCE
 
 
+def intro_variant(date: str | None = None) -> str:
+    """'intro' or 'none' for the intro A/B test (see config.INTRO_AB_TEST): from INTRO_AB_START on,
+    odd calendar ordinals keep the intro and even ones start on the story hook. Stateless, so a
+    re-run on the same date gets the same variant."""
+    import datetime
+    day = datetime.date.fromisoformat(date) if date else datetime.date.today()
+    if not config.INTRO_AB_TEST or day < datetime.date.fromisoformat(config.INTRO_AB_START):
+        return "intro"
+    return "intro" if day.toordinal() % 2 == 1 else "none"
+
+
 def prepare_intro_vertical(date: str | None = None) -> Path | None:
     """
     Same conversion/caching as prepare_outro_vertical(), mirrored for the
@@ -670,6 +681,8 @@ def prepare_intro_vertical(date: str | None = None) -> Path | None:
     source) since there's more than one now, unlike the single fixed
     INTRO_VERTICAL path the legacy single-file path still uses.
     """
+    if intro_variant(date) == "none":
+        return None
     source = _select_intro_source(date)
     if source is None:
         return None
