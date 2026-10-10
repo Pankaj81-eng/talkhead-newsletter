@@ -259,7 +259,7 @@ class _CandidateScore(BaseModel):
     explainability: int = Field(5, ge=1, le=10)
     # False for press-release/promotional tone, unproven extraordinary claims, clickbait.
     credible: bool = True
-    # False for stories with no AI/robot/autonomy/space-tech angle at all (a bigger wind
+    # False for stories with no AI/automation/computing/space-tech angle at all (a bigger wind
     # turbine, a new battery, a bridge). Default True so a model that omits it cannot
     # empty the pool; the rubric asks for it explicitly.
     ai_related: bool = True
@@ -346,12 +346,13 @@ Score every candidate 1-10 on:
   explainability     -- can it be made clear to anyone in 60 seconds?
 Average the six. A story is only eligible if that average is >= {SCORE_THRESHOLD}.
 
-ai_related: set TRUE only if AI or machine learning is part of the story, OR it is about
-robots, drones, autonomous or self-driving machines, smart/AI devices, or space and
-aerospace hardware (rockets, satellites, spacecraft, air taxis). Set FALSE for stories with
-no such angle: wind turbines, batteries, solar, bridges, materials, ordinary medicine or
-engineering, politics. This channel is about AI and the machines it drives -- a story about
-"new technology" alone is not enough.
+ai_related: set TRUE only if the story has an AI or computing angle that shows something
+new happening in the technology market: AI or machine learning, automation (robots, drones,
+self-driving machines, automated warehouses/factories/services), computers, chips and
+data centres, software and apps, smart or AI devices, or space and aerospace hardware.
+Set FALSE for stories with no such angle: wind turbines, batteries, solar, bridges, materials,
+ordinary medicine or engineering, politics. A story about "new technology" alone is not
+enough -- AI, automation or computing must be part of it.
 
 credible: set false for press-release or promotional tone, an extraordinary claim
 with a single unnamed source, startup hype with no evidence, or clickbait.
