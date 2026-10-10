@@ -105,10 +105,6 @@ def _license_ok(name: str) -> bool:
     n = name.lower()
     if "nc" in re.split(r"[^a-z]+", n) or "nd" in re.split(r"[^a-z]+", n) or "fair use" in n:
         return False
-    if not config.CREDITS_IN_DESCRIPTION:
-        # No credit line is published, so only licences that need no attribution may be used
-        # (CC BY / CC BY-SA legally require crediting the author).
-        return n.startswith(("cc0", "public domain", "pd", "cc pd")) or "public domain" in n
     return n.startswith(("cc by", "cc0", "public domain", "pd")) or "public domain" in n
 
 
