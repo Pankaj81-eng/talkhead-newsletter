@@ -28,6 +28,4 @@ def pinned_comment(narration: str, youtube_url: str = "") -> str:
         "Subscribe so you don't miss either.\n\n"
         f"Today's question: {q} Tell me below 👇"
     )
-    head = "Pinned comment for this video (copy it, then pin it on YouTube"
-    head += f": {youtube_url})" if youtube_url else ")"
-    return f"{head}\n\n{comment}"
+    return comment      # just the text: Pankaj copies the whole Telegram message as is
