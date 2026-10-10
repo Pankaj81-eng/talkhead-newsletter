@@ -665,6 +665,8 @@ def intro_variant(date: str | None = None) -> str:
     odd calendar ordinals keep the intro and even ones start on the story hook. Stateless, so a
     re-run on the same date gets the same variant."""
     import datetime
+    if not config.INTRO_ENABLED:
+        return "none"
     day = datetime.date.fromisoformat(date) if date else datetime.date.today()
     if not config.INTRO_AB_TEST or day < datetime.date.fromisoformat(config.INTRO_AB_START):
         return "intro"

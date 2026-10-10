@@ -242,3 +242,7 @@ BROLL_RECENCY_RUNS = int(os.getenv("FACTORY_BROLL_RECENCY_RUNS", 12))
 # the intro again. The variant is recorded in state/published_log.json as "intro_variant".
 INTRO_AB_TEST = os.getenv("INTRO_AB_TEST", "1") != "0"
 INTRO_AB_START = os.getenv("INTRO_AB_START", "2026-10-10")
+
+# 2026-10-10 (Pankaj): no intro clip on any video -- the story hook comes first. Set INTRO_ENABLED=1
+# to bring the rotating intro back (the A/B test settings above then apply again).
+INTRO_ENABLED = os.getenv("INTRO_ENABLED", "0") == "1"
