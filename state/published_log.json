@@ -1244,5 +1244,31 @@
       "instagram_media_id": "17973639539942886",
       "linkedin_post_id": "182015872452263936"
     }
+  },
+  {
+    "date": "2026-10-10",
+    "run_id": "ab16b73a72d5",
+    "story": "Germany\u2019s telescoping wind turbine becomes world\u2019s tallest",
+    "source_url": "https://newatlas.com/energy/gicon-telescoping-wind-turbine-world-record-height/",
+    "category": "cities_energy",
+    "title": "World's Tallest Wind Turbine Reaches 365 m Height",
+    "description": "What is Germany\u2019s telescoping wind turbine becomes world\u2019s tallest?\n\n\u26a0\ufe0f GENERIC: the brief has real percentages (0.1%) but the script cited none after 3 attempts -- consider rejecting and re-running.\n\nCan a wind turbine as tall as a TV tower generate more power? Germany built a 365-meter tall, telescoping turbine to capture stronger winds and test double energy output. The pilot\u2019s 3.8 MW capacity could pave the way for thousands of extra-tall turbines in existing farms.\n\nCredits: Video: Andol / Wikimedia Commons (CC BY-SA 4.0); O. Sidor / Wikimedia Commons (CC0); Diego Delso / Wikimedia Commons (CC BY-SA 4.0); Spike / Wikimedia Commons (CC BY-SA 4.0)",
+    "full_narration": "A 365-meter wind turbine, as tall as Berlin\u2019s TV tower, now stands in Germany. It reaches higher, steadier winds, aiming to generate roughly twice the electricity of a normal turbine with the same blade size. The pilot produces 3.8 MW, far less than China\u2019s 26-MW offshore record, but its height of 365 m gives it a new edge. Gicon says existing farms could add a second story, potentially fitting up to 4,000 of these towers in today\u2019s wind sites. Would you trust power from a TV-tower-tall turbine?",
+    "hashtags": [
+      "windenergy",
+      "renewable",
+      "germany",
+      "turbines",
+      "cleantech",
+      "sustainability"
+    ],
+    "video_path": "runs/ab16b73a72d5/final.mp4",
+    "thumbnail_path": "runs/ab16b73a72d5/thumbnail.jpg",
+    "metadata_path": "runs/ab16b73a72d5/metadata.txt",
+    "used_hero_image": true,
+    "intro_variant": "intro",
+    "status": "discarded_by_pankaj",
+    "generated_at": "2026-10-10T05:43:00.015278",
+    "decided_at": "2026-10-10T08:56:30.735712"
   }
 ]
