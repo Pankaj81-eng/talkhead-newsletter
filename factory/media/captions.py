@@ -46,6 +46,36 @@ def transcribe_words(wav_path: Path) -> list[dict]:
     return words
 
 
+def align_to_script(words: list[dict], narration: str) -> list[dict]:
+    """Whisper hears names wrong ("Pony.ai" -> "Poni .A"). The script text is the truth, Whisper
+    only knows WHEN each word was said. Align the two and put the script's spelling on Whisper's
+    timings; a Whisper word that has no script counterpart is dropped, a script word Whisper
+    missed gets no time slot of its own (the captions then simply skip it, as before)."""
+    import re
+    from difflib import SequenceMatcher
+
+    script_toks = narration.split()
+    if not words or not script_toks:
+        return words
+    norm = lambda t: re.sub(r"[^a-z0-9]", "", t.lower())      # noqa: E731
+    a = [norm(w["word"]) for w in words]
+    b = [norm(t) for t in script_toks]
+    out: list[dict] = []
+    for op, i1, i2, j1, j2 in SequenceMatcher(None, a, b, autojunk=False).get_opcodes():
+        if op == "equal":
+            for k in range(i2 - i1):
+                out.append({**words[i1 + k], "word": script_toks[j1 + k]})
+        elif op == "replace":
+            span = words[i1:i2]; toks = script_toks[j1:j2]
+            t0, t1 = span[0]["start"], span[-1]["end"]
+            weights = [max(len(norm(t)), 1) for t in toks]; total = sum(weights); at = t0
+            for t, wt in zip(toks, weights):
+                end = at + (t1 - t0) * wt / total
+                out.append({"word": t, "start": float(at), "end": float(end)}); at = end
+        # "delete": Whisper-only noise word, drop.  "insert": script word never heard, skip.
+    return out or words
+
+
 def beat_timings_from_words(
     beats_word_counts: list[int], words: list[dict], audio_duration: float | None = None
 ) -> list[BeatTiming]:

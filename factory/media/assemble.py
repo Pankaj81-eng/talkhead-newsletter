@@ -297,6 +297,23 @@ def _video_shot(path: Path, frames: int, start: float, out: Path) -> None:
     ])
 
 
+def _stock_fits(path: Path, story: str, line: str, query: str) -> bool:
+    """Vision check on the middle frame of a stock clip (see shotplan.frame_fits)."""
+    if not story:
+        return True
+    try:
+        from .shotplan import frame_fits
+        mid = max(probe_duration(path) / 2, 0.0)
+        jpg = path.with_suffix(".check.jpg")
+        run_ffmpeg(["-ss", f"{mid:.2f}", "-i", str(path), "-frames:v", "1", "-vf", "scale=512:-2", str(jpg)])
+        ok = frame_fits(jpg, story, line)
+        print(f"[assemble] stock check {'ok ' if ok else 'REJECT'} for {query!r}: {path.name[:40]}")
+        return ok
+    except Exception as e:  # noqa: BLE001
+        print(f"[assemble] stock check skipped ({str(e)[:80]})")
+        return True
+
+
 def _gather_shots(beat, idx: int, run_dir: Path, plan: dict, n: int, duration: float) -> list[dict]:
     """Distinct footage for one beat, interleaving stock with the special
     story-specific material (NASA, Commons footage, a real article image)."""
@@ -332,6 +349,8 @@ def _gather_shots(beat, idx: int, run_dir: Path, plan: dict, n: int, duration: f
             continue
         if p and str(p) not in seen:
             seen.add(str(p))
+            if not _stock_fits(p, plan.get("_story", ""), beat.text, q):
+                continue
             stock.append({"kind": "video", "path": p})
 
     # Long special clips: find a moving stretch, drop clips that never move.
@@ -756,6 +775,8 @@ def assemble_reel(
     try:
         from .shotplan import plan_shots
         plans = plan_shots(script.title, [b.text for b in beats])
+        for _p in plans.values():
+            _p["_story"] = script.title
     except Exception as e:  # noqa: BLE001 -- planning is an upgrade, never a blocker
         print(f"[assemble] shot planning skipped: {e}")
         plans = {}

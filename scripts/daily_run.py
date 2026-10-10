@@ -36,7 +36,7 @@ from factory import config, db
 from factory.agents.script_agent import generate_script
 from factory.graph import new_run_id, run_dir_for
 from factory.media.voice import get_voice_engine
-from factory.media.captions import transcribe_words, beat_timings_from_words
+from factory.media.captions import transcribe_words, beat_timings_from_words, align_to_script
 from factory.media.assemble import assemble_reel, intro_variant
 from factory.media.thumbnail import generate_thumbnail
 from factory.media.metadata_export import write_metadata
@@ -175,7 +175,7 @@ def main() -> None:
         wav_path = engine.synthesize(script.full_narration, run_dir / "voiceover.wav")
 
         stage = "captions"
-        words = transcribe_words(wav_path)
+        words = align_to_script(transcribe_words(wav_path), script.full_narration)
 
         stage = "assemble"
         beats = script.all_beats

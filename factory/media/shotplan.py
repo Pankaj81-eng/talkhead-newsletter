@@ -56,3 +56,32 @@ def plan_shots(headline: str, beat_texts: list[str]) -> dict[int, dict]:
                 out[b.index] = {"queries": qs, "space": b.space.strip()}
     print(f"[shotplan] planned shots for {len(out)}/{len(beat_texts)} lines")
     return out
+
+
+def frame_fits(frame_jpg, story: str, line: str) -> bool:
+    """Ask Gemini (vision) whether one frame of a stock clip plausibly illustrates the story and the
+    narration line. Fails OPEN (returns True) when there is no key, no answer or any error, so a
+    quota hiccup never leaves a beat without footage."""
+    from pathlib import Path
+
+    from .. import config
+    if not config.GEMINI_API_KEY:
+        return True
+    try:
+        from google import genai
+        from google.genai import types
+        client = genai.Client(api_key=config.GEMINI_API_KEY)
+        prompt = (
+            "You are the picture editor of a news Short. Story: " + story + "\nNarration line: " + line +
+            "\nDoes this single frame plausibly illustrate the story or that line (the right kind of "
+            "subject: e.g. cars/roads/robots/phones/cities as the line needs)? Random scenery, "
+            "unrelated people, vintage or irrelevant objects, empty abstract shots and green screens "
+            "do NOT fit. Answer with exactly one word: YES or NO.")
+        resp = client.models.generate_content(
+            model=config.GEMINI_MODEL,
+            contents=[types.Part.from_bytes(data=Path(frame_jpg).read_bytes(), mime_type="image/jpeg"), prompt])
+        ans = (resp.text or "").strip().upper()
+        return not ans.startswith("NO")
+    except Exception as e:  # noqa: BLE001
+        print(f"[shotplan] frame check skipped ({str(e)[:80]})")
+        return True
