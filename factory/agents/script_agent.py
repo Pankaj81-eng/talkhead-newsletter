@@ -69,6 +69,15 @@ Hard requirements:
     software with a perfect record."
   If a technical term is truly unavoidable, define what it IS in the same
   sentence, as if the listener has never heard it before.
+- NO PUZZLING NAMES. A viewer who has never heard of the thing must follow
+  every sentence on first listen. So: never say model numbers, trim names or
+  codes ("Arcfox Alpha T5", "Gen-7", "RTX 5090", "Tier 4") -- say "an electric
+  car" or "the company's newest robotaxi". Name a small or foreign city only
+  with its country or what it is ("Zagreb in Croatia", or just "a European
+  city"), and only if the story needs it. Name a company only if the viewer
+  would recognise it or you say in the same breath what it does ("Pony.ai, a
+  Chinese self-driving company"). If you cannot explain a name in a few words,
+  leave it out and describe the thing instead.
 - FACTUAL ACCURACY IS STILL NON-NEGOTIABLE: every number, benchmark
   result, dollar figure, count, or quote you use (even paraphrased in
   plain words) MUST be traceable to something literally stated in the
