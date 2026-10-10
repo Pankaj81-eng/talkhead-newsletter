@@ -259,6 +259,10 @@ class _CandidateScore(BaseModel):
     explainability: int = Field(5, ge=1, le=10)
     # False for press-release/promotional tone, unproven extraordinary claims, clickbait.
     credible: bool = True
+    # False for stories with no AI/robot/autonomy/space-tech angle at all (a bigger wind
+    # turbine, a new battery, a bridge). Default True so a model that omits it cannot
+    # empty the pool; the rubric asks for it explicitly.
+    ai_related: bool = True
     # True when substantively the same story/subject as a recently published
     # headline. Selection happens in code, so the model flags it here rather
     # than relying on a single chosen_index (needed once pools are chunked).
@@ -342,6 +346,13 @@ Score every candidate 1-10 on:
   explainability     -- can it be made clear to anyone in 60 seconds?
 Average the six. A story is only eligible if that average is >= {SCORE_THRESHOLD}.
 
+ai_related: set TRUE only if AI or machine learning is part of the story, OR it is about
+robots, drones, autonomous or self-driving machines, smart/AI devices, or space and
+aerospace hardware (rockets, satellites, spacecraft, air taxis). Set FALSE for stories with
+no such angle: wind turbines, batteries, solar, bridges, materials, ordinary medicine or
+engineering, politics. This channel is about AI and the machines it drives -- a story about
+"new technology" alone is not enough.
+
 credible: set false for press-release or promotional tone, an extraordinary claim
 with a single unnamed source, startup hype with no evidence, or clickbait.
 Otherwise true.
@@ -368,6 +379,7 @@ these EXACT key names, do not rename or nest them differently:
      "novelty": 1-10, "human_impact": 1-10, "wow_factor": 1-10,
      "visual_potential": 1-10, "significance": 1-10, "explainability": 1-10,
      "credible": true or false,
+     "ai_related": true or false,
      "already_covered": true if it is substantively the same story/subject as an ALREADY COVERED headline, else false,
      "category": "one of the categories above",
      "average": <mean of the six, one decimal place>,
@@ -383,7 +395,7 @@ _FINAL_RUBRIC = """You are the Editor-in-Chief of TalkHead, a daily short-video 
 EVERYONE about how AI and new technology are changing the real world. Below are
 today's finalists (already scored). Pick the ONE story for today's video, in this
 order of importance:
-1. A real-world story a stranger would stop for -- people, robots, vehicles,
+1. An AI or robotics/space story (never plain energy, construction or other non-AI tech) that a stranger would stop for -- people, robots, vehicles,
    rockets, devices, health, school, work, a big launch or deal -- over insider
    AI-industry news, case studies and product polish.
 2. VARIETY against the recent headlines/categories: not the same company or the
@@ -474,7 +486,7 @@ def _score_all(candidates: list[dict]) -> list[tuple[int, _CandidateScore]]:
 def _eligible(scored: list[tuple[int, _CandidateScore]]) -> list[tuple[int, _CandidateScore]]:
     """Best first: not already covered and at/above the bar."""
     ok = [(i, sc) for i, sc in scored
-          if sc.credible and not sc.already_covered and sc.computed_average >= SCORE_THRESHOLD]
+          if sc.credible and sc.ai_related and not sc.already_covered and sc.computed_average >= SCORE_THRESHOLD]
     return sorted(ok, key=lambda t: -t[1].computed_average)
 
 
