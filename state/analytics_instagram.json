@@ -607,8 +607,8 @@
      "d": "2026-10-09"
     },
     {
-     "reach": 128,
-     "views": 176,
+     "reach": 129,
+     "views": 178,
      "saves": 0,
      "shares": 0,
      "interactions": 6,
@@ -1455,6 +1455,24 @@
      "interactions": 8,
      "avg_watch_s": 4.7,
      "likes": 8,
+     "comments": 0,
+     "d": "2026-10-10"
+    }
+   ]
+  },
+  "18179184091431927": {
+   "posted": "2026-10-10T09:30:08+0000",
+   "caption": "Will driverless taxis soon cruise London streets?\nUber and Pony.ai are set to begin testin",
+   "link": "https://www.instagram.com/reel/DeTw7tukWHt/",
+   "history": [
+    {
+     "reach": 0,
+     "views": 0,
+     "saves": 0,
+     "shares": 0,
+     "interactions": 0,
+     "avg_watch_s": 0.0,
+     "likes": 0,
      "comments": 0,
      "d": "2026-10-10"
     }

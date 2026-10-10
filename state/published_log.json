@@ -1270,5 +1270,35 @@
     "status": "discarded_by_pankaj",
     "generated_at": "2026-10-10T05:43:00.015278",
     "decided_at": "2026-10-10T08:56:30.735712"
+  },
+  {
+    "date": "2026-10-10",
+    "run_id": "c540a2450ada",
+    "story": "Uber and Pony.ai Plan London Robotaxi Service With Testing to Begin in Coming Weeks",
+    "source_url": "https://digitalmarketreports.com/news/93708/uber-and-pony-ai-plan-london-robotaxi-service-with-testing-to-begin-in-coming-weeks/",
+    "category": "cars",
+    "title": "London to Test Driverless Taxis Next Week \ud83d\ude97",
+    "description": "Will driverless taxis soon cruise London streets?\nUber and Pony.ai are set to begin testing autonomous robotaxis in London, following a similar rollout in Zagreb and aiming for a large European fleet.\nWould you ride in a driverless car on busy London roads?\n\nCredits: Video: Acabashi / Wikimedia Commons (CC BY-SA 4.0); S5A-0043 / Wikimedia Commons (CC BY 4.0); Video: rmnbblog / Wikimedia Commons (CC BY 3.0); Raysonho @ Open Grid Scheduler / Scalable Grid Eng / Wikimedia Commons (CC0); Nortix08 / Wikimedia Commons (CC BY-SA 4.0)",
+    "full_narration": "A driverless car fleet will start test rides on London streets next week. Uber provides the ride-hailing app and Pony.ai supplies the self-driving tech and Arcfox Alpha T5 cars, after proving the model in Zagreb. Testing of the Gen-7 robotaxis will start in the coming weeks, and the companies hope to roll out a fleet that could eventually exceed 2,000 driverless vehicles across Europe. London will host two autonomous partners \u2013 Pony.ai and British firm Wayve \u2013 as Uber broadens its driverless network. Would you feel comfortable riding in a driverless car on busy London roads?",
+    "hashtags": [
+      "london",
+      "robotaxi",
+      "autonomousvehicles",
+      "uber",
+      "ponyai"
+    ],
+    "video_path": "runs/c540a2450ada/final.mp4",
+    "thumbnail_path": "runs/c540a2450ada/thumbnail.jpg",
+    "metadata_path": "runs/c540a2450ada/metadata.txt",
+    "used_hero_image": true,
+    "intro_variant": "none",
+    "status": "published",
+    "generated_at": "2026-10-10T09:27:01.309147",
+    "decided_at": "2026-10-10T09:30:18.920484",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/mCl7KQzt34Q",
+      "instagram_media_id": "18179184091431927",
+      "linkedin_post_id": "182424620329074688"
+    }
   }
 ]
