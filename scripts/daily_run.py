@@ -188,7 +188,7 @@ def main() -> None:
         thumbs = generate_thumbnail(script, run_dir)
 
         credits_file = run_dir / "image_credits.txt"
-        if credits_file.exists() and credits_file.read_text().strip():
+        if config.CREDITS_IN_DESCRIPTION and credits_file.exists() and credits_file.read_text().strip():
             script.description += "\n\nCredits: " + "; ".join(credits_file.read_text().splitlines())
 
         stage = "metadata"

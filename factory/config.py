@@ -246,3 +246,8 @@ INTRO_AB_START = os.getenv("INTRO_AB_START", "2026-10-10")
 # 2026-10-10 (Pankaj): no intro clip on any video -- the story hook comes first. Set INTRO_ENABLED=1
 # to bring the rotating intro back (the A/B test settings above then apply again).
 INTRO_ENABLED = os.getenv("INTRO_ENABLED", "0") == "1"
+
+# Pankaj 2026-10-10: no credit lines in descriptions/captions. Because CC BY / CC BY-SA photos and clips
+# legally need attribution, with this off only public-domain/CC0 Wikimedia media is used. Set
+# CREDITS_IN_DESCRIPTION=1 to allow CC BY again and publish the credits.
+CREDITS_IN_DESCRIPTION = os.getenv("CREDITS_IN_DESCRIPTION", "0") == "1"
