@@ -238,10 +238,24 @@ def _slug(text: str, limit: int = 40) -> str:
     return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")[:limit].strip("-")
 
 
-def publish_instagram(video_path: Path, caption: str, label: str = "") -> str:
+def publish_instagram(video_path: Path, caption: str, label: str = "", cover_path: Path | None = None) -> str:
     """Returns the published media's id. Handles the temp-hosting dance
-    internally -- uploads, publishes, deletes, regardless of outcome."""
+    internally -- uploads, publishes, deletes, regardless of outcome.
+    cover_path: optional vertical thumbnail used as the Reel's cover; if hosting it fails the Reel
+    is still published with Instagram's own automatic cover."""
     host = TempAssetHost()
+    cover_host = None
+    cover_url = None
+    if cover_path is not None and Path(cover_path).exists():
+        try:
+            cover_host = TempAssetHost()
+            cover_url = cover_host.upload(Path(cover_path), label=f"{label}-cover" if label else "cover")
+            if not _verify_public(cover_url, expected_size=Path(cover_path).stat().st_size):
+                log.warning("Instagram cover URL not reachable; posting without a custom cover")
+                cover_url = None
+        except Exception as exc:  # noqa: BLE001
+            log.warning("Instagram cover upload failed (%s); posting without a custom cover", exc)
+            cover_url = None
     try:
         video_url = host.upload(video_path, label=label)
         if not _verify_public(video_url, expected_size=video_path.stat().st_size):
@@ -250,16 +264,25 @@ def publish_instagram(video_path: Path, caption: str, label: str = "") -> str:
                 f"({video_path.stat().st_size} bytes): {video_url}"
             )
 
-        container = _ig_post(
-            f"{config.IG_USER_ID}/media",
-            media_type="REELS", video_url=video_url,
-            caption=caption[:2200], share_to_feed="true",
-        )
+        params = dict(media_type="REELS", video_url=video_url, caption=caption[:2200], share_to_feed="true")
+        container = None
+        if cover_url:
+            try:
+                container = _ig_post(f"{config.IG_USER_ID}/media", **params, cover_url=cover_url)
+            except PublishError as exc:
+                log.warning("Instagram rejected the cover (%s); retrying without it", exc)
+        if container is None:
+            container = _ig_post(f"{config.IG_USER_ID}/media", **params)
         _ig_wait_ready(container["id"])
         published = _ig_post(f"{config.IG_USER_ID}/media_publish", creation_id=container["id"])
         return published["id"]
     finally:
         host.delete()
+        if cover_host is not None:
+            try:
+                cover_host.delete()
+            except Exception:  # noqa: BLE001
+                pass
 
 
 # --- LinkedIn (via WoopSocial) -------------------------------------------
@@ -477,9 +500,11 @@ def publish_video(script, video_path: Path, thumbnail_path: Path | None = None) 
             f"{script.description}\n\n" + " ".join(f"#{h}" for h in script.hashtags)
             + f"\n\n{FOLLOW_FOOTER}"
         )
+        vertical = Path(thumbnail_path).with_name("thumbnail_vertical.jpg") if thumbnail_path else None
         result["instagram_media_id"] = publish_instagram(
             video_path, caption,
             label=f"{date.today():%Y-%m-%d}-{_slug(script.title)}",
+            cover_path=vertical,
         )
     except Exception as e:  # noqa: BLE001
         result["instagram_error"] = str(e)
