@@ -430,10 +430,14 @@ def concat_clips(paths: list[Path], out_path: Path, faststart: bool = False) -> 
     run_ffmpeg([*args, str(out_path)])
 
 
-_LOUDNORM_TARGET = "I=-16:TP=-1.5:LRA=11"
+# -14 LUFS / -1 dBTP is what YouTube Shorts, Reels and TikTok play at; -16/-1.5 left the published
+# videos near -18.8 LUFS, which sounded quiet next to other clips (2026-10-11). A gentle compressor
+# + limiter runs first so the narration's peaks do not stop loudnorm from reaching the target.
+_LOUDNORM_TARGET = "I=-14:TP=-1:LRA=11"
+_VOICE_LEVELER = "acompressor=threshold=0.063:ratio=3:attack=5:release=100:makeup=3,alimiter=limit=0.89:level=disabled"
 
 
-def _measure_loudness(audio_path: Path) -> dict | None:
+def _measure_loudness(audio_path: Path, pre: str = "") -> dict | None:
     """First pass of a proper two-pass loudnorm: measure the file's real
     stats so the apply pass can use them (`linear=true`) instead of
     loudnorm's own on-the-fly single-pass estimate, which undershoots
@@ -450,7 +454,7 @@ def _measure_loudness(audio_path: Path) -> dict | None:
 
     cmd = [
         "ffmpeg", "-y", "-i", str(audio_path),
-        "-af", f"loudnorm={_LOUDNORM_TARGET}:print_format=json",
+        "-af", f"{pre}loudnorm={_LOUDNORM_TARGET}:print_format=json",
         "-f", "null", "-",
     ]
     result = subprocess.run(cmd, capture_output=True, text=True)
@@ -480,16 +484,17 @@ def mux_audio(video_path: Path, audio_path: Path, out_path: Path) -> None:
     those measured stats) gets noticeably closer to that target than a
     single blind pass -- see _measure_loudness()'s docstring.
     """
-    stats = _measure_loudness(audio_path)
+    pre = _VOICE_LEVELER + ","
+    stats = _measure_loudness(audio_path, pre=pre)
     if stats:
         af = (
-            f"loudnorm={_LOUDNORM_TARGET}:"
+            f"{pre}loudnorm={_LOUDNORM_TARGET}:"
             f"measured_I={stats['input_i']}:measured_TP={stats['input_tp']}:"
             f"measured_LRA={stats['input_lra']}:measured_thresh={stats['input_thresh']}:"
             f"linear=true"
         )
     else:
-        af = f"loudnorm={_LOUDNORM_TARGET}"
+        af = f"{pre}loudnorm={_LOUDNORM_TARGET}"
 
     run_ffmpeg([
         "-i", str(video_path), "-i", str(audio_path),
