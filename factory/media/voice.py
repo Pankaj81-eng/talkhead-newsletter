@@ -10,6 +10,60 @@ from typing import Protocol
 from .. import config
 
 
+
+# Pace evening (2026-10-11): chunks of one narration came out at 2.5 to 3.4 words/sec, so the
+# voice raced in some sentences and dragged in others. Each chunk's real speech rate is measured
+# (leading/trailing silence excluded) and time-stretched (pitch kept) toward one target rate.
+PACE_TARGET_WPS = 2.60
+PACE_TOLERANCE = 0.06          # leave takes within +-6% of the target untouched
+PACE_MAX_STRETCH = 0.18        # never speed up or slow down by more than 18%
+
+
+def _even_pace(wav, sr: int, n_words: int):
+    import subprocess
+    import tempfile
+
+    import numpy as np
+    import soundfile as sf
+
+    if n_words < 3 or len(wav) < sr:
+        return wav
+    frame = int(sr * 0.01)
+    n = len(wav) // frame
+    if n < 10:
+        return wav
+    rms = np.sqrt((wav[: n * frame].reshape(n, frame) ** 2).mean(axis=1))
+    loud = np.where(rms > max(rms.max() * 0.03, 1e-4))[0]
+    if len(loud) == 0:
+        return wav
+    # Cut dead air around the speech (a chunk can carry seconds of trailing silence) but keep a
+    # small natural pad; the 250 ms gap between chunks is added by the caller.
+    pad = 8                                   # 80 ms
+    lo = max(int(loud[0]) - pad, 0) * frame
+    hi = min(int(loud[-1]) + 1 + pad, n) * frame
+    wav = wav[lo:hi]
+    speech_s = (loud[-1] - loud[0] + 1) * 0.01
+    wps = n_words / speech_s
+    ratio = wps / PACE_TARGET_WPS            # >1 = too fast -> slow down (atempo < 1)
+    if abs(ratio - 1) <= PACE_TOLERANCE:
+        print(f"[voice]   pace {wps:.2f} wps ok (silence trimmed)")
+        return wav
+    tempo = 1 / ratio
+    tempo = min(max(tempo, 1 - PACE_MAX_STRETCH), 1 + PACE_MAX_STRETCH)
+    with tempfile.TemporaryDirectory() as d:
+        src, dst = f"{d}/in.wav", f"{d}/out.wav"
+        sf.write(src, wav, sr)
+        try:
+            subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", src, "-filter:a", f"atempo={tempo:.4f}", dst],
+                           check=True)
+            out, _ = sf.read(dst, dtype="float32")
+        except Exception as e:  # noqa: BLE001
+            print(f"[voice] pace evening skipped ({e})")
+            return wav
+    out = out if out.ndim == 1 else out.mean(axis=1)
+    print(f"[voice]   pace {wps:.2f} -> ~{wps * tempo:.2f} wps (tempo {tempo:.2f})")
+    return out.astype(np.float32)
+
 class VoiceEngine(Protocol):
     def synthesize(self, text: str, out_path: Path) -> Path: ...
 
@@ -185,6 +239,7 @@ class ChatterboxVoice:
                 # Nudge the RNG so the retry is a genuinely different
                 # sample, not the same rushed take again.
                 torch.manual_seed(seed + (i + 1) * 1000 + attempt + 1)
+            wav = _even_pace(wav, model.sr, n_words)
             chunks.append(wav)
             chunks.append(gap)
 
