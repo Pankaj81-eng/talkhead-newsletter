@@ -1300,5 +1300,37 @@
       "instagram_media_id": "18179184091431927",
       "linkedin_post_id": "182424620329074688"
     }
+  },
+  {
+    "date": "2026-10-11",
+    "run_id": "bf9f00189a35",
+    "story": "Skild AI robots trial at Pittsburgh International Airport",
+    "source_url": "https://www.internationalairportreview.com/picture-of-the-week-pittsburgh-international-airport-to-trial-four-legged-skild-ai-robots-in-airside-terminal-under-xbridge-programme/2136709.article",
+    "category": "aviation",
+    "title": "Can four-legged robots monitor airports now?",
+    "description": "Can four-legged robots monitor airports now?\nPittsburgh International Airport is testing four-legged AI robots that measure air quality and could soon deliver snacks or coffee.\nWould you let a robot fetch coffee at the gate?",
+    "full_narration": "Four-legged robots are already strolling through Pittsburgh airport, checking the air for us. Up to four Skild AI quadrupeds and two charging stations will patrol the airside terminal, each with its own zone and automatic charging. First they roam alone, measuring pollution levels and alerting staff if thresholds are exceeded, using cameras and sensors to map the space in real time. Later they could point out full trash bins, spot spills, and deliver snacks to gates, giving data that helps crews keep walkways and improve flow. Would you let a robot fetch coffee at the gate?",
+    "hashtags": [
+      "fourlegged",
+      "robots",
+      "airport",
+      "airquality",
+      "automation",
+      "technews",
+      "robotics"
+    ],
+    "video_path": "runs/bf9f00189a35/final.mp4",
+    "thumbnail_path": "runs/bf9f00189a35/thumbnail.jpg",
+    "metadata_path": "runs/bf9f00189a35/metadata.txt",
+    "used_hero_image": true,
+    "intro_variant": "none",
+    "status": "published",
+    "generated_at": "2026-10-11T05:36:38.466714",
+    "decided_at": "2026-10-11T07:25:41.984838",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/_9UPhgZUVFg",
+      "instagram_media_id": "17930833479167597",
+      "linkedin_post_id": "182755647895371776"
+    }
   }
 ]
