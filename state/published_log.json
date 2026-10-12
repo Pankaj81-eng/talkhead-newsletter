@@ -1332,5 +1332,36 @@
       "instagram_media_id": "17930833479167597",
       "linkedin_post_id": "182755647895371776"
     }
+  },
+  {
+    "date": "2026-10-12",
+    "run_id": "4b3b659c0b02",
+    "story": "AI Traffic Signals That Cut Waiting Times by Up to 60 Percent Put Ambulances First",
+    "source_url": "https://bioengineer.org/ai-traffic-signals-that-cut-waiting-times-by-up-to-60-percent-put-ambulances-first/",
+    "category": "cities_energy",
+    "title": "Can AI traffic lights cut waiting times by 60%? \ud83d\udea6",
+    "description": "Can smart traffic signals fix city gridlock?\n\nResearchers developed an AI traffic system that cuts intersection wait times by up to 60%. Using sensors mounted directly on street poles, it detects approaching ambulances and clears a green path automatically.\n\nWould you trust AI to control your city's traffic lights?",
+    "full_narration": "Smart traffic lights using cameras cut city wait times by up to 60%. Instead of relying on fixed timers that keep drivers waiting on empty streets, these signals adjust in real time to actual road traffic. By combining video feeds, sound sensors, and infrared detectors, the system identifies emergency vehicles with roughly 90% accuracy. When an ambulance approaches, the lights switch green to clear a fast, safe corridor straight through the intersection. Small computer chips mounted directly at the signal run the program, reducing overall congestion by up to 25%. Would you trust AI to control your city's traffic lights?",
+    "hashtags": [
+      "ai",
+      "traffic",
+      "smartcities",
+      "tech",
+      "transportation",
+      "innovation"
+    ],
+    "video_path": "runs/4b3b659c0b02/final.mp4",
+    "thumbnail_path": "runs/4b3b659c0b02/thumbnail.jpg",
+    "metadata_path": "runs/4b3b659c0b02/metadata.txt",
+    "used_hero_image": true,
+    "intro_variant": "none",
+    "status": "published",
+    "generated_at": "2026-10-12T05:44:30.101897",
+    "decided_at": "2026-10-12T05:52:50.910206",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/apeovsMFxPA",
+      "instagram_media_id": "18127595716883470",
+      "linkedin_post_id": "183094668949454848"
+    }
   }
 ]
