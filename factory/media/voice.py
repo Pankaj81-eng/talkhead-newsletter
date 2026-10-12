@@ -64,6 +64,13 @@ def _even_pace(wav, sr: int, n_words: int):
     print(f"[voice]   pace {wps:.2f} -> ~{wps * tempo:.2f} wps (tempo {tempo:.2f})")
     return out.astype(np.float32)
 
+
+def speakable(text: str) -> str:
+    """Spell out symbols the TTS reads badly. 2026-10-12: "60%" was spoken as "sixty pence"."""
+    import re
+    text = re.sub(r"(\d[\d,]*(?:\.\d+)?)\s*%", r"\1 percent", text)
+    return text.replace("%", " percent").replace("&", " and ")
+
 class VoiceEngine(Protocol):
     def synthesize(self, text: str, out_path: Path) -> Path: ...
 
@@ -82,6 +89,7 @@ class KokoroVoice:
         return self._pipeline
 
     def synthesize(self, text: str, out_path: Path) -> Path:
+        text = speakable(text)
         import soundfile as sf
         import numpy as np
 
@@ -149,6 +157,7 @@ class ChatterboxVoice:
         return _load_chatterbox_model()
 
     def synthesize(self, text: str, out_path: Path) -> Path:
+        text = speakable(text)
         import re
         import random
         import numpy as np
