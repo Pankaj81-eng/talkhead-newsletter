@@ -434,7 +434,7 @@ def concat_clips(paths: list[Path], out_path: Path, faststart: bool = False) -> 
 # videos near -18.8 LUFS, which sounded quiet next to other clips (2026-10-11). A gentle compressor
 # + limiter runs first so the narration's peaks do not stop loudnorm from reaching the target.
 _LOUDNORM_TARGET = "I=-14:TP=-1:LRA=11"
-_VOICE_LEVELER = "acompressor=threshold=0.063:ratio=3:attack=5:release=100:makeup=3,alimiter=limit=0.89:level=disabled"
+_VOICE_LEVELER = "acompressor=threshold=0.063:ratio=3:attack=5:release=100:makeup=3,alimiter=limit=0.85:level=disabled"
 
 
 def _measure_loudness(audio_path: Path, pre: str = "") -> dict | None:
@@ -467,41 +467,51 @@ def _measure_loudness(audio_path: Path, pre: str = "") -> dict | None:
         return None
 
 
+def _integrated_lufs(path: Path) -> float | None:
+    stats = _measure_loudness(path)
+    try:
+        return float(stats["input_i"]) if stats else None
+    except (KeyError, TypeError, ValueError):
+        return None
+
+
+def _normalize_voice(audio_path: Path, out_wav: Path) -> Path:
+    """Brings the narration to the target loudness with plain gain + compressor + peak limiter,
+    then MEASURES the result and corrects once more. loudnorm's own linear mode left the cloud
+    narration at about -17.6 LUFS (2026-10-12) despite a -14 target, so the result is verified
+    instead of trusted. Returns out_wav, or audio_path itself if anything fails."""
+    target = float(_LOUDNORM_TARGET.split(":")[0].split("=")[1])
+    limiter = "alimiter=limit=0.85:level=disabled"
+    try:
+        i0 = _integrated_lufs(audio_path)
+        if i0 is None:
+            return audio_path
+        wav1 = out_wav.with_suffix(".pass1.wav")
+        run_ffmpeg(["-i", str(audio_path), "-af",
+                    f"volume={target - i0:.2f}dB,{_VOICE_LEVELER}", str(wav1)])
+        i1 = _integrated_lufs(wav1)
+        if i1 is None or abs(target - i1) <= 0.4:
+            return wav1
+        run_ffmpeg(["-i", str(wav1), "-af", f"volume={target - i1:.2f}dB,{limiter}", str(out_wav)])
+        return out_wav
+    except Exception as e:  # noqa: BLE001
+        print(f"[assemble] voice leveling failed ({str(e)[:80]}); using the narration as is")
+        return audio_path
+
+
 def mux_audio(video_path: Path, audio_path: Path, out_path: Path) -> None:
     """
-    Loudness-normalizes the narration before muxing it in (2026-09-11,
-    Pankaj's feedback: voiceover sounded noticeably quieter than the
-    intro/outro clips, which carry their own naturally full-level
-    recorded audio -- the raw TTS output from voice.py has no volume
-    handling at all, so the body of every video was at whatever level
-    Chatterbox happened to render). `loudnorm` (EBU R128, the same
-    standard podcasts and Reels/Shorts commonly target) rather than a
-    flat volume multiplier -- self-corrects for take-to-take level
-    variance instead of assuming every voiceover is equally quiet.
-    -16 LUFS / -1.5 dBTP is the typical mobile/social target, matching
-    real recorded video like the outro rather than broadcast's quieter
-    -23 LUFS. Two-pass (measure via _measure_loudness(), then apply with
-    those measured stats) gets noticeably closer to that target than a
-    single blind pass -- see _measure_loudness()'s docstring.
+    Loudness-normalizes the narration before muxing it in (2026-09-11, Pankaj's feedback: the
+    voiceover sounded quieter than the intro/outro clips; raw TTS has no level handling). Target
+    is -14 LUFS / -1 dBTP, what Shorts/Reels/TikTok play at. See _normalize_voice(): gain +
+    compressor + limiter, measured and corrected, because loudnorm alone undershot.
     """
-    pre = _VOICE_LEVELER + ","
-    stats = _measure_loudness(audio_path, pre=pre)
-    if stats:
-        af = (
-            f"{pre}loudnorm={_LOUDNORM_TARGET}:"
-            f"measured_I={stats['input_i']}:measured_TP={stats['input_tp']}:"
-            f"measured_LRA={stats['input_lra']}:measured_thresh={stats['input_thresh']}:"
-            f"linear=true"
-        )
-    else:
-        af = f"{pre}loudnorm={_LOUDNORM_TARGET}"
-
+    leveled = _normalize_voice(audio_path, out_path.with_suffix(".voice.wav"))
     run_ffmpeg([
-        "-i", str(video_path), "-i", str(audio_path),
+        "-i", str(video_path), "-i", str(leveled),
         "-map", "0:v:0", "-map", "1:a:0",
-        "-af", af,
         "-c:v", "copy",
-        "-c:a", "aac", "-b:a", "128k", "-ar", "48000", "-ac", "2",
+        "-c:a", "aac", "-b:a", "160k", "-ar", "48000", "-ac", "2",
         "-shortest",
         str(out_path),
     ])
