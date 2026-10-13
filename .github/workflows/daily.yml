@@ -85,7 +85,10 @@ jobs:
           FACTORY_MIN_SECONDS: "36"
           FACTORY_SAFE_MAX_SECONDS: "45"
           FACTORY_HARD_MAX_SECONDS: "50"
-          FACTORY_WORDS_PER_SECOND: "2.6"
+          # 2026-10-13: no extra speed-up (it was 1.15 by default and sounded rushed); at the natural
+          # pace about 2.4 words/sec, so the same 36-45s budget means ~86-108 words.
+          FACTORY_VOICE_SPEED: "1.0"
+          FACTORY_WORDS_PER_SECOND: "2.4"
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}

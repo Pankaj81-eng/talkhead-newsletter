@@ -33,7 +33,7 @@ for p in (RUNS_DIR, CACHE_BROLL, CACHE_VOICE, OUTRO_DIR, INTRO_DIR, INTRO_LIBRAR
 MIN_SECONDS = float(os.getenv("FACTORY_MIN_SECONDS", 36))
 SAFE_MAX_SECONDS = float(os.getenv("FACTORY_SAFE_MAX_SECONDS", 45))
 HARD_MAX_SECONDS = float(os.getenv("FACTORY_HARD_MAX_SECONDS", 50))
-WORDS_PER_SECOND = float(os.getenv("FACTORY_WORDS_PER_SECOND", 2.6))
+WORDS_PER_SECOND = float(os.getenv("FACTORY_WORDS_PER_SECOND", 2.4))   # real spoken pace incl. pauses at VOICE_SPEED 1.0
 
 # --- Output video spec (Instagram Reels + YouTube Shorts safe) ---
 OUT_WIDTH = 1080
@@ -178,7 +178,9 @@ VOICE_ENGINE = os.getenv("FACTORY_VOICE_ENGINE", "kokoro")  # "kokoro" | "chatte
 # Pace, applied as a post-process time-stretch (pitch-preserving) after
 # whichever engine generates the audio -- 1.15 = 15% faster, good default
 # for shorts where the natural TTS pace reads a little slow. 1.0 disables it.
-VOICE_SPEED = float(os.getenv("FACTORY_VOICE_SPEED", 1.15))
+# 2026-10-13: default 1.0. The old 1.15 (a 15% speed-up on top of the narration) made the voice sound
+# rushed; pace is now evened per sentence inside the voice engine instead (see voice._even_pace).
+VOICE_SPEED = float(os.getenv("FACTORY_VOICE_SPEED", 1.0))
 
 
 def _find_voice_sample() -> Path:
