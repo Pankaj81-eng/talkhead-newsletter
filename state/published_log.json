@@ -1363,5 +1363,36 @@
       "instagram_media_id": "18127595716883470",
       "linkedin_post_id": "183094668949454848"
     }
+  },
+  {
+    "date": "2026-10-13",
+    "run_id": "eda80b93de76",
+    "story": "NASA\u2019s Perseverance breaks 28-mile Mars driving record using autonomous navigation",
+    "source_url": "https://interestingengineering.com/space/nasa-perseverance-mars-driving-record",
+    "category": "space",
+    "title": "Perseverance Sets New Mars Driving Record \ud83d\ude97",
+    "description": "Did you know Perseverance now holds the farthest driving record on another planet?\nThe rover has driven 28.10 miles using its AutoNav system, surpassing Opportunity\u2019s 28.06-mile record and exploring new terrain for signs of ancient water.\nWould you explore Mars if you could?",
+    "full_narration": "Perseverance just drove farther on Mars than any rover ever did. It reached 28.10 miles, beating Opportunity\u2019s 28.06-mile record by a tiny margin. More than 90% of that distance was covered using AutoNav, the rover\u2019s on-board thinking-while-driving system. Each day it can travel up to 1,351 feet, scanning 600,000 points to avoid rocks\u2014far more than the 20 points the first rover used. Scientists hope this extra mileage will uncover more clues about ancient water and possible life on Mars. The rover is now heading toward a site called Rainbow Falls, where bright mineral layers may reveal the planet\u2019s early climate.",
+    "hashtags": [
+      "mars",
+      "perseverance",
+      "space",
+      "nasa",
+      "rover",
+      "science"
+    ],
+    "video_path": "runs/eda80b93de76/final.mp4",
+    "thumbnail_path": "runs/eda80b93de76/thumbnail.jpg",
+    "metadata_path": "runs/eda80b93de76/metadata.txt",
+    "used_hero_image": true,
+    "intro_variant": "none",
+    "status": "published",
+    "generated_at": "2026-10-13T05:48:42.203468",
+    "decided_at": "2026-10-13T05:53:57.388693",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/eAYy7_6M8ms",
+      "instagram_media_id": "18116217824015314",
+      "linkedin_post_id": "183457335098736640"
+    }
   }
 ]
