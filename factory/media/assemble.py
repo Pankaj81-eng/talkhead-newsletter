@@ -297,21 +297,41 @@ def _video_shot(path: Path, frames: int, start: float, out: Path) -> None:
     ])
 
 
+def _frame_jpg(path: Path, name: str) -> Path:
+    mid = max(probe_duration(path) / 2, 0.0)
+    jpg = path.with_name(path.stem + name)
+    run_ffmpeg(["-ss", f"{mid:.2f}", "-i", str(path), "-frames:v", "1", "-vf", "scale=512:-2", str(jpg)])
+    return jpg
+
+
 def _stock_fits(path: Path, story: str, line: str, query: str) -> bool:
-    """Vision check on the middle frame of a stock clip (see shotplan.frame_fits)."""
+    """Vision check on the middle frame of a stock clip (see shotplan.frame_fits). If the check
+    cannot run (Gemini busy), the clip is REJECTED: on 2026-10-13 an unchecked run let a Vietnamese
+    market and a waterfall into a Mars-rover video. A missing shot is better than a wrong one."""
     if not story:
         return True
     try:
         from .shotplan import frame_fits
-        mid = max(probe_duration(path) / 2, 0.0)
-        jpg = path.with_suffix(".check.jpg")
-        run_ffmpeg(["-ss", f"{mid:.2f}", "-i", str(path), "-frames:v", "1", "-vf", "scale=512:-2", str(jpg)])
-        ok = frame_fits(jpg, story, line)
-        print(f"[assemble] stock check {'ok ' if ok else 'REJECT'} for {query!r}: {path.name[:40]}")
-        return ok
+        ok = frame_fits(_frame_jpg(path, ".check.jpg"), story, line)
+        verdict = "ok " if ok else ("REJECT" if ok is False else "REJECT (no check)")
+        print(f"[assemble] stock check {verdict} for {query!r}: {path.name[:40]}")
+        return bool(ok)
     except Exception as e:  # noqa: BLE001
-        print(f"[assemble] stock check skipped ({str(e)[:80]})")
-        return True
+        print(f"[assemble] stock check failed ({str(e)[:80]}); clip rejected")
+        return False
+
+
+def _is_slate(path: Path) -> bool:
+    """A story clip (NASA/Commons) that is really a title card or text slide, e.g. a cropped 'Jet
+    Propulsion Laboratory / California Institute of Technology' slate. Unknown -> keep the clip."""
+    try:
+        from .shotplan import is_text_slide
+        bad = is_text_slide(_frame_jpg(path, ".slate.jpg")) is True
+        if bad:
+            print(f"[assemble] dropped text slide {path.name[:40]}")
+        return bad
+    except Exception:  # noqa: BLE001
+        return False
 
 
 def _gather_shots(beat, idx: int, run_dir: Path, plan: dict, n: int, duration: float) -> list[dict]:
@@ -358,6 +378,8 @@ def _gather_shots(beat, idx: int, run_dir: Path, plan: dict, n: int, duration: f
     live: list[dict] = []
     for sp in specials:
         if sp["kind"] == "video":
+            if _is_slate(sp["path"]):
+                continue
             clip_len = probe_duration(sp["path"])
             start = _motion_start(sp["path"], seg, clip_len) if clip_len > seg + 1.5 else 0.0
             if start is None:

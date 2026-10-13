@@ -58,30 +58,51 @@ def plan_shots(headline: str, beat_texts: list[str]) -> dict[int, dict]:
     return out
 
 
-def frame_fits(frame_jpg, story: str, line: str) -> bool:
-    """Ask Gemini (vision) whether one frame of a stock clip plausibly illustrates the story and the
-    narration line. Fails OPEN (returns True) when there is no key, no answer or any error, so a
-    quota hiccup never leaves a beat without footage."""
+def _ask_frame(frame_jpg, prompt: str, tries: int = 3) -> bool | None:
+    """One YES/NO question about one frame, asked of Gemini (vision) with a few retries because the
+    free tier often answers 503/429. Returns True (YES), False (NO) or None when no answer came."""
+    import time
     from pathlib import Path
 
     from .. import config
     if not config.GEMINI_API_KEY:
-        return True
+        return None
     try:
         from google import genai
         from google.genai import types
         client = genai.Client(api_key=config.GEMINI_API_KEY)
-        prompt = (
-            "You are the picture editor of a news Short. Story: " + story + "\nNarration line: " + line +
-            "\nDoes this single frame plausibly illustrate the story or that line (the right kind of "
-            "subject: e.g. cars/roads/robots/phones/cities as the line needs)? Random scenery, "
-            "unrelated people, vintage or irrelevant objects, empty abstract shots and green screens "
-            "do NOT fit. Answer with exactly one word: YES or NO.")
-        resp = client.models.generate_content(
-            model=config.GEMINI_MODEL,
-            contents=[types.Part.from_bytes(data=Path(frame_jpg).read_bytes(), mime_type="image/jpeg"), prompt])
-        ans = (resp.text or "").strip().upper()
-        return not ans.startswith("NO")
+        data = Path(frame_jpg).read_bytes()
     except Exception as e:  # noqa: BLE001
-        print(f"[shotplan] frame check skipped ({str(e)[:80]})")
-        return True
+        print(f"[shotplan] frame check unavailable ({str(e)[:80]})")
+        return None
+    for attempt in range(tries):
+        try:
+            resp = client.models.generate_content(
+                model=config.GEMINI_MODEL,
+                contents=[types.Part.from_bytes(data=data, mime_type="image/jpeg"), prompt])
+            return (resp.text or "").strip().upper().startswith("YES")
+        except Exception as e:  # noqa: BLE001
+            if attempt == tries - 1:
+                print(f"[shotplan] frame check gave no answer ({str(e)[:80]})")
+                return None
+            time.sleep(4 * (attempt + 1))
+    return None
+
+
+def frame_fits(frame_jpg, story: str, line: str) -> bool | None:
+    """Does one frame of a stock clip plausibly illustrate the story and the narration line?
+    True / False, or None when the check could not run (the caller decides what to do then)."""
+    prompt = (
+        "You are the picture editor of a news Short. Story: " + story + "\nNarration line: " + line +
+        "\nDoes this single frame plausibly illustrate the story or that line (the right kind of "
+        "subject: e.g. cars/roads/robots/space rovers/phones/cities as the line needs)? Random scenery, "
+        "markets, oceans, waterfalls, unrelated people, vintage or irrelevant objects, empty abstract "
+        "shots and green screens do NOT fit. Answer with exactly one word: YES or NO.")
+    return _ask_frame(frame_jpg, prompt)
+
+
+def is_text_slide(frame_jpg) -> bool | None:
+    """True when the frame is a title card, logo, caption slate or mostly text rather than footage."""
+    prompt = ("Is this frame mainly a title card, logo, slide, caption screen or cropped text (not real "
+              "footage of a place, object or person)? Answer with exactly one word: YES or NO.")
+    return _ask_frame(frame_jpg, prompt)
