@@ -147,6 +147,19 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: uv run python scripts/scorecard.py --snapshot --weekly-on-monday
 
+      - name: Renew Instagram token
+        # Sundays only: refreshes the 60-day Instagram token and stores the new one back into the
+        # GitHub secret IG_ACCESS_TOKEN (needs the GH_PAT secret). Never fails the run; warns on Telegram.
+        if: always()
+        continue-on-error: true
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: uv run python scripts/refresh_ig_token.py --weekly-on-sunday
+
       - name: Weekly creator brief
         # Sundays only: three ideas for Pankaj's weekly deeper video, sent to Telegram.
         if: always()
