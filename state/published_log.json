@@ -1394,5 +1394,31 @@
       "instagram_media_id": "18116217824015314",
       "linkedin_post_id": "183457335098736640"
     }
+  },
+  {
+    "date": "2026-10-14",
+    "run_id": "8976a8573373",
+    "story": "Science Corporation implants its vision-restoring chip in its first Stargardt disease patient",
+    "source_url": "https://techcrunch.com/2026/10/13/science-corporation-implants-its-vision-restoring-chip-in-its-first-stargardt-disease-patient/",
+    "category": "health",
+    "title": "Can a tiny eye chip give back sight?",
+    "description": "What is Science Corporation implants its vision-restoring chip in its first Stargardt disease patient?\n\n\u26a0\ufe0f GENERIC: the brief has real percentages (50%) but the script cited none after 3 attempts -- consider rejecting and re-running.\n\nCan a tiny eye chip give back sight?\nScience Corporation implanted its PRIMA retinal chip in a Stargardt disease patient, letting him read letters for the first time.",
+    "full_narration": "A tiny chip let a blind man read a letter for the first time. Stargardt disease slowly destroys the eye\u2019s central vision, affecting about 150,000 people worldwide. Doctors place a 2 mm \u00d7 2 mm chip behind the eye and the patient wears camera glasses that send images to the chip. In his first rehab session he could see a single letter, and a week later he read a whole word. The team aims to enlarge the field of view and reach normal sharpness within five years. Would you try a vision-restoring chip?",
+    "hashtags": [
+      "visionrestoration",
+      "retinalimplant",
+      "stargardtdisease",
+      "bci",
+      "medicaltechnology",
+      "technews"
+    ],
+    "video_path": "runs/8976a8573373/final.mp4",
+    "thumbnail_path": "runs/8976a8573373/thumbnail.jpg",
+    "metadata_path": "runs/8976a8573373/metadata.txt",
+    "used_hero_image": true,
+    "intro_variant": "none",
+    "status": "discarded_by_pankaj",
+    "generated_at": "2026-10-14T05:48:21.421061",
+    "decided_at": "2026-10-14T06:05:31.570893"
   }
 ]
