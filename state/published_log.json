@@ -1420,5 +1420,35 @@
     "status": "discarded_by_pankaj",
     "generated_at": "2026-10-14T05:48:21.421061",
     "decided_at": "2026-10-14T06:05:31.570893"
+  },
+  {
+    "date": "2026-10-14",
+    "run_id": "0c3da256c2ff",
+    "story": "Humanoid robots join the workforce at auto parts factory in Hangzhou",
+    "source_url": "https://www.ecns.cn/hd/2026-10-14/detail-ihfmcrte5285681.shtml",
+    "category": "robots",
+    "title": "Hangzhou Factory Adds 20 Humanoid Robots to Assembly Line \ud83e\udd16",
+    "description": "Are robots now loading car parts in a Chinese factory? A plant in Hangzhou has deployed nearly 20 humanoid robots to handle the tedious loading and unloading tasks, letting human workers focus on more skilled work. Would you trust a robot to load car parts?",
+    "full_narration": "A factory in Hangzhou now has nearly 20 humanoid robots loading car parts. These robots pick up and place components along the assembly line, working side-by-side with human staff. The plant deployed about 20 units to handle the tedious loading and unloading jobs, freeing workers for more skilled tasks. Each robot can operate continuously, so the production line runs almost nonstop, boosting overall output. Automating this step lets the factory meet demand without extra hires, cutting costs and speeding production. Would you trust a robot to load car parts?",
+    "hashtags": [
+      "robots",
+      "manufacturing",
+      "china",
+      "automation",
+      "technews"
+    ],
+    "video_path": "runs/0c3da256c2ff/final.mp4",
+    "thumbnail_path": "runs/0c3da256c2ff/thumbnail.jpg",
+    "metadata_path": "runs/0c3da256c2ff/metadata.txt",
+    "used_hero_image": false,
+    "intro_variant": "none",
+    "status": "published_partial",
+    "generated_at": "2026-10-14T06:50:41.906932",
+    "decided_at": "2026-10-14T06:52:02.028627",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/n8Cb7DQEL9A",
+      "instagram_error": "Instagram POST 17841439908626050/media -> 400: {\"error\":{\"message\":\"Error validating access token: Session has expired on Tuesday, 13-Oct-26 08:00:04 PDT. The current time is Tuesday, 13-Oct-26 23:51:54 PDT.\",\"type\":\"OAuthException\",\"code\":190,\"error_subcode\":0,\"fbtrace_id\":\"AJ4otiQMfsrxotlAxjZeAXL\"}}",
+      "linkedin_post_id": "183834338930982912"
+    }
   }
 ]
