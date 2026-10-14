@@ -455,7 +455,7 @@ def concat_clips(paths: list[Path], out_path: Path, faststart: bool = False) -> 
 # -14 LUFS / -1 dBTP is what YouTube Shorts, Reels and TikTok play at; -16/-1.5 left the published
 # videos near -18.8 LUFS, which sounded quiet next to other clips (2026-10-11). A gentle compressor
 # + limiter runs first so the narration's peaks do not stop loudnorm from reaching the target.
-_LOUDNORM_TARGET = "I=-14:TP=-1:LRA=11"
+_LOUDNORM_TARGET = "I=-15:TP=-1:LRA=11"
 _VOICE_LEVELER = "acompressor=threshold=0.063:ratio=3:attack=5:release=100:makeup=3,alimiter=limit=0.85:level=disabled"
 
 
@@ -509,8 +509,11 @@ def _normalize_voice(audio_path: Path, out_wav: Path) -> Path:
         if i0 is None:
             return audio_path
         wav1 = out_wav.with_suffix(".pass1.wav")
+        # NO compressor: with its make-up gain it lifted breaths and room air between the words by
+        # 8-13 dB (quiet parts went from 30 dB below the speech to 16 dB, 2026-10-14) and the
+        # narration sounded full of sighs. Gain + a peak limiter keeps the pauses clean.
         run_ffmpeg(["-i", str(audio_path), "-af",
-                    f"volume={target - i0:.2f}dB,{_VOICE_LEVELER}", str(wav1)])
+                    f"volume={target - i0:.2f}dB,{limiter}", str(wav1)])
         i1 = _integrated_lufs(wav1)
         if i1 is None or abs(target - i1) <= 0.4:
             return wav1
