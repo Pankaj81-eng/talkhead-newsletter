@@ -15,9 +15,23 @@ from .. import config
 # voice raced in some sentences and dragged in others. Each chunk's real speech rate is measured
 # (leading/trailing silence excluded) and time-stretched (pitch kept) toward one target rate.
 PACE_TARGET_WPS = 2.60
-PACE_TOLERANCE = 0.06          # leave takes within +-6% of the target untouched
-PACE_MAX_STRETCH = 0.18        # never speed up or slow down by more than 18%
+PACE_TOLERANCE = 0.04          # leave takes within +-4% of the target untouched
+PACE_MAX_STRETCH = 0.08        # polish only: never stretch more than 8% (more sounds sing-song)
 
+
+
+def _speech_wps(wav, sr: int, n_words: int) -> float:
+    """Words per second of the actual speech in a chunk (leading/trailing silence excluded)."""
+    import numpy as np
+    frame = int(sr * 0.01)
+    n = len(wav) // frame
+    if n_words < 3 or n < 10:
+        return 0.0
+    rms = np.sqrt((wav[: n * frame].reshape(n, frame) ** 2).mean(axis=1))
+    loud = np.where(rms > max(rms.max() * 0.03, 1e-4))[0]
+    if len(loud) == 0:
+        return 0.0
+    return n_words / ((loud[-1] - loud[0] + 1) * 0.01)
 
 def _even_pace(wav, sr: int, n_words: int):
     import subprocess
@@ -211,43 +225,38 @@ class ChatterboxVoice:
         # self.conds, it doesn't touch sampling) -- it's plain sampling
         # variance, so retry ONLY the offending chunk with a nudged seed
         # rather than re-rolling the whole take.
-        MAX_WORDS_PER_SEC = 3.2
-        MAX_PACE_RETRIES = 3
+        # 2026-10-14: stretching rushed/slow sentences by up to +-18% (the earlier fix) made each
+        # sentence a different tempo and the narration sounded like someone reciting a poem. Now a
+        # sentence is simply RE-GENERATED (different seed) until its natural speech rate lands in a
+        # comfortable band, and the best of up to MAX_ATTEMPTS is kept; stretching is only a polish.
+        MAX_ATTEMPTS = 5
+        BAND = (2.35, 2.85)               # speech-only words/sec, silence excluded
 
         chunks = []
         for i, sentence in enumerate(merged):
             n_words = len(sentence.split())
-            for attempt in range(MAX_PACE_RETRIES + 1):
-                # Only pass audio_prompt_path on the FIRST chunk (first
-                # attempt) -- that's what triggers Chatterbox to (re)process
-                # the reference audio. Passing it on every call re-ran that
-                # (expensive) step per chunk for no reason; conditioning is
-                # identical every time since the reference doesn't change
-                # mid-video. Using the full sample_path (not a trimmed clip)
-                # and library-default generation params -- confirmed as the
-                # version that actually sounded like you, kept as-is rather
-                # than "improved" further.
+            best = None                    # (distance from target, wav)
+            for attempt in range(MAX_ATTEMPTS):
+                # Only pass audio_prompt_path on the FIRST generate() call -- that is what makes
+                # Chatterbox (re)process the reference audio; conditioning never changes mid-video.
                 wav = model.generate(
                     sentence,
                     audio_prompt_path=str(self.sample_path) if i == 0 and attempt == 0 else None,
                 )
                 wav = wav.squeeze().detach().cpu().numpy().astype(np.float32)
-                dur = len(wav) / model.sr
-                wps = n_words / dur if dur > 0 else 0
-                too_fast = wps > MAX_WORDS_PER_SEC
-                # Printed per-chunk so a future glitch (e.g. a chunk running
-                # way longer than its word count would suggest) is visible
-                # immediately in the console instead of requiring an ffprobe
-                # forensic pass after the fact.
-                flag = " -- TOO FAST, retrying" if too_fast and attempt < MAX_PACE_RETRIES else ""
-                print(f"[voice] chunk {i+1}/{len(merged)} attempt {attempt+1} "
-                      f"({n_words} words) -> {dur:.2f}s ({wps:.2f} wps){flag}: "
-                      f"\"{sentence[:60]}{'...' if len(sentence) > 60 else ''}\"")
-                if not too_fast or attempt == MAX_PACE_RETRIES:
+                wps = _speech_wps(wav, model.sr, n_words)
+                dist = abs(wps - PACE_TARGET_WPS) if wps else 99.0
+                in_band = bool(wps) and BAND[0] <= wps <= BAND[1]
+                print(f"[voice] chunk {i+1}/{len(merged)} attempt {attempt+1} ({n_words} words) -> "
+                      f"{wps:.2f} wps speech-only{' ok' if in_band else ''}: "
+                      f"\"{sentence[:50]}{'...' if len(sentence) > 50 else ''}\"")
+                if best is None or dist < best[0]:
+                    best = (dist, wav)
+                if in_band:
                     break
-                # Nudge the RNG so the retry is a genuinely different
-                # sample, not the same rushed take again.
+                # A genuinely different sample, not the same take again.
                 torch.manual_seed(seed + (i + 1) * 1000 + attempt + 1)
+            wav = best[1]
             wav = _even_pace(wav, model.sr, n_words)
             chunks.append(wav)
             chunks.append(gap)
