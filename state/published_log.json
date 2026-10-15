@@ -1481,5 +1481,37 @@
       "instagram_media_id": "18136056982646749",
       "linkedin_post_id": "183906251380359168"
     }
+  },
+  {
+    "date": "2026-10-15",
+    "run_id": "9b8903646e33",
+    "story": "How Alex Zhou built $3B startup Linkerbot to give robots human-like hands",
+    "source_url": "https://e.vnexpress.net/news/tech/personalities/how-alex-zhou-built-3b-startup-linkerbot-to-give-robots-human-like-hands-5131683.html",
+    "category": "robots",
+    "title": "Why does Alex Zhou own 31% of a $3B robot-hand company?",
+    "description": "Did you know Alex Zhou owns 31% of a $3 billion robot-hand startup? The company builds cheap yet dexterous robotic fingers that can pick up phones and use tweezers, aiming to let robots help at home. Would you let a robot wash your dishes?",
+    "full_narration": "Alex Zhou owns 31% of a $3 billion robot-hand startup. Linkerbot makes robotic fingers that move like yours, with over 20 joints instead of the human hand\u2019s 27. Their cheapest hand costs 6,666 yuan (about $980) and can pick up a phone, while the top model reaches 99,999 yuan and can use tweezers on tiny screws. Zhou hopes these hands will let robots cook, clean and help at home, turning factories\u2019 simple grippers into true assistants. If robots could feel objects as you do, would you let one wash your dishes?",
+    "hashtags": [
+      "robotics",
+      "ai",
+      "technews",
+      "startup",
+      "china",
+      "innovation",
+      "future"
+    ],
+    "video_path": "runs/9b8903646e33/final.mp4",
+    "thumbnail_path": "runs/9b8903646e33/thumbnail.jpg",
+    "metadata_path": "runs/9b8903646e33/metadata.txt",
+    "used_hero_image": true,
+    "intro_variant": "none",
+    "status": "published",
+    "generated_at": "2026-10-15T05:50:45.353683",
+    "decided_at": "2026-10-15T05:53:17.604684",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/a0k_p9PMcAk",
+      "instagram_media_id": "18356625139217807",
+      "linkedin_post_id": "184181944550948864"
+    }
   }
 ]
