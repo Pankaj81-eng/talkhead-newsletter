@@ -1513,5 +1513,37 @@
       "instagram_media_id": "18356625139217807",
       "linkedin_post_id": "184181944550948864"
     }
+  },
+  {
+    "date": "2026-10-16",
+    "run_id": "2b12a6b4bc24",
+    "story": "Almaty oncologists use surgical robot to remove lung tumor",
+    "source_url": "https://kz.kursiv.media/en/2026-10-15/engk-nknk-almaty-oncologists-use-surgical-robot-to-remove-lung-tumor/",
+    "category": "health",
+    "title": "Robotic surgery removes lung tumor in Kazakhstan",
+    "description": "Can a robot safely remove a lung tumor?\nKazakhstan surgeons performed their first robot-assisted lung tumor removal, using 3-D vision and tiny tools for smaller cuts and faster recovery.\nDo you think robotic surgery will become the norm for removing tumors?",
+    "full_narration": "Surgeons in Kazakhstan used a robot to cut out a lung tumor. The robot gives doctors 3-D vision and tiny instruments, so they make tiny cuts instead of a big opening. Surgeons learned the system in a workshop led by a Chinese thoracic expert with 35 years of experience. Each operation lasted about 2.5 hours, and patients left the hospital sooner with less pain. The team had already done over 20 robot surgeries on belly and pelvic tumors, now expanding to chest cancers. Do you think robotic surgery will become the norm for removing tumors?",
+    "hashtags": [
+      "robotics",
+      "surgery",
+      "healthcare",
+      "kazakhstan",
+      "medicaltechnology",
+      "robotassisted",
+      "lungcancer"
+    ],
+    "video_path": "runs/2b12a6b4bc24/final.mp4",
+    "thumbnail_path": "runs/2b12a6b4bc24/thumbnail.jpg",
+    "metadata_path": "runs/2b12a6b4bc24/metadata.txt",
+    "used_hero_image": true,
+    "intro_variant": "none",
+    "status": "published",
+    "generated_at": "2026-10-16T05:51:23.997668",
+    "decided_at": "2026-10-16T05:59:56.669354",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/ZnoN4DS_mJ4",
+      "instagram_media_id": "18192979399392912",
+      "linkedin_post_id": "184546006010953728"
+    }
   }
 ]
