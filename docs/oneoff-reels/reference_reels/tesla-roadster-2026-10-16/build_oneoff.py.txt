@@ -1,0 +1,195 @@
+"""One-off assembly of the Tesla Roadster reel. Reuses the project's helpers (imports only, no edits).
+Usage: uv run python runs/oneoff-tesla-roadster-2026-10-16/tools/build.py
+Timeline: 0..COLD s = Tesla's own footage with its original sound (the "suspense"), then the cloned-voice
+narration over Tesla footage and press stills, original sound ducked underneath. No intro, no outro."""
+import json
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+import numpy as np
+import soundfile as sf
+from PIL import Image, ImageDraw, ImageFont
+
+ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT))
+from factory import config  # noqa: E402
+from factory.media.assemble import (_fill_frame, _normalize_voice, _still_image_clip,  # noqa: E402
+                                    burn_captions, concat_clips)
+from factory.media.captions import render_caption_images  # noqa: E402
+from factory.utils import probe_duration, run_ffmpeg  # noqa: E402
+
+RUN = ROOT / "runs" / "oneoff-tesla-roadster-2026-10-16"
+A = RUN / "assets"
+W, H, FPS = config.OUT_WIDTH, config.OUT_HEIGHT, config.OUT_FPS
+FONT = str(ROOT / "assets" / "fonts" / "Poppins-Bold.ttf")
+COLD = 4.5                                   # seconds of original Tesla sound before the narration starts
+BED_DUCK = 0.20                              # Tesla's sound under the voice
+BED_COLD = 1.25                              # Tesla's sound during the cold open
+V1, V2 = A / "kickflip_screenrec.mp4", A / "reallife_screenrec.mp4"
+CROP = "crop=486:720:0:228"                  # the video area of the phone screen recording, minus the icon column
+WORK = RUN / "work"; WORK.mkdir(exist_ok=True)
+
+
+def font(size):
+    return ImageFont.truetype(FONT, size)
+
+
+# ---------- timings from the narration ----------
+words = json.load(open(RUN / "voice2" / "words_best.json"))
+sentences = [s.strip() for s in re.split(r"(?<=[.?!])\s+", (RUN / "script.txt").read_text().strip()) if s.strip()]
+idx, sent_t = 0, []
+for s in sentences:
+    n = len(s.split())
+    sent_t.append((words[idx]["start"], words[idx + n - 1]["end"])); idx += n
+assert idx == len(words), (idx, len(words))
+voice_len = words[-1]["end"]
+total = COLD + voice_len + 0.9
+print("sentences:", len(sentences), "voice", round(voice_len, 1), "total", round(total, 1))
+
+
+def t_of(i, edge):                            # absolute timeline time of a sentence boundary
+    return COLD + sent_t[i][0 if edge == 0 else 1]
+
+
+# groups of sentences -> shots: (kind, source, start_in_source, label)
+GROUPS = [
+    (0, 1, [("clip", V1, 17.0), ("clip", V1, 21.6), ("clip", V2, 25.6), ("clip", V1, 28.0)]),
+    (2, 3, [("still", A / "press_45.webp", 0), ("still", A / "press_47.webp", 0), ("still", A / "press_48.webp", 0)]),
+    (4, 4, [("clip", V2, 8.2), ("clip", V2, 20.6)]),
+    (5, 7, [("clip", V1, 34.3), ("still", A / "press_46.png", 0), ("still", A / "press_50.webp", 0), ("clip", V1, 6.2)]),
+    (8, 8, [("still", A / "press_49.png", 0), ("still", A / "press_48.webp", 0)]),
+    (9, 10, [("still", A / "press_51.png", 0), ("clip", V2, 3.0), ("clip", V2, 44.0)]),
+]
+bounds = [COLD]
+for g0, g1, _ in GROUPS:
+    bounds.append(t_of(g1, 1))
+bounds[-1] = total                            # the last group runs to the end
+shots = []                                    # (kind, src, start, dur)
+shots.append(("clip", V2, 13.4, COLD))        # cold open: Tesla's own footage + sound
+for gi, (g0, g1, lst) in enumerate(GROUPS):
+    t0, t1 = bounds[gi], bounds[gi + 1]
+    per = (t1 - t0) / len(lst)
+    for kind, src, st in lst:
+        shots.append((kind, src, st, per))
+print("shots:", [(s[0], Path(s[1]).name[:14], round(s[3], 2)) for s in shots])
+
+# ---------- video segments ----------
+segs, bed_parts = [], []
+for k, (kind, src, st, dur) in enumerate(shots):
+    out = WORK / f"seg{k:02d}.mp4"
+    if kind == "clip":
+        frames = max(1, round(dur * FPS))
+        fc = (f"[0:v]{CROP},split[a][b];"
+              f"[a]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},boxblur=40:8,eq=brightness=-0.25[bg];"
+              f"[b]scale={W}:-2:flags=lanczos,unsharp=5:5:0.9[fg];"
+              f"[bg][fg]overlay=(W-w)/2:(H-h)/2,fps={FPS},format=yuv420p[v]")
+        run_ffmpeg(["-ss", f"{st:.3f}", "-t", f"{dur:.3f}", "-i", str(src), "-filter_complex", fc, "-map", "[v]",
+                    "-frames:v", str(frames), "-c:v", "libx264", "-crf", "17", "-preset", "medium", "-an", str(out)])
+        wav = WORK / f"bed{k:02d}.wav"
+        run_ffmpeg(["-ss", f"{st:.3f}", "-t", f"{dur:.3f}", "-i", str(src), "-vn", "-ac", "2", "-ar", "48000", str(wav)])
+        a, sr = sf.read(str(wav)); need = int(round(dur * 48000))
+        a = a[:need]
+        if len(a) < need:
+            a = np.vstack([a, np.zeros((need - len(a), 2))])
+        bed_parts.append(a)
+    else:
+        # _fill_frame writes a PNG of the still fitted over its own blurred copy
+        png = WORK / f"fill{k:02d}.png"
+        im = Image.open(src).convert("RGB"); im.save(WORK / f"orig{k:02d}.png")
+        _fill_frame(WORK / f"orig{k:02d}.png", png)
+        _still_image_clip(png, dur, out, zoom_out=bool(k % 2))
+        bed_parts.append(np.zeros((int(round(dur * 48000)), 2)))
+    segs.append(out)
+
+body = WORK / "body_video.mp4"
+concat_clips(segs, body)
+body_len = probe_duration(body)
+print("body video", round(body_len, 2), "s")
+
+# ---------- overlays (top of the frame; captions sit lower) ----------
+def panel(draw, box, alpha=150):
+    draw.rounded_rectangle(box, radius=28, fill=(0, 0, 0, alpha))
+
+
+def center(draw, text, y, size, fill=(255, 255, 255, 255), stroke=5):
+    f = font(size); w = draw.textlength(text, font=f)
+    draw.text(((W - w) / 2, y), text, font=f, fill=fill, stroke_width=stroke, stroke_fill=(0, 0, 0, 255))
+    return w
+
+
+def make_overlay(name, lines, y0=210, pad=36):
+    img = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    widths = [d.textlength(t, font=font(s)) for t, s, *_ in lines]
+    hgt = sum(int(s * 1.25) for _, s, *_ in lines)
+    wmax = max(widths) + 2 * pad
+    panel(d, ((W - wmax) / 2, y0 - pad / 2, (W + wmax) / 2, y0 + hgt + pad / 2))
+    y = y0
+    for t, s, *c in lines:
+        center(d, t, y, s, fill=c[0] if c else (255, 255, 255, 255)); y += int(s * 1.25)
+    p = WORK / f"ov_{name}.png"; img.save(p); return p
+
+
+RED = (255, 70, 70, 255)
+ov = []                                       # (png, t_start, t_end)
+ov.append((make_overlay("title", [("TESLA CAN FLY?", 112, RED)], y0=330), 0.0, COLD + 0.6))
+g = lambda i: (bounds[i], bounds[i + 1])      # noqa: E731
+ov.append((make_overlay("gas", [("COLD-GAS THRUSTERS", 66, RED), ("gas blasts out, the car is pushed back", 40)]), *g(1)))
+ov.append((make_overlay("suction", [("SUCTION SYSTEM", 66, RED), ("fans pull it onto the ramp", 44)]), *g(2)))
+# "Prototype demo ≠ proven everyday capability"
+img = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+panel(d, (90, 190, W - 90, 520))
+center(d, "PROTOTYPE DEMO", 215, 70, RED)
+center(d, "≠", 300, 90)
+center(d, "PROVEN EVERYDAY CAPABILITY", 410, 50)
+p = WORK / "ov_reality.png"; img.save(p); ov.append((p, *g(3)))
+ov.append((make_overlay("prod", [("PRODUCTION TARGET: 2028", 58, RED), ("Tesla's stated timing, not a guarantee", 38)]), *g(4)))
+# bottom tag for the closing seconds
+img = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+panel(d, (120, 1480, W - 120, 1610)); center(d, "TECH TALES ENGINEERING", 1505, 56, (255, 255, 255, 255))
+p = WORK / "ov_brand.png"; img.save(p); ov.append((p, total - 3.6, total))
+# persistent source tag
+img = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+d.text((44, 1790), "Source: Tesla", font=font(34), fill=(255, 255, 255, 235), stroke_width=3, stroke_fill=(0, 0, 0, 255))
+p = WORK / "ov_source.png"; img.save(p); ov.append((p, 0.0, total))
+
+with_ov = WORK / "body_overlays.mp4"
+ins, chain, last = ["-i", str(body)], [], "0:v"
+for n, (png, a, b) in enumerate(ov, start=1):
+    ins += ["-i", str(png)]
+    chain.append(f"[{last}][{n}:v]overlay=0:0:enable='between(t,{a:.3f},{b:.3f})'[o{n}]"); last = f"o{n}"
+run_ffmpeg([*ins, "-filter_complex", ";".join(chain), "-map", f"[{last}]", "-c:v", "libx264", "-crf", "17",
+            "-pix_fmt", "yuv420p", "-an", str(with_ov)])
+
+# ---------- captions (match the spoken script exactly) ----------
+shifted = [{"word": w["word"], "start": w["start"] + COLD, "end": w["end"] + COLD} for w in words]
+caps = render_caption_images(shifted, WORK / "captions")
+captioned = WORK / "captioned.mp4"
+burn_captions(with_ov, caps, captioned)
+
+# ---------- audio ----------
+voice_wav = _normalize_voice(RUN / "voice2" / "voiceover_best.wav", WORK / "voice_norm.wav")
+run_ffmpeg(["-i", str(voice_wav), "-ar", "48000", "-ac", "1", str(WORK / "voice_48k.wav")])
+v, sr = sf.read(str(WORK / "voice_48k.wav")); v = v if v.ndim == 1 else v.mean(axis=1)
+n_total = int(round(body_len * 48000))
+if sr != 48000:
+    raise SystemExit(f"unexpected voice sample rate {sr}")
+mix = np.zeros((n_total, 2))
+off = int(round(COLD * 48000))
+mix[off:off + len(v), 0] += v[: n_total - off]; mix[off:off + len(v), 1] += v[: n_total - off]
+bed = np.vstack(bed_parts)[:n_total]
+if len(bed) < n_total:
+    bed = np.vstack([bed, np.zeros((n_total - len(bed), 2))])
+gain = np.full(n_total, BED_DUCK)
+cold_n = int(COLD * 48000); ramp_n = int(0.8 * 48000)
+gain[:cold_n] = BED_COLD
+gain[cold_n:cold_n + ramp_n] = np.linspace(BED_COLD, BED_DUCK, ramp_n)   # fade the original sound down as the voice starts
+mix += bed * gain[:, None]
+mix_wav = WORK / "mix.wav"; sf.write(str(mix_wav), mix, 48000)
+final_audio = _normalize_voice(mix_wav, WORK / "mix_norm.wav")
+
+final = RUN / "tesla_roadster_reel.mp4"
+run_ffmpeg(["-i", str(captioned), "-i", str(final_audio), "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy",
+            "-c:a", "aac", "-b:a", "160k", "-ar", "48000", "-ac", "2", "-shortest", "-movflags", "+faststart", str(final)])
+print("FINAL", final, round(probe_duration(final), 1), "s")

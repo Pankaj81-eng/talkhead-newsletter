@@ -1,0 +1,135 @@
+1
+00:00:04,500 --> 00:00:05,919
+Tesla just showed a
+
+2
+00:00:05,919 --> 00:00:07,900
+Roadster that launches off
+
+3
+00:00:07,900 --> 00:00:09,440
+a ramp and flips
+
+4
+00:00:09,440 --> 00:00:10,900
+through the air. But
+
+5
+00:00:10,900 --> 00:00:12,460
+the engineering behind it
+
+6
+00:00:12,460 --> 00:00:14,199
+is even more interesting
+
+7
+00:00:14,199 --> 00:00:16,219
+than the video. This
+
+8
+00:00:16,219 --> 00:00:17,420
+isn't a normal flying
+
+9
+00:00:17,420 --> 00:00:19,079
+car. The Rocket version
+
+10
+00:00:19,079 --> 00:00:20,660
+uses cold gas thrusters,
+
+11
+00:00:21,320 --> 00:00:22,379
+powerful jets of compressed
+
+12
+00:00:22,379 --> 00:00:23,960
+gas, developed with SpaceX.
+
+13
+00:00:24,579 --> 00:00:26,179
+A separate suction system
+
+14
+00:00:26,179 --> 00:00:27,879
+even holds the car
+
+15
+00:00:27,879 --> 00:00:29,379
+to a ramp upside
+
+16
+00:00:29,379 --> 00:00:31,000
+down. So is this
+
+17
+00:00:31,000 --> 00:00:32,620
+a road car? Not
+
+18
+00:00:32,620 --> 00:00:34,079
+yet. The flip was
+
+19
+00:00:34,079 --> 00:00:35,539
+a prototype stunt with
+
+20
+00:00:35,539 --> 00:00:37,380
+nobody inside, the Rocket
+
+21
+00:00:37,380 --> 00:00:38,840
+version isn't approved for
+
+22
+00:00:38,840 --> 00:00:40,939
+public roads, and Tesla's
+
+23
+00:00:40,939 --> 00:00:42,000
+zero to sixty claim
+
+24
+00:00:42,000 --> 00:00:43,240
+of under one second
+
+25
+00:00:43,240 --> 00:00:45,420
+hasn't been independently verified.
+
+26
+00:00:45,960 --> 00:00:47,500
+Musk says production starts
+
+27
+00:00:47,500 --> 00:00:49,399
+in twenty twenty-eight, but
+
+28
+00:00:49,399 --> 00:00:50,679
+that's a target, not
+
+29
+00:00:50,679 --> 00:00:52,520
+a guarantee. Would you
+
+30
+00:00:52,520 --> 00:00:54,179
+trust a rocket-powered Tesla
+
+31
+00:00:54,179 --> 00:00:55,579
+on the road? Follow
+
+32
+00:00:55,579 --> 00:00:57,000
+Tech Tales Engineering for
+
+33
+00:00:57,000 --> 00:00:58,640
+technology explained beyond the
+
+34
+00:00:58,640 --> 00:00:58,939
+headlines.

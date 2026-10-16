@@ -1,0 +1,39 @@
+"""One-off: re-record each sentence with several seeds (cloned voice, existing engine) and keep the take
+whose speech rate is closest to the target, then join them. Does not modify any project code."""
+import json, sys
+from pathlib import Path
+import numpy as np, soundfile as sf
+ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT))
+from factory import config
+from factory.media.captions import align_to_script, transcribe_words
+from factory.media.voice import ChatterboxVoice, _speech_wps
+
+out = Path(sys.argv[2]); out.mkdir(parents=True, exist_ok=True)
+SENT = [l.strip() for l in Path(sys.argv[1]).read_text().strip().split("\n") if l.strip()]
+WEAK = {1, 2, 8}                                   # short sentences that rushed in the first pass (0-based)
+engine = ChatterboxVoice()
+base = int(config.CHATTERBOX_SEED or 1965803137)
+parts = []
+for i, text in enumerate(SENT):
+    best = None
+    for k in range(4 if i in WEAK else 2):
+        engine.seed = base + 7919 * k + 31 * i
+        p = out / f"s{i}_k{k}.wav"
+        engine.synthesize(text, p)
+        a, sr = sf.read(str(p)); a = a if a.ndim == 1 else a.mean(axis=1)
+        wps = _speech_wps(a.astype(np.float32), sr, len(text.split()))
+        dist = abs(wps - 2.6) if wps else 99
+        print(f"[best] s{i} seed{k}: {wps:.2f} wps", flush=True)
+        if best is None or dist < best[0]:
+            best = (dist, a, sr, wps)
+        if 2.4 <= wps <= 2.8 and k >= 1:
+            break
+    print(f"[best] s{i} CHOSEN {best[3]:.2f} wps: {text[:50]}", flush=True)
+    parts.append(best[1]); sr = best[2]
+full = np.concatenate(parts)
+sf.write(str(out / "voiceover_best.wav"), full, sr)
+text_all = " ".join(SENT)
+words = align_to_script(transcribe_words(out / "voiceover_best.wav"), text_all)
+(out / "words_best.json").write_text(json.dumps(words, indent=1))
+print(f"[best] done {len(full)/sr:.1f}s, {len(words)} words")
