@@ -69,6 +69,11 @@ Hard requirements:
     software with a perfect record."
   If a technical term is truly unavoidable, define what it IS in the same
   sentence, as if the listener has never heard it before.
+- TALK LIKE A FRIEND. The audience is everyday people on social media, many of them not technical. Write the way you would
+  explain it to a friend over coffee: short spoken sentences, everyday words, "you" and "your" where natural, contractions
+  ("it's", "doesn't"). Swap jargon for plain words ("self-driving" not "autonomous", "walking robots" not "quadrupeds",
+  "chips" not "processors" when it fits). If a technical word is truly needed, say what it means in the same sentence.
+  Never stack more than one number or technical term in a sentence. If a line would sound odd read aloud, rewrite it.
 - NO PUZZLING NAMES. A viewer who has never heard of the thing must follow
   every sentence on first listen. So: never say model numbers, trim names or
   codes ("Arcfox Alpha T5", "Gen-7", "RTX 5090", "Tier 4") -- say "an electric
