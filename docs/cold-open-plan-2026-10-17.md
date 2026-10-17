@@ -52,3 +52,11 @@ No paid services. Extra run time about 3-8 minutes (download + transcription). E
 
 ## Separate small item: plain conversational language (Pankaj, 2026-10-17)
 Scripts must sound like everyday speech for a general audience, not only engineers. The prompt already has plain-language and no-puzzling-names rules; recent scripts are mostly clean (a few terms like "AutoNav", "humanoid"). Proposed: add a short "talk like you would to a friend" rule (short sentences, everyday words, explain or drop any technical word in the same sentence, address the viewer as "you"). One prompt edit, reversible, applied only after Pankaj says yes.
+
+## Dry-run result (2026-10-17, module built but NOT wired into the daily flow)
+Ran `scripts/cold_open_dryrun.py` on the 6 recent eligible stories (space, robots, aviation): cold open found 0/6; all fell back to the normal opening, as designed.
+- Amazon satellite: NASA candidates matched on the word "Amazon" (rainforest fieldwork). The accuracy gate rejected all 3 as unrelated (correct).
+- Perseverance: the best clip (How Perseverance Drives on Mars) was found and downloaded, but the gate rated the narrator lines "partial": the "broke all the driving records" line is general and NASA's graphic is about a one-day record while our story is total distance. So the very example used in the mock-up would NOT pass the strict gate.
+- Robot / airport / humanoid stories: NASA has no matching footage.
+Lessons: (1) strict narrated-line matching is rarely satisfied by NASA's generic explainer videos; (2) NASA alone covers only a few space stories; (3) the gate is doing its job (no wrong clip got through).
+Options considered next: (A) allow "partial" narrated lines when general, with safeguards; (B) add no-narrator "ambient" openings (real footage + natural sound, only needs to match the SUBJECT); (C) add Wikimedia Commons PD/CC0 videos as a second source. Decision pending with Pankaj.
