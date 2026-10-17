@@ -60,3 +60,7 @@ Ran `scripts/cold_open_dryrun.py` on the 6 recent eligible stories (space, robot
 - Robot / airport / humanoid stories: NASA has no matching footage.
 Lessons: (1) strict narrated-line matching is rarely satisfied by NASA's generic explainer videos; (2) NASA alone covers only a few space stories; (3) the gate is doing its job (no wrong clip got through).
 Options considered next: (A) allow "partial" narrated lines when general, with safeguards; (B) add no-narrator "ambient" openings (real footage + natural sound, only needs to match the SUBJECT); (C) add Wikimedia Commons PD/CC0 videos as a second source. Decision pending with Pankaj.
+
+## Dry-run result 2 (after adding ambient openings and public-domain Commons videos; 6 candidates per story)
+Still 0/6 eligible recent stories get a cold open. The strict gate rejects: NASA clips about a different mission/event ("partial"), the right Perseverance explainer whose lines are general, and launch/test-rover footage for a story about total driving distance. No wrong clip passed.
+Conclusion: for DAILY news, free public-domain footage that matches the SPECIFIC story is rare, so an automatic cold open would appear on very few days. Recommendation: do NOT wire it into the daily run for now. Keep real-footage cold opens as assisted/one-off specials (as with Tesla/Meta), and test a different daily hook upgrade that does not depend on finding matching footage. Module stays dormant.
