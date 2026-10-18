@@ -31,6 +31,10 @@
   {
    "d": "2026-10-16",
    "subs": 900
+  },
+  {
+   "d": "2026-10-18",
+   "subs": 913
   }
  ],
  "videos": {
@@ -132,6 +136,18 @@
      "comments": 9,
      "shares": 26,
      "subs": 2
+    },
+    {
+     "d": "2026-10-18",
+     "views": 9588,
+     "ad_views": 9428,
+     "org_views": 160,
+     "org_avg_s": 49.7,
+     "avg_pct": 6.0,
+     "likes": 1295,
+     "comments": 9,
+     "shares": 26,
+     "subs": 2
     }
    ]
   },
@@ -227,6 +243,18 @@
      "views": 4236,
      "ad_views": 4071,
      "org_views": 165,
+     "org_avg_s": 33.9,
+     "avg_pct": 27.4,
+     "likes": 313,
+     "comments": 1,
+     "shares": 8,
+     "subs": 1
+    },
+    {
+     "d": "2026-10-18",
+     "views": 4237,
+     "ad_views": 4071,
+     "org_views": 166,
      "org_avg_s": 33.9,
      "avg_pct": 27.4,
      "likes": 313,
@@ -334,6 +362,18 @@
      "comments": 3,
      "shares": 5,
      "subs": 0
+    },
+    {
+     "d": "2026-10-18",
+     "views": 2081,
+     "ad_views": 2014,
+     "org_views": 67,
+     "org_avg_s": 28.3,
+     "avg_pct": 15.2,
+     "likes": 278,
+     "comments": 3,
+     "shares": 5,
+     "subs": 0
     }
    ]
   },
@@ -435,6 +475,18 @@
      "comments": 1,
      "shares": 2,
      "subs": 0
+    },
+    {
+     "d": "2026-10-18",
+     "views": 3627,
+     "ad_views": 3541,
+     "org_views": 87,
+     "org_avg_s": 19.4,
+     "avg_pct": 9.1,
+     "likes": 502,
+     "comments": 1,
+     "shares": 2,
+     "subs": 0
     }
    ]
   },
@@ -530,6 +582,18 @@
      "views": 263,
      "ad_views": 0,
      "org_views": 263,
+     "org_avg_s": 26.5,
+     "avg_pct": 40.1,
+     "likes": 3,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
+    },
+    {
+     "d": "2026-10-18",
+     "views": 264,
+     "ad_views": 0,
+     "org_views": 264,
      "org_avg_s": 26.5,
      "avg_pct": 40.1,
      "likes": 3,
@@ -637,6 +701,18 @@
      "comments": 2,
      "shares": 2,
      "subs": 2
+    },
+    {
+     "d": "2026-10-18",
+     "views": 261,
+     "ad_views": 0,
+     "org_views": 261,
+     "org_avg_s": 33.6,
+     "avg_pct": 32.5,
+     "likes": 6,
+     "comments": 2,
+     "shares": 2,
+     "subs": 2
     }
    ]
   },
@@ -729,6 +805,18 @@
     },
     {
      "d": "2026-10-16",
+     "views": 242,
+     "ad_views": 0,
+     "org_views": 242,
+     "org_avg_s": 66.9,
+     "avg_pct": 42.6,
+     "likes": 6,
+     "comments": 2,
+     "shares": 0,
+     "subs": 1
+    },
+    {
+     "d": "2026-10-18",
      "views": 242,
      "ad_views": 0,
      "org_views": 242,
@@ -839,6 +927,18 @@
      "comments": 0,
      "shares": 1,
      "subs": 1
+    },
+    {
+     "d": "2026-10-18",
+     "views": 242,
+     "ad_views": 0,
+     "org_views": 242,
+     "org_avg_s": 23.5,
+     "avg_pct": 37.3,
+     "likes": 3,
+     "comments": 0,
+     "shares": 1,
+     "subs": 1
     }
    ]
   },
@@ -931,6 +1031,18 @@
     },
     {
      "d": "2026-10-16",
+     "views": 222,
+     "ad_views": 0,
+     "org_views": 222,
+     "org_avg_s": 25.4,
+     "avg_pct": 39.1,
+     "likes": 4,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
+    },
+    {
+     "d": "2026-10-18",
      "views": 222,
      "ad_views": 0,
      "org_views": 222,
@@ -1041,6 +1153,18 @@
      "comments": 0,
      "shares": 0,
      "subs": 0
+    },
+    {
+     "d": "2026-10-18",
+     "views": 203,
+     "ad_views": 0,
+     "org_views": 203,
+     "org_avg_s": 22.7,
+     "avg_pct": 33.9,
+     "likes": 2,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
     }
    ]
   },
@@ -1142,6 +1266,18 @@
      "comments": 0,
      "shares": 2,
      "subs": 1
+    },
+    {
+     "d": "2026-10-18",
+     "views": 197,
+     "ad_views": 0,
+     "org_views": 197,
+     "org_avg_s": 64.8,
+     "avg_pct": 95.1,
+     "likes": 2,
+     "comments": 0,
+     "shares": 2,
+     "subs": 1
     }
    ]
   },
@@ -1234,6 +1370,18 @@
     },
     {
      "d": "2026-10-16",
+     "views": 188,
+     "ad_views": 0,
+     "org_views": 188,
+     "org_avg_s": 26.1,
+     "avg_pct": 36.8,
+     "likes": 2,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
+    },
+    {
+     "d": "2026-10-18",
      "views": 188,
      "ad_views": 0,
      "org_views": 188,
@@ -1344,6 +1492,18 @@
      "comments": 0,
      "shares": 0,
      "subs": 0
+    },
+    {
+     "d": "2026-10-18",
+     "views": 170,
+     "ad_views": 0,
+     "org_views": 170,
+     "org_avg_s": 16.1,
+     "avg_pct": 30.1,
+     "likes": 3,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
     }
    ]
   },
@@ -1436,6 +1596,18 @@
     },
     {
      "d": "2026-10-16",
+     "views": 159,
+     "ad_views": 0,
+     "org_views": 159,
+     "org_avg_s": 16.8,
+     "avg_pct": 33.5,
+     "likes": 5,
+     "comments": 0,
+     "shares": 6,
+     "subs": 0
+    },
+    {
+     "d": "2026-10-18",
      "views": 159,
      "ad_views": 0,
      "org_views": 159,
@@ -1546,6 +1718,18 @@
      "comments": 0,
      "shares": 0,
      "subs": 0
+    },
+    {
+     "d": "2026-10-18",
+     "views": 152,
+     "ad_views": 0,
+     "org_views": 152,
+     "org_avg_s": 46.5,
+     "avg_pct": 65.4,
+     "likes": 4,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
     }
    ]
   },
@@ -1638,6 +1822,18 @@
     },
     {
      "d": "2026-10-16",
+     "views": 144,
+     "ad_views": 0,
+     "org_views": 144,
+     "org_avg_s": 9.1,
+     "avg_pct": 57.7,
+     "likes": 4,
+     "comments": 0,
+     "shares": 1,
+     "subs": 0
+    },
+    {
+     "d": "2026-10-18",
      "views": 144,
      "ad_views": 0,
      "org_views": 144,
@@ -1748,6 +1944,18 @@
      "comments": 1,
      "shares": 6,
      "subs": 2
+    },
+    {
+     "d": "2026-10-18",
+     "views": 144,
+     "ad_views": 0,
+     "org_views": 144,
+     "org_avg_s": 57.6,
+     "avg_pct": 26.2,
+     "likes": 5,
+     "comments": 1,
+     "shares": 6,
+     "subs": 2
     }
    ]
   },
@@ -1840,6 +2048,18 @@
     },
     {
      "d": "2026-10-16",
+     "views": 140,
+     "ad_views": 0,
+     "org_views": 140,
+     "org_avg_s": 14.1,
+     "avg_pct": 92.6,
+     "likes": 3,
+     "comments": 0,
+     "shares": 1,
+     "subs": 0
+    },
+    {
+     "d": "2026-10-18",
      "views": 140,
      "ad_views": 0,
      "org_views": 140,
@@ -1950,6 +2170,18 @@
      "comments": 0,
      "shares": 1,
      "subs": 1
+    },
+    {
+     "d": "2026-10-18",
+     "views": 141,
+     "ad_views": 0,
+     "org_views": 141,
+     "org_avg_s": 7.8,
+     "avg_pct": 34.2,
+     "likes": 2,
+     "comments": 0,
+     "shares": 1,
+     "subs": 1
     }
    ]
   },
@@ -2042,6 +2274,18 @@
     },
     {
      "d": "2026-10-16",
+     "views": 134,
+     "ad_views": 0,
+     "org_views": 134,
+     "org_avg_s": 28.8,
+     "avg_pct": 40.0,
+     "likes": 5,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
+    },
+    {
+     "d": "2026-10-18",
      "views": 134,
      "ad_views": 0,
      "org_views": 134,
@@ -2152,6 +2396,18 @@
      "comments": 0,
      "shares": 0,
      "subs": 1
+    },
+    {
+     "d": "2026-10-18",
+     "views": 128,
+     "ad_views": 0,
+     "org_views": 128,
+     "org_avg_s": 13.2,
+     "avg_pct": 18.2,
+     "likes": 1,
+     "comments": 0,
+     "shares": 0,
+     "subs": 1
     }
    ]
   },
@@ -2244,6 +2500,18 @@
     },
     {
      "d": "2026-10-16",
+     "views": 129,
+     "ad_views": 0,
+     "org_views": 129,
+     "org_avg_s": 9.7,
+     "avg_pct": 43.6,
+     "likes": 1,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
+    },
+    {
+     "d": "2026-10-18",
      "views": 129,
      "ad_views": 0,
      "org_views": 129,
@@ -2354,6 +2622,18 @@
      "comments": 0,
      "shares": 0,
      "subs": 0
+    },
+    {
+     "d": "2026-10-18",
+     "views": 129,
+     "ad_views": 0,
+     "org_views": 129,
+     "org_avg_s": 12.5,
+     "avg_pct": 98.1,
+     "likes": 2,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
     }
    ]
   },
@@ -2446,6 +2726,18 @@
     },
     {
      "d": "2026-10-16",
+     "views": 122,
+     "ad_views": 0,
+     "org_views": 122,
+     "org_avg_s": 29.0,
+     "avg_pct": 42.8,
+     "likes": 2,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
+    },
+    {
+     "d": "2026-10-18",
      "views": 122,
      "ad_views": 0,
      "org_views": 122,
@@ -2556,6 +2848,18 @@
      "comments": 0,
      "shares": 0,
      "subs": 1
+    },
+    {
+     "d": "2026-10-18",
+     "views": 118,
+     "ad_views": 0,
+     "org_views": 118,
+     "org_avg_s": 42.3,
+     "avg_pct": 60.0,
+     "likes": 3,
+     "comments": 0,
+     "shares": 0,
+     "subs": 1
     }
    ]
   },
@@ -2648,6 +2952,18 @@
     },
     {
      "d": "2026-10-16",
+     "views": 119,
+     "ad_views": 0,
+     "org_views": 119,
+     "org_avg_s": 23.5,
+     "avg_pct": 34.1,
+     "likes": 7,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
+    },
+    {
+     "d": "2026-10-18",
      "views": 119,
      "ad_views": 0,
      "org_views": 119,
@@ -2758,6 +3074,18 @@
      "comments": 1,
      "shares": 1,
      "subs": 0
+    },
+    {
+     "d": "2026-10-18",
+     "views": 120,
+     "ad_views": 0,
+     "org_views": 120,
+     "org_avg_s": 42.7,
+     "avg_pct": 55.5,
+     "likes": 4,
+     "comments": 1,
+     "shares": 1,
+     "subs": 0
     }
    ]
   },
@@ -2850,6 +3178,18 @@
     },
     {
      "d": "2026-10-16",
+     "views": 115,
+     "ad_views": 0,
+     "org_views": 115,
+     "org_avg_s": 47.5,
+     "avg_pct": 65.2,
+     "likes": 6,
+     "comments": 0,
+     "shares": 2,
+     "subs": 1
+    },
+    {
+     "d": "2026-10-18",
      "views": 115,
      "ad_views": 0,
      "org_views": 115,
@@ -2960,6 +3300,18 @@
      "comments": 1,
      "shares": 6,
      "subs": 3
+    },
+    {
+     "d": "2026-10-18",
+     "views": 109,
+     "ad_views": 0,
+     "org_views": 109,
+     "org_avg_s": 41.5,
+     "avg_pct": 23.9,
+     "likes": 8,
+     "comments": 1,
+     "shares": 6,
+     "subs": 3
     }
    ]
   },
@@ -3052,6 +3404,18 @@
     },
     {
      "d": "2026-10-16",
+     "views": 107,
+     "ad_views": 0,
+     "org_views": 107,
+     "org_avg_s": 24.0,
+     "avg_pct": 35.6,
+     "likes": 2,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
+    },
+    {
+     "d": "2026-10-18",
      "views": 107,
      "ad_views": 0,
      "org_views": 107,
@@ -3162,6 +3526,18 @@
      "comments": 0,
      "shares": 2,
      "subs": 1
+    },
+    {
+     "d": "2026-10-18",
+     "views": 117,
+     "ad_views": 0,
+     "org_views": 117,
+     "org_avg_s": 198.4,
+     "avg_pct": 26.7,
+     "likes": 1,
+     "comments": 0,
+     "shares": 3,
+     "subs": 1
     }
    ]
   },
@@ -3263,6 +3639,18 @@
      "comments": 0,
      "shares": 0,
      "subs": 0
+    },
+    {
+     "d": "2026-10-18",
+     "views": 105,
+     "ad_views": 0,
+     "org_views": 105,
+     "org_avg_s": 18.2,
+     "avg_pct": 29.7,
+     "likes": 1,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
     }
    ]
   },
@@ -3355,6 +3743,18 @@
     },
     {
      "d": "2026-10-16",
+     "views": 102,
+     "ad_views": 0,
+     "org_views": 102,
+     "org_avg_s": 151.3,
+     "avg_pct": 201.2,
+     "likes": 2,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
+    },
+    {
+     "d": "2026-10-18",
      "views": 102,
      "ad_views": 0,
      "org_views": 102,
@@ -3465,6 +3865,18 @@
      "comments": 0,
      "shares": 2,
      "subs": 0
+    },
+    {
+     "d": "2026-10-18",
+     "views": 96,
+     "ad_views": 0,
+     "org_views": 96,
+     "org_avg_s": 15.8,
+     "avg_pct": 107.3,
+     "likes": 2,
+     "comments": 0,
+     "shares": 2,
+     "subs": 0
     }
    ]
   },
@@ -3557,6 +3969,18 @@
     },
     {
      "d": "2026-10-16",
+     "views": 95,
+     "ad_views": 0,
+     "org_views": 95,
+     "org_avg_s": 9.0,
+     "avg_pct": 78.5,
+     "likes": 1,
+     "comments": 0,
+     "shares": 1,
+     "subs": 0
+    },
+    {
+     "d": "2026-10-18",
      "views": 95,
      "ad_views": 0,
      "org_views": 95,
@@ -3667,6 +4091,18 @@
      "comments": 1,
      "shares": 9,
      "subs": 2
+    },
+    {
+     "d": "2026-10-18",
+     "views": 94,
+     "ad_views": 0,
+     "org_views": 94,
+     "org_avg_s": 29.0,
+     "avg_pct": 55.6,
+     "likes": 7,
+     "comments": 1,
+     "shares": 9,
+     "subs": 2
     }
    ]
   },
@@ -3759,6 +4195,18 @@
     },
     {
      "d": "2026-10-16",
+     "views": 92,
+     "ad_views": 0,
+     "org_views": 92,
+     "org_avg_s": 33.0,
+     "avg_pct": 47.2,
+     "likes": 8,
+     "comments": 1,
+     "shares": 3,
+     "subs": 1
+    },
+    {
+     "d": "2026-10-18",
      "views": 92,
      "ad_views": 0,
      "org_views": 92,
@@ -3869,6 +4317,18 @@
      "comments": 0,
      "shares": 0,
      "subs": 0
+    },
+    {
+     "d": "2026-10-18",
+     "views": 92,
+     "ad_views": 0,
+     "org_views": 92,
+     "org_avg_s": 10.1,
+     "avg_pct": 55.6,
+     "likes": 1,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
     }
    ]
   },
@@ -3970,6 +4430,18 @@
      "comments": 0,
      "shares": 1,
      "subs": 0
+    },
+    {
+     "d": "2026-10-18",
+     "views": 102,
+     "ad_views": 0,
+     "org_views": 102,
+     "org_avg_s": 28.9,
+     "avg_pct": 79.9,
+     "likes": 3,
+     "comments": 0,
+     "shares": 1,
+     "subs": 0
     }
    ]
   },
@@ -4062,6 +4534,18 @@
     },
     {
      "d": "2026-10-16",
+     "views": 90,
+     "ad_views": 0,
+     "org_views": 90,
+     "org_avg_s": 17.6,
+     "avg_pct": 27.9,
+     "likes": 1,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
+    },
+    {
+     "d": "2026-10-18",
      "views": 90,
      "ad_views": 0,
      "org_views": 90,
@@ -4172,6 +4656,18 @@
      "comments": 0,
      "shares": 1,
      "subs": 0
+    },
+    {
+     "d": "2026-10-18",
+     "views": 89,
+     "ad_views": 0,
+     "org_views": 89,
+     "org_avg_s": 7.0,
+     "avg_pct": 49.3,
+     "likes": 2,
+     "comments": 0,
+     "shares": 1,
+     "subs": 0
     }
    ]
   },
@@ -4264,6 +4760,18 @@
     },
     {
      "d": "2026-10-16",
+     "views": 90,
+     "ad_views": 0,
+     "org_views": 90,
+     "org_avg_s": 113.7,
+     "avg_pct": 171.8,
+     "likes": 2,
+     "comments": 0,
+     "shares": 0,
+     "subs": 1
+    },
+    {
+     "d": "2026-10-18",
      "views": 90,
      "ad_views": 0,
      "org_views": 90,
@@ -4374,6 +4882,18 @@
      "comments": 0,
      "shares": 1,
      "subs": 0
+    },
+    {
+     "d": "2026-10-18",
+     "views": 89,
+     "ad_views": 0,
+     "org_views": 89,
+     "org_avg_s": 63.0,
+     "avg_pct": 19.9,
+     "likes": 2,
+     "comments": 0,
+     "shares": 1,
+     "subs": 0
     }
    ]
   },
@@ -4466,6 +4986,18 @@
     },
     {
      "d": "2026-10-16",
+     "views": 89,
+     "ad_views": 0,
+     "org_views": 89,
+     "org_avg_s": 15.2,
+     "avg_pct": 152.3,
+     "likes": 2,
+     "comments": 0,
+     "shares": 0,
+     "subs": 1
+    },
+    {
+     "d": "2026-10-18",
      "views": 89,
      "ad_views": 0,
      "org_views": 89,
@@ -4576,6 +5108,18 @@
      "comments": 0,
      "shares": 0,
      "subs": 1
+    },
+    {
+     "d": "2026-10-18",
+     "views": 91,
+     "ad_views": 0,
+     "org_views": 91,
+     "org_avg_s": 8.7,
+     "avg_pct": 14.5,
+     "likes": 2,
+     "comments": 0,
+     "shares": 0,
+     "subs": 1
     }
    ]
   },
@@ -4668,6 +5212,18 @@
     },
     {
      "d": "2026-10-16",
+     "views": 86,
+     "ad_views": 0,
+     "org_views": 86,
+     "org_avg_s": 32.3,
+     "avg_pct": 43.2,
+     "likes": 2,
+     "comments": 0,
+     "shares": 0,
+     "subs": 1
+    },
+    {
+     "d": "2026-10-18",
      "views": 86,
      "ad_views": 0,
      "org_views": 86,
@@ -4778,6 +5334,18 @@
      "comments": 0,
      "shares": 0,
      "subs": 0
+    },
+    {
+     "d": "2026-10-18",
+     "views": 87,
+     "ad_views": 0,
+     "org_views": 87,
+     "org_avg_s": 55.8,
+     "avg_pct": 73.4,
+     "likes": 2,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
     }
    ]
   },
@@ -4870,6 +5438,18 @@
     },
     {
      "d": "2026-10-16",
+     "views": 83,
+     "ad_views": 0,
+     "org_views": 83,
+     "org_avg_s": 39.5,
+     "avg_pct": 65.4,
+     "likes": 2,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
+    },
+    {
+     "d": "2026-10-18",
      "views": 83,
      "ad_views": 0,
      "org_views": 83,
@@ -4980,6 +5560,18 @@
      "comments": 0,
      "shares": 0,
      "subs": 0
+    },
+    {
+     "d": "2026-10-18",
+     "views": 81,
+     "ad_views": 0,
+     "org_views": 81,
+     "org_avg_s": 26.9,
+     "avg_pct": 36.6,
+     "likes": 4,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
     }
    ]
   },
@@ -5081,6 +5673,18 @@
      "comments": 0,
      "shares": 0,
      "subs": 0
+    },
+    {
+     "d": "2026-10-18",
+     "views": 90,
+     "ad_views": 0,
+     "org_views": 90,
+     "org_avg_s": 31.4,
+     "avg_pct": 49.0,
+     "likes": 1,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
     }
    ]
   },
@@ -5173,6 +5777,18 @@
     },
     {
      "d": "2026-10-16",
+     "views": 76,
+     "ad_views": 0,
+     "org_views": 76,
+     "org_avg_s": 5.9,
+     "avg_pct": 22.7,
+     "likes": 0,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
+    },
+    {
+     "d": "2026-10-18",
      "views": 76,
      "ad_views": 0,
      "org_views": 76,
@@ -5283,6 +5899,18 @@
      "comments": 0,
      "shares": 0,
      "subs": 0
+    },
+    {
+     "d": "2026-10-18",
+     "views": 73,
+     "ad_views": 0,
+     "org_views": 73,
+     "org_avg_s": 7.8,
+     "avg_pct": 39.2,
+     "likes": 1,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
     }
    ]
   },
@@ -5380,6 +6008,18 @@
      "org_views": 85,
      "org_avg_s": 11.6,
      "avg_pct": 19.6,
+     "likes": 1,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
+    },
+    {
+     "d": "2026-10-18",
+     "views": 90,
+     "ad_views": 0,
+     "org_views": 90,
+     "org_avg_s": 11.9,
+     "avg_pct": 20.3,
      "likes": 1,
      "comments": 0,
      "shares": 0,
@@ -5892,6 +6532,18 @@
      "comments": 0,
      "shares": 0,
      "subs": 0
+    },
+    {
+     "d": "2026-10-18",
+     "views": 167,
+     "ad_views": 0,
+     "org_views": 167,
+     "org_avg_s": 43.4,
+     "avg_pct": 25.7,
+     "likes": 3,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
     }
    ]
   },
@@ -6075,6 +6727,18 @@
      "comments": 1,
      "shares": 0,
      "subs": 0
+    },
+    {
+     "d": "2026-10-18",
+     "views": 217,
+     "ad_views": 0,
+     "org_views": 217,
+     "org_avg_s": 8.7,
+     "avg_pct": 23.4,
+     "likes": 5,
+     "comments": 1,
+     "shares": 0,
+     "subs": 0
     }
    ]
   },
@@ -6104,6 +6768,18 @@
      "comments": 0,
      "shares": 0,
      "subs": 1
+    },
+    {
+     "d": "2026-10-18",
+     "views": 104,
+     "ad_views": 0,
+     "org_views": 104,
+     "org_avg_s": 17.1,
+     "avg_pct": 39.8,
+     "likes": 1,
+     "comments": 0,
+     "shares": 0,
+     "subs": 1
     }
    ]
   },
@@ -6121,34 +6797,98 @@
      "comments": 0,
      "shares": 0,
      "subs": 0
+    },
+    {
+     "d": "2026-10-18",
+     "views": 86,
+     "ad_views": 0,
+     "org_views": 86,
+     "org_avg_s": 56.1,
+     "avg_pct": 89.0,
+     "likes": 0,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
+    }
+   ]
+  },
+  "n8Cb7DQEL9A": {
+   "title": "Hangzhou Factory Adds 20 Humanoid Robots to Assembly Line \ud83e\udd16",
+   "history": [
+    {
+     "d": "2026-10-18",
+     "views": 471,
+     "ad_views": 0,
+     "org_views": 471,
+     "org_avg_s": 10.8,
+     "avg_pct": 25.5,
+     "likes": 3,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
+    }
+   ]
+  },
+  "a0k_p9PMcAk": {
+   "title": "Why does Alex Zhou own 31% of a $3B robot-hand company?",
+   "history": [
+    {
+     "d": "2026-10-18",
+     "views": 450,
+     "ad_views": 0,
+     "org_views": 450,
+     "org_avg_s": 12.6,
+     "avg_pct": 31.9,
+     "likes": 7,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
+    }
+   ]
+  },
+  "Fm-78vrngVo": {
+   "title": "Can AI keep wild animals off airport runways?",
+   "history": [
+    {
+     "d": "2026-10-18",
+     "views": 85,
+     "ad_views": 0,
+     "org_views": 85,
+     "org_avg_s": 17.6,
+     "avg_pct": 34.5,
+     "likes": 1,
+     "comments": 0,
+     "shares": 0,
+     "subs": 0
     }
    ]
   }
  },
  "sources_7d": {
-  "NO_LINK_OTHER": 0,
-  "ADVERTISING": 1111,
+  "NO_LINK_OTHER": 4,
+  "ADVERTISING": 2905,
   "SUBSCRIBER": 14,
-  "YT_CHANNEL": 7,
-  "YT_SEARCH": 218,
-  "RELATED_VIDEO": 0,
-  "YT_OTHER_PAGE": 4,
-  "EXT_URL": 4,
-  "NOTIFICATION": 3,
-  "SHORTS": 340,
-  "HASHTAGS": 2
+  "YT_CHANNEL": 6,
+  "YT_SEARCH": 238,
+  "RELATED_VIDEO": 3,
+  "YT_OTHER_PAGE": 10,
+  "EXT_URL": 5,
+  "NOTIFICATION": 2,
+  "SHORTS": 1204,
+  "HASHTAGS": 2,
+  "SOUND_PAGE": 5
  },
  "sources_prev7d": {
   "NO_LINK_OTHER": 7,
-  "ADVERTISING": 517,
-  "SUBSCRIBER": 17,
-  "YT_CHANNEL": 18,
-  "YT_SEARCH": 624,
+  "ADVERTISING": 636,
+  "SUBSCRIBER": 22,
+  "YT_CHANNEL": 22,
+  "YT_SEARCH": 595,
   "RELATED_VIDEO": 4,
-  "YT_OTHER_PAGE": 32,
-  "EXT_URL": 3,
+  "YT_OTHER_PAGE": 30,
+  "EXT_URL": 4,
   "PLAYLIST": 1,
-  "NOTIFICATION": 4,
-  "SHORTS": 451
+  "NOTIFICATION": 5,
+  "SHORTS": 534
  }
 }

@@ -1575,5 +1575,35 @@
       "instagram_media_id": "18201910720375980",
       "linkedin_post_id": "184937664934313984"
     }
+  },
+  {
+    "date": "2026-10-18",
+    "run_id": "d1d0fc75e649",
+    "story": "Robots Learn to Grab Any Fruit With 99 Percent Accuracy in Cluttered Scenes",
+    "source_url": "https://bioengineer.org/robots-learn-to-grab-any-fruit-with-99-percent-accuracy-in-cluttered-scenes/",
+    "category": "robots",
+    "title": "Robot Picks Fruit with 99% Accuracy \ud83c\udf4e",
+    "description": "Can a robot pick fruit with 99% accuracy in a messy orchard?\nResearchers created a lightweight AI that sees color and depth, trained on thousands of fruit images, and can judge the perfect grip angle. This could let farms harvest faster and cheaper.\nWould you trust a robot to pick your fruit?",
+    "full_narration": "A farm robot just plucked fruit with 99% accuracy, even in a messy bunch. Researchers built a tiny AI brain that looks at color and depth to find the best grip spot. They trained it on 31,500 images showing single fruits, cluttered scenes, and multiple fruits together. The system uses a special anchor method to predict the exact angle, so the gripper doesn\u2019t smash a stem. With this speed and precision, robots could harvest orchards without stopping, making fresh produce cheaper. Would you trust a robot to pick your fruit?",
+    "hashtags": [
+      "robotics",
+      "agriculture",
+      "ai",
+      "fruitpicking",
+      "technews"
+    ],
+    "video_path": "runs/d1d0fc75e649/final.mp4",
+    "thumbnail_path": "runs/d1d0fc75e649/thumbnail.jpg",
+    "metadata_path": "runs/d1d0fc75e649/metadata.txt",
+    "used_hero_image": true,
+    "intro_variant": "none",
+    "status": "published",
+    "generated_at": "2026-10-18T06:00:35.154276",
+    "decided_at": "2026-10-18T07:07:00.066312",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/FI6AwqHm8gk",
+      "instagram_media_id": "18091220636223797",
+      "linkedin_post_id": "185287657192947712"
+    }
   }
 ]
