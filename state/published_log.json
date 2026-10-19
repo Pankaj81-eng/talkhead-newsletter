@@ -1605,5 +1605,37 @@
       "instagram_media_id": "18091220636223797",
       "linkedin_post_id": "185287657192947712"
     }
+  },
+  {
+    "date": "2026-10-19",
+    "run_id": "2a9388f40509",
+    "story": "BloomX Raises $13 Million Series A Led By Elah Fund To Scale AI And Robotics Pollination Technology",
+    "source_url": "https://pulse2.com/bloomx-raises-13-million-series-a/",
+    "category": "food_farming",
+    "title": "Robot Bees Boost Blueberry Harvest by 20% \ud83c\udf47",
+    "description": "Can a robot that buzzes like a bee really boost blueberry harvests? BloomX\u2019s AI-driven pollination robots are already increasing yields by about 20% and have just raised $13 million to expand worldwide. Would you trust a robot to pollinate your garden at home in future?",
+    "full_narration": "A robot that buzzes like a bee boosted blueberry yields by 20%. BloomX\u2019s Robee robot vibrates each flower just like a bumblebee, shaking loose the pollen as it moves across rows. Farmers using it report about a 20% jump in blueberry size and total harvest, delivering bigger, sweeter fruit. Operator can cover nine acres daily, the tech earned investors $13 million and gives growers up to 10.5\u00d7 returns, even when storms stop real bees. Would you trust a robot to pollinate your garden at home in future?",
+    "hashtags": [
+      "ai",
+      "robotics",
+      "agriculture",
+      "pollination",
+      "startup",
+      "funding",
+      "technews"
+    ],
+    "video_path": "runs/2a9388f40509/final.mp4",
+    "thumbnail_path": "runs/2a9388f40509/thumbnail.jpg",
+    "metadata_path": "runs/2a9388f40509/metadata.txt",
+    "used_hero_image": true,
+    "intro_variant": "none",
+    "status": "published",
+    "generated_at": "2026-10-19T05:52:23.457085",
+    "decided_at": "2026-10-19T06:11:35.810190",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/B9N0u2_5TfM",
+      "instagram_media_id": "18135002440667688",
+      "linkedin_post_id": "185636102088949760"
+    }
   }
 ]
