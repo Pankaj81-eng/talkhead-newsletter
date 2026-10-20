@@ -1637,5 +1637,36 @@
       "instagram_media_id": "18135002440667688",
       "linkedin_post_id": "185636102088949760"
     }
+  },
+  {
+    "date": "2026-10-20",
+    "run_id": "689d74a77107",
+    "story": "AI tool used on facial photo to predict cancer survival",
+    "source_url": "https://www.mandurahmail.com.au/story/9371821/ai-tool-used-on-facial-photo-to-predict-cancer-survival/",
+    "category": "health",
+    "title": "Can a simple photo predict your cancer survival?",
+    "description": "Can a photo help predict cancer survival?\n\nResearchers trained an AI model on more than 40 million pictures to estimate biological age and health risks directly from facial photos. The tool aims to help doctors tailor individual treatments.\n\nWould you let AI analyze your photo?",
+    "full_narration": "Researchers built an AI that predicts your cancer survival from a single photo. Scientists trained the tool on more than 40 million pictures to measure biological aging, or how fast your body health declines. It accurately calculates your health risk even if your face has makeup, bad lighting, or a strange expression. Unhealthy habits like smoking showed up clearly, making smokers look older than people who never smoked at all. The system helps doctors personalize your cancer care, not replace human judgment. Would you let AI analyze your photo?",
+    "hashtags": [
+      "ai",
+      "cancer",
+      "healthtech",
+      "medicine",
+      "research",
+      "medicalai"
+    ],
+    "video_path": "runs/689d74a77107/final.mp4",
+    "thumbnail_path": "runs/689d74a77107/thumbnail.jpg",
+    "metadata_path": "runs/689d74a77107/metadata.txt",
+    "used_hero_image": true,
+    "intro_variant": "none",
+    "status": "published",
+    "generated_at": "2026-10-20T06:49:05.639753",
+    "decided_at": "2026-10-20T06:51:38.938984",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/imQ46mtn6uw",
+      "instagram_media_id": "18033094922883674",
+      "linkedin_post_id": "186008569416515584"
+    }
   }
 ]
