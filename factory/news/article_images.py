@@ -35,8 +35,10 @@ _JUNK_HINTS = frozenset({
 })
 _JUNK_ALT_RE = re.compile(r"video post|poster|\bcover\b|[\u2014-] card\b", re.IGNORECASE)
 _RELATED_HEADING_RE = re.compile(
-    r"<h[2-4][^>]*>[^<]*\b(related|more (stories|articles|posts|from)|read next|"
-    r"keep reading|you (might|may) also|recommended|latest (news|stories|articles))\b",
+    r"<h[2-4][^>]*>[^<]*\b(related|more (stories|articles|posts|from|in)|read next|"
+    r"keep reading|you (might|may) also|recommended|latest (news|stories|articles)|"
+    r"most (popular|read|viewed)|trending|popular (stories|posts|now)|top stories|up next|also read|"
+    r"don.t miss|from around the web|more on this|editor.s picks?)\b",
     re.IGNORECASE,
 )
 
