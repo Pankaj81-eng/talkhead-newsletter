@@ -492,12 +492,12 @@
      "d": "2026-10-20"
     },
     {
-     "reach": 49,
+     "reach": 50,
      "views": 70,
      "saves": 0,
      "shares": 0,
      "interactions": 3,
-     "avg_watch_s": 3.8,
+     "avg_watch_s": 3.7,
      "likes": 3,
      "comments": 0,
      "d": "2026-10-21"
@@ -7698,7 +7698,7 @@
    "history": [
     {
      "reach": 0,
-     "views": 0,
+     "views": 2,
      "saves": 0,
      "shares": 0,
      "interactions": 0,
