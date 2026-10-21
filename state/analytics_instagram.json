@@ -493,7 +493,7 @@
     },
     {
      "reach": 49,
-     "views": 69,
+     "views": 70,
      "saves": 0,
      "shares": 0,
      "interactions": 3,
@@ -6483,7 +6483,7 @@
     },
     {
      "reach": 263,
-     "views": 301,
+     "views": 302,
      "saves": 1,
      "shares": 0,
      "interactions": 8,
@@ -6610,8 +6610,8 @@
      "d": "2026-10-20"
     },
     {
-     "reach": 253,
-     "views": 307,
+     "reach": 254,
+     "views": 309,
      "saves": 0,
      "shares": 0,
      "interactions": 4,
@@ -6928,12 +6928,12 @@
      "d": "2026-10-20"
     },
     {
-     "reach": 44,
-     "views": 74,
+     "reach": 46,
+     "views": 76,
      "saves": 0,
      "shares": 0,
      "interactions": 2,
-     "avg_watch_s": 7.7,
+     "avg_watch_s": 7.5,
      "likes": 2,
      "comments": 0,
      "d": "2026-10-21"
@@ -7191,12 +7191,12 @@
      "d": "2026-10-20"
     },
     {
-     "reach": 59,
-     "views": 98,
+     "reach": 60,
+     "views": 99,
      "saves": 1,
      "shares": 1,
      "interactions": 6,
-     "avg_watch_s": 9.0,
+     "avg_watch_s": 8.9,
      "likes": 4,
      "comments": 0,
      "d": "2026-10-21"
@@ -7282,8 +7282,8 @@
      "d": "2026-10-20"
     },
     {
-     "reach": 169,
-     "views": 198,
+     "reach": 170,
+     "views": 199,
      "saves": 0,
      "shares": 0,
      "interactions": 3,
@@ -7344,8 +7344,8 @@
      "d": "2026-10-20"
     },
     {
-     "reach": 240,
-     "views": 267,
+     "reach": 242,
+     "views": 268,
      "saves": 0,
      "shares": 0,
      "interactions": 4,
@@ -7679,12 +7679,30 @@
      "d": "2026-10-20"
     },
     {
-     "reach": 38,
+     "reach": 39,
      "views": 56,
      "saves": 0,
      "shares": 0,
      "interactions": 0,
      "avg_watch_s": 8.1,
+     "likes": 0,
+     "comments": 0,
+     "d": "2026-10-21"
+    }
+   ]
+  },
+  "18125001416484410": {
+   "posted": "2026-10-21T10:16:34+0000",
+   "caption": "Can your car\u2019s AI read your emails to help you while driving?\nGoogle\u2019s Gemini AI now integ",
+   "link": "https://www.instagram.com/reel/DewK_mbik9A/",
+   "history": [
+    {
+     "reach": 0,
+     "views": 0,
+     "saves": 0,
+     "shares": 0,
+     "interactions": 0,
+     "avg_watch_s": 0.0,
      "likes": 0,
      "comments": 0,
      "d": "2026-10-21"

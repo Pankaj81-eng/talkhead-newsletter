@@ -1668,5 +1668,36 @@
       "instagram_media_id": "18033094922883674",
       "linkedin_post_id": "186008569416515584"
     }
+  },
+  {
+    "date": "2026-10-21",
+    "run_id": "01b2c4cf0a8f",
+    "story": "Google\u2019s more personalized Gemini AI is heading to your car",
+    "source_url": "https://www.theverge.com/tech/1014999/google-gemini-ai-cars-android-auto",
+    "category": "cars",
+    "title": "Can your car AI read your emails for you?",
+    "description": "Can your car\u2019s AI read your emails to help you while driving?\nGoogle\u2019s Gemini AI now integrates with Android Auto, letting you ask about flights or appointments without typing.\nWould you let an AI read your emails while driving?",
+    "full_narration": "Your AI can read your email to tell you flight status while you drive. When you turn on Personal Intelligence, Gemini can pull data from Gmail, Calendar, Maps, and Photos right inside Android Auto. Ask it about your flight, and it grabs the confirmation from Gmail and shows the live status on the car screen. You can also say \u201ctake me to my doctor\u2019s appointment,\u201d and it reads the address from Calendar and navigates for you. Would you let an AI read your emails while driving?",
+    "hashtags": [
+      "google",
+      "gemini",
+      "androidauto",
+      "ai",
+      "cars",
+      "personalassistant"
+    ],
+    "video_path": "runs/01b2c4cf0a8f/final.mp4",
+    "thumbnail_path": "runs/01b2c4cf0a8f/thumbnail.jpg",
+    "metadata_path": "runs/01b2c4cf0a8f/metadata.txt",
+    "used_hero_image": true,
+    "intro_variant": "none",
+    "status": "published",
+    "generated_at": "2026-10-21T10:13:14.540172",
+    "decided_at": "2026-10-21T10:16:47.268796",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/m0xlKc7hEGw",
+      "instagram_media_id": "18125001416484410",
+      "linkedin_post_id": "186422582038233088"
+    }
   }
 ]
