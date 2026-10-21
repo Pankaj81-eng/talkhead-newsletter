@@ -87,6 +87,37 @@ def _ask_frame_groq(data: bytes, prompt: str) -> bool | None:
     return None
 
 
+def _ask_frame_openrouter(data: bytes, prompt: str) -> bool | None:
+    """Last backup for the YES/NO picture question: free vision models on OpenRouter."""
+    import base64
+    import re
+
+    from .. import config
+    from ..llm import _openrouter_post
+    if not config.OPENROUTER_API_KEY:
+        return None
+    b64 = base64.b64encode(data).decode()
+    for model in config.OPENROUTER_VISION_MODELS:
+        try:
+            resp = _openrouter_post({"model": model, "max_tokens": 400, "temperature": 0, "messages": [{"role": "user", "content": [
+                {"type": "text", "text": prompt},
+                {"type": "image_url", "image_url": {"url": "data:image/jpeg;base64," + b64}}]}]})
+            text = re.sub(r"<think>.*?</think>", "", resp["choices"][0]["message"]["content"] or "", flags=re.S).strip().upper()
+            if text.startswith("YES"):
+                return True
+            if text.startswith("NO"):
+                return False
+        except Exception as e:  # noqa: BLE001
+            print(f"[shotplan] openrouter {model} frame check gave no answer ({str(e)[:80]})")
+    return None
+
+
+def _ask_frame_backup(data: bytes, prompt: str) -> bool | None:
+    """Groq first, then OpenRouter, for when Gemini has no answer."""
+    ans = _ask_frame_groq(data, prompt)
+    return ans if ans is not None else _ask_frame_openrouter(data, prompt)
+
+
 def _ask_frame(frame_jpg, prompt: str, tries: int = 3) -> bool | None:
     """One YES/NO question about one frame, asked of Gemini (vision) with a few retries because the
     free tier often answers 503/429; if Gemini still gives nothing, the same question goes to Groq.
@@ -101,14 +132,14 @@ def _ask_frame(frame_jpg, prompt: str, tries: int = 3) -> bool | None:
         print(f"[shotplan] frame check unavailable ({str(e)[:80]})")
         return None
     if not config.GEMINI_API_KEY:
-        return _ask_frame_groq(data, prompt)
+        return _ask_frame_backup(data, prompt)
     try:
         from google import genai
         from google.genai import types
         client = genai.Client(api_key=config.GEMINI_API_KEY)
     except Exception as e:  # noqa: BLE001
         print(f"[shotplan] frame check unavailable ({str(e)[:80]})")
-        return _ask_frame_groq(data, prompt)
+        return _ask_frame_backup(data, prompt)
     for attempt in range(tries):
         try:
             resp = client.models.generate_content(
@@ -118,7 +149,7 @@ def _ask_frame(frame_jpg, prompt: str, tries: int = 3) -> bool | None:
         except Exception as e:  # noqa: BLE001
             if attempt == tries - 1:
                 print(f"[shotplan] frame check gave no answer ({str(e)[:80]}); trying Groq")
-                return _ask_frame_groq(data, prompt)
+                return _ask_frame_backup(data, prompt)
             time.sleep(4 * (attempt + 1))
     return None
 

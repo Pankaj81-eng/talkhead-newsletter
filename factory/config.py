@@ -43,6 +43,9 @@ OUT_FPS = 30
 # --- Provider keys ---
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")          # last-resort free models (see llm._call_openrouter)
+OPENROUTER_MODELS = [m for m in os.getenv("FACTORY_OPENROUTER_MODELS", "minimax/minimax-m3.1-flash:free,google/gemma-4-31b-it:free").split(",") if m]
+OPENROUTER_VISION_MODELS = [m for m in os.getenv("FACTORY_OPENROUTER_VISION_MODELS", "minimax/minimax-m3.1-flash:free,google/gemma-4-31b-it:free").split(",") if m]
 GROQ_VISION_MODEL = os.getenv("FACTORY_GROQ_VISION_MODEL", "qwen/qwen3.8-27b")   # backup picture checker when Gemini quota is out
 PEXELS_API_KEY = os.getenv("PEXELS_API_KEY", "")
 PIXABAY_API_KEY = os.getenv("PIXABAY_API_KEY", "")

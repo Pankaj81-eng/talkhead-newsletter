@@ -5,6 +5,7 @@ call site — free tiers change without notice, this is the one place that pays.
 from __future__ import annotations
 
 import json
+import re
 import time
 from typing import TypeVar
 from pydantic import BaseModel, ValidationError
@@ -152,6 +153,38 @@ def _call_groq_model(model: str, prompt: str, schema: type[T], max_output_tokens
         return None
 
 
+def _openrouter_post(payload: dict) -> dict:
+    import urllib.request
+    req = urllib.request.Request(
+        "https://openrouter.ai/api/v1/chat/completions", data=json.dumps(payload).encode(),
+        headers={"Authorization": "Bearer " + config.OPENROUTER_API_KEY, "Content-Type": "application/json",
+                 "User-Agent": "talkhead-factory/1.0"})
+    with urllib.request.urlopen(req, timeout=120) as r:
+        return json.load(r)
+
+
+def _call_openrouter(prompt: str, schema: type[T], max_output_tokens: int = _DEFAULT_MAX_OUTPUT_TOKENS) -> T | None:
+    """Last resort (added 2026-10-21): the free models on OpenRouter (config.OPENROUTER_MODELS, in order),
+    used only when Gemini and both Groq models have failed. Public news text only goes here."""
+    if not config.OPENROUTER_API_KEY:
+        return None
+    for model in config.OPENROUTER_MODELS:
+        try:
+            resp = _openrouter_post({
+                "model": model, "max_tokens": max(max_output_tokens, 2000), "temperature": 0.7,
+                "response_format": {"type": "json_object"},
+                "messages": [{"role": "system", "content": _SYSTEM_JSON_INSTRUCTION},
+                             {"role": "user", "content": f"Schema fields: {list(schema.model_fields.keys())}\n\n{prompt}"}]})
+            raw = resp["choices"][0]["message"]["content"] or ""
+            raw = re.sub(r"<think>.*?</think>", "", raw, flags=re.S)
+            result = schema.model_validate_json(_extract_json(raw))
+            print(f"[llm] OpenRouter {model} answered")
+            return result
+        except Exception as e:  # noqa: BLE001
+            print(f"[llm] OpenRouter {model} failed: {str(e)[:160]}")
+    return None
+
+
 def generate_structured(
     prompt: str, schema: type[T], retries: int = 1,
     max_output_tokens: int = _DEFAULT_MAX_OUTPUT_TOKENS,
@@ -182,9 +215,9 @@ def generate_structured(
         if attempt > 0:
             time.sleep(_RATE_LIMIT_DELAY_S if rate_limited else _RETRY_DELAY_S)
             rate_limited = False
-        for fn in (_call_gemini, _call_groq):
+        for fn in (_call_gemini, _call_groq, _call_openrouter):
             try:
-                result = fn(prompt, schema, max_output_tokens) if fn is _call_groq else fn(prompt, schema)
+                result = fn(prompt, schema) if fn is _call_gemini else fn(prompt, schema, max_output_tokens)
             except ValidationError as e:
                 last_err = e
                 continue
