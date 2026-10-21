@@ -43,6 +43,7 @@ OUT_FPS = 30
 # --- Provider keys ---
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+GROQ_VISION_MODEL = os.getenv("FACTORY_GROQ_VISION_MODEL", "qwen/qwen3.8-27b")   # backup picture checker when Gemini quota is out
 PEXELS_API_KEY = os.getenv("PEXELS_API_KEY", "")
 PIXABAY_API_KEY = os.getenv("PIXABAY_API_KEY", "")
 COVERR_API_KEY = os.getenv("COVERR_API_KEY", "")

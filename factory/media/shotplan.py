@@ -58,23 +58,57 @@ def plan_shots(headline: str, beat_texts: list[str]) -> dict[int, dict]:
     return out
 
 
+def _ask_frame_groq(data: bytes, prompt: str) -> bool | None:
+    """Backup for _ask_frame when Gemini gives no answer (free-tier quota): the same YES/NO question to a
+    Groq-hosted vision model. Added 2026-10-21 after the Gemini quota made every stock clip fail closed."""
+    import base64
+    import re
+
+    from .. import config
+    if not config.GROQ_API_KEY:
+        return None
+    try:
+        from groq import Groq
+        client = Groq(api_key=config.GROQ_API_KEY)
+        b64 = base64.b64encode(data).decode()
+        resp = client.chat.completions.create(
+            model=config.GROQ_VISION_MODEL, max_tokens=400, temperature=0,
+            messages=[{"role": "user", "content": [
+                {"type": "text", "text": prompt},
+                {"type": "image_url", "image_url": {"url": "data:image/jpeg;base64," + b64}}]}])
+        text = re.sub(r"<think>.*?</think>", "", resp.choices[0].message.content or "", flags=re.S).strip().upper()
+        if text.startswith("YES"):
+            return True
+        if text.startswith("NO"):
+            return False
+        print(f"[shotplan] groq frame check gave an unclear answer ({text[:40]!r})")
+    except Exception as e:  # noqa: BLE001
+        print(f"[shotplan] groq frame check gave no answer ({str(e)[:80]})")
+    return None
+
+
 def _ask_frame(frame_jpg, prompt: str, tries: int = 3) -> bool | None:
     """One YES/NO question about one frame, asked of Gemini (vision) with a few retries because the
-    free tier often answers 503/429. Returns True (YES), False (NO) or None when no answer came."""
+    free tier often answers 503/429; if Gemini still gives nothing, the same question goes to Groq.
+    Returns True (YES), False (NO) or None when no answer came."""
     import time
     from pathlib import Path
 
     from .. import config
-    if not config.GEMINI_API_KEY:
-        return None
     try:
-        from google import genai
-        from google.genai import types
-        client = genai.Client(api_key=config.GEMINI_API_KEY)
         data = Path(frame_jpg).read_bytes()
     except Exception as e:  # noqa: BLE001
         print(f"[shotplan] frame check unavailable ({str(e)[:80]})")
         return None
+    if not config.GEMINI_API_KEY:
+        return _ask_frame_groq(data, prompt)
+    try:
+        from google import genai
+        from google.genai import types
+        client = genai.Client(api_key=config.GEMINI_API_KEY)
+    except Exception as e:  # noqa: BLE001
+        print(f"[shotplan] frame check unavailable ({str(e)[:80]})")
+        return _ask_frame_groq(data, prompt)
     for attempt in range(tries):
         try:
             resp = client.models.generate_content(
@@ -83,8 +117,8 @@ def _ask_frame(frame_jpg, prompt: str, tries: int = 3) -> bool | None:
             return (resp.text or "").strip().upper().startswith("YES")
         except Exception as e:  # noqa: BLE001
             if attempt == tries - 1:
-                print(f"[shotplan] frame check gave no answer ({str(e)[:80]})")
-                return None
+                print(f"[shotplan] frame check gave no answer ({str(e)[:80]}); trying Groq")
+                return _ask_frame_groq(data, prompt)
             time.sleep(4 * (attempt + 1))
     return None
 
