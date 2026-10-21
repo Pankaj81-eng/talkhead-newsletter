@@ -16,8 +16,7 @@ from .. import config
 # (leading/trailing silence excluded) and time-stretched (pitch kept) toward one target rate.
 PACE_TARGET_WPS = 2.60
 PACE_TOLERANCE = 0.04          # leave takes within +-4% of the target untouched
-PACE_MAX_STRETCH = 0.08        # speeding up: never more than 8% (more sounds sing-song)
-PACE_MAX_SLOWDOWN = 0.14       # slowing down a rushed take: up to 14% (2026-10-21: all 5 takes of a script came out at 3.2-4.5 words/sec)
+PACE_MAX_STRETCH = 0.08        # polish only: never stretch more than 8% (more sounds sing-song)
 
 
 
@@ -64,7 +63,7 @@ def _even_pace(wav, sr: int, n_words: int):
         print(f"[voice]   pace {wps:.2f} wps ok (silence trimmed)")
         return wav
     tempo = 1 / ratio
-    tempo = min(max(tempo, 1 - PACE_MAX_SLOWDOWN), 1 + PACE_MAX_STRETCH)
+    tempo = min(max(tempo, 1 - PACE_MAX_STRETCH), 1 + PACE_MAX_STRETCH)
     with tempfile.TemporaryDirectory() as d:
         src, dst = f"{d}/in.wav", f"{d}/out.wav"
         sf.write(src, wav, sr)
@@ -84,7 +83,6 @@ def speakable(text: str) -> str:
     """Spell out symbols the TTS reads badly. 2026-10-12: "60%" was spoken as "sixty pence"."""
     import re
     text = re.sub(r"(\d[\d,]*(?:\.\d+)?)\s*%", r"\1 percent", text)
-    text = re.sub(r"[\u201c\u201d\"]", "", text)       # quotation marks change how the model phrases a line
     return text.replace("%", " percent").replace("&", " and ")
 
 class VoiceEngine(Protocol):
