@@ -133,6 +133,7 @@ GEMINI_MODEL = os.getenv("FACTORY_GEMINI_MODEL", "gemini-3.6-flash")
 # endpoint for a replacement; openai/gpt-oss-120b is their current
 # largest general-purpose chat model.
 GROQ_MODEL = os.getenv("FACTORY_GROQ_MODEL", "openai/gpt-oss-120b")
+GROQ_FALLBACK_MODELS = [m for m in os.getenv("FACTORY_GROQ_FALLBACK_MODELS", "openai/gpt-oss-20b").split(",") if m]   # own daily quota
 
 # --- Fixed outro asset ---
 # Accepts whatever container your camera/screen-recorder actually produced

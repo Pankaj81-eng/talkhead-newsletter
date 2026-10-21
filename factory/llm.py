@@ -72,13 +72,28 @@ class _RateLimited(Exception):
 
 
 def _call_groq(prompt: str, schema: type[T], max_output_tokens: int = _DEFAULT_MAX_OUTPUT_TOKENS) -> T | None:
+    """Groq's free-tier limits are per model, so when the main model is out of tokens for the day
+    (2026-10-21: 200k/day used up by two runs plus story scoring) the next model in
+    config.GROQ_FALLBACK_MODELS is tried before giving up."""
+    models = [config.GROQ_MODEL, *config.GROQ_FALLBACK_MODELS]
+    for i, model in enumerate(models):
+        try:
+            return _call_groq_model(model, prompt, schema, max_output_tokens)
+        except _RateLimited:
+            if i == len(models) - 1:
+                raise
+            print(f"[llm] Groq {model} is rate-limited; trying {models[i + 1]}")
+    return None
+
+
+def _call_groq_model(model: str, prompt: str, schema: type[T], max_output_tokens: int) -> T | None:
     if not config.GROQ_API_KEY:
         return None
     try:
         from groq import Groq
         client = Groq(api_key=config.GROQ_API_KEY)
         resp = client.chat.completions.create(
-            model=config.GROQ_MODEL,
+            model=model,
             messages=[
                 {"role": "system", "content": _SYSTEM_JSON_INSTRUCTION},
                 {"role": "user", "content": prompt},
@@ -130,7 +145,7 @@ def _call_groq(prompt: str, schema: type[T], max_output_tokens: int = _DEFAULT_M
         return schema.model_validate_json(_extract_json(raw))
     except Exception as e:  # noqa: BLE001
         msg = str(e)
-        if "rate_limit_exceeded" in msg or "tokens per minute" in msg.lower():
+        if "rate_limit_exceeded" in msg or "tokens per minute" in msg.lower() or "Error code: 429" in msg:
             print(f"[llm] Groq rate-limited (will back off longer before retrying): {e}")
             raise _RateLimited(msg) from e
         print(f"[llm] Groq failed, falling back: {e}")
