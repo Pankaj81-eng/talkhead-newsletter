@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 import traceback
 from datetime import datetime
@@ -171,8 +172,13 @@ def main() -> None:
         print(f"[daily_run] script: {script.word_count} words, title={script.title!r}")
 
         stage = "voice"
-        engine = get_voice_engine()
-        wav_path = engine.synthesize(script.full_narration, run_dir / "voiceover.wav")
+        if os.getenv("FACTORY_VOICE_GUARD", "1") != "0":
+            # Watchdog: runs the voice in a child process, restarts it once if it freezes (2026-10-21 incident).
+            from factory.media.voice_guard import synthesize_guarded
+            wav_path = synthesize_guarded(script.full_narration, run_dir / "voiceover.wav")
+        else:
+            engine = get_voice_engine()
+            wav_path = engine.synthesize(script.full_narration, run_dir / "voiceover.wav")
 
         stage = "captions"
         words = align_to_script(transcribe_words(wav_path), script.full_narration)
