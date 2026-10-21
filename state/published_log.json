@@ -1699,5 +1699,35 @@
       "instagram_media_id": "18125001416484410",
       "linkedin_post_id": "186422582038233088"
     }
+  },
+  {
+    "date": "2026-10-21",
+    "run_id": "03fa457cc64a",
+    "story": "Ukraine\u2019s drone rescue of wounded soldier puts much touted idea into practice",
+    "source_url": "https://arstechnica.com/gadgets/2026/10/ukraines-drone-rescue-of-wounded-soldier-puts-much-touted-idea-into-practice/",
+    "category": "aviation",
+    "title": "Can drones replace helicopters for battlefield rescues?",
+    "description": "How do drones help soldiers in war zones? Ukraine just used a drone to fly a wounded soldier 39 miles in over an hour. This shows a new way to save lives on the front line. Do you think drones should replace human medics on the front line?",
+    "full_narration": "A soldier was flown 39 miles by a drone in just 1 hour 14 minutes. The hexacopter, a six-rotor drone, can lift up to 200 pounds\u2014more than a typical ambulance\u2014making it ideal for battlefield use. Soldier strapped to a harness and a winch, then lifted off the ground, then flown away. This rescue shows drones can save wounded soldiers when helicopters can\u2019t reach safely. Should drones replace human medics on the front line? Other makers like SkyFall are testing similar stretcher drones, hoping to ease future battles.",
+    "hashtags": [
+      "drone",
+      "wartech",
+      "safety",
+      "innovation",
+      "military"
+    ],
+    "video_path": "runs/03fa457cc64a/final.mp4",
+    "thumbnail_path": "runs/03fa457cc64a/thumbnail.jpg",
+    "metadata_path": "runs/03fa457cc64a/metadata.txt",
+    "used_hero_image": true,
+    "intro_variant": "none",
+    "status": "published",
+    "generated_at": "2026-10-21T11:12:41.067002",
+    "decided_at": "2026-10-21T11:42:37.585080",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/85RQyYTWrzY",
+      "instagram_media_id": "18120113345323042",
+      "linkedin_post_id": "186444184079564800"
+    }
   }
 ]
