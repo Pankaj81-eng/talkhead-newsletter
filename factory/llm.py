@@ -22,6 +22,10 @@ _DEFAULT_MAX_OUTPUT_TOKENS = 3000
 
 T = TypeVar("T", bound=BaseModel)
 
+# Which provider answered the most recent successful call ("Gemini", "Groq openai/gpt-oss-20b", ...).
+# daily_run reads it after the script is written so Telegram can warn when a backup model wrote it.
+LAST_PROVIDER = ""
+
 _SYSTEM_JSON_INSTRUCTION = (
     "You must respond with ONLY a single valid JSON object matching the "
     "requested schema. No markdown fences, no commentary, no extra text."
@@ -35,6 +39,11 @@ def _extract_json(raw: str) -> str:
         if raw.lower().startswith("json"):
             raw = raw[4:]
     return raw.strip()
+
+
+def _set_provider(name: str) -> None:
+    global LAST_PROVIDER
+    LAST_PROVIDER = name
 
 
 def _call_gemini(prompt: str, schema: type[T]) -> T | None:
@@ -57,7 +66,9 @@ def _call_gemini(prompt: str, schema: type[T]) -> T | None:
             print(f"[llm] Gemini usage: prompt={usage.prompt_token_count} "
                   f"output={usage.candidates_token_count} "
                   f"total={usage.total_token_count}")
-        return schema.model_validate_json(_extract_json(resp.text))
+        result = schema.model_validate_json(_extract_json(resp.text))
+        _set_provider("Gemini")
+        return result
     except Exception as e:  # noqa: BLE001 — fall through to next provider deliberately
         print(f"[llm] Gemini failed, falling back: {e}")
         return None
@@ -143,7 +154,9 @@ def _call_groq_model(model: str, prompt: str, schema: type[T], max_output_tokens
             print(f"[llm] Groq usage: prompt={usage.prompt_tokens} "
                   f"output={usage.completion_tokens} total={usage.total_tokens}")
         raw = resp.choices[0].message.content
-        return schema.model_validate_json(_extract_json(raw))
+        result = schema.model_validate_json(_extract_json(raw))
+        _set_provider(f"Groq {model}")
+        return result
     except Exception as e:  # noqa: BLE001
         msg = str(e)
         if "rate_limit_exceeded" in msg or "tokens per minute" in msg.lower() or "Error code: 429" in msg:
@@ -178,6 +191,7 @@ def _call_openrouter(prompt: str, schema: type[T], max_output_tokens: int = _DEF
             raw = resp["choices"][0]["message"]["content"] or ""
             raw = re.sub(r"<think>.*?</think>", "", raw, flags=re.S)
             result = schema.model_validate_json(_extract_json(raw))
+            _set_provider(f"OpenRouter {model}")
             print(f"[llm] OpenRouter {model} answered")
             return result
         except Exception as e:  # noqa: BLE001

@@ -68,7 +68,7 @@ def send_text(token: str, chat_id: str, text: str) -> None:
 def send_daily_video(
     token: str, chat_id: str, video_path: Path, thumbnail_path: Path | None,
     title: str, description: str, story_link: str, metadata_path: Path | None = None,
-    run_id: str | None = None,
+    run_id: str | None = None, warning: str = "",
 ) -> int | None:
     """
     Sends the thumbnail (if any), the video, then the full copy-paste-
@@ -84,7 +84,11 @@ def send_daily_video(
             _post(token, "sendPhoto", data={"chat_id": chat_id, "caption": "Thumbnail"},
                   files={"photo": f})
 
-    caption = f"*{title}*\n\n{description}\n\nSource: {story_link}"[:1024]
+    caption = f"*{title}*\n\n{description}\n\nSource: {story_link}"
+    if warning:   # shown first, so it is the first thing read before pressing Publish
+        warning = warning.replace("_", " ").replace("*", "").replace("`", "")
+        caption = f"\u26a0\ufe0f {warning}\n\n" + caption
+    caption = caption[:1024]
     data = {"chat_id": chat_id, "caption": caption, "parse_mode": "Markdown"}
     if run_id:
         import json as _json

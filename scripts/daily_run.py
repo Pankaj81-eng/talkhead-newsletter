@@ -169,6 +169,9 @@ def main() -> None:
 
         stage = "generate_script"
         script = generate_script(brief)
+        from factory import llm as _llm
+        script_provider = _llm.LAST_PROVIDER
+        print(f"[daily_run] script written by: {script_provider or 'unknown'}")
         print(f"[daily_run] script: {script.word_count} words, title={script.title!r}")
 
         stage = "voice"
@@ -205,6 +208,9 @@ def main() -> None:
             token, chat_id, final_path, thumbs["landscape"],
             script.title, script.description, story.get("link", ""),
             metadata_path, run_id=run_id,
+            warning=("" if script_provider.startswith("Gemini") else
+                     f"Script was written by a backup model ({script_provider or 'unknown'}) because Gemini had no "
+                     "quota. Read the script and check every fact and number before pressing Publish."),
         )
 
         stage = "log"
