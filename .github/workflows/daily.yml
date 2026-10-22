@@ -24,6 +24,10 @@ permissions:
 
 jobs:
   run:
+    # 2026-10-22: while the repo variable LOCAL_RUN is "true", the daily run happens on Pankaj's Mac
+    # (scripts/local_run.sh) and this job is skipped, which costs no Actions minutes. Back to GitHub:
+    #   gh variable set LOCAL_RUN --body false --repo Pankaj81-eng/talkhead-newsletter
+    if: ${{ vars.LOCAL_RUN != 'true' }}
     runs-on: ubuntu-latest
     # Generation (~45 min on the CPU-only runner) + a bounded Publish/Discard
     # wait (4 hours, passed to daily_run.py below) + headroom. The run ends
