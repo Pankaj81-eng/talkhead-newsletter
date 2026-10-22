@@ -336,7 +336,7 @@ The run is unattended, so almost every step has a fallback.
 
 ---
 
-## Where it runs: GitHub or this Mac
+## 9. Where it runs: GitHub or this Mac
 
 The same pipeline (`scripts/daily_run.py`) runs in either place. Pankaj switches between them to manage GitHub Actions minutes.
 
@@ -352,7 +352,7 @@ Every code change has a dated note and an undo recipe in [docs/ROLLBACK-2026-10-
 
 ---
 
-## 9. Folder map
+## 10. Folder map
 
 ```
 talkhead-newsletter/
@@ -378,7 +378,7 @@ talkhead-newsletter/
 
 ---
 
-## 10. Other ways the project is used
+## 11. Other ways the project is used
 
 | Mode | How | Notes |
 |---|---|---|
@@ -389,7 +389,7 @@ talkhead-newsletter/
 
 ---
 
-## 11. Settings worth knowing
+## 12. Settings worth knowing
 
 | Setting | Daily value | What it controls |
 |---|---|---|
