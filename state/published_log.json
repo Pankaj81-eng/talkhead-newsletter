@@ -1729,5 +1729,36 @@
       "instagram_media_id": "18120113345323042",
       "linkedin_post_id": "186444184079564800"
     }
+  },
+  {
+    "date": "2026-10-22",
+    "run_id": "307662f86fa4",
+    "story": "Tesla starts Optimus robot production in California as profit falls 43%",
+    "source_url": "https://techcrunch.com/2026/10/21/tesla-stars-optimus-robot-production-in-california-as-profit-falls-43/",
+    "category": "robots",
+    "title": "Why is Tesla building robots while profits drop?",
+    "description": "Tesla has officially started building its Optimus humanoid robots in California. Huge spending on AI and robotics caused profits to drop by 43% this quarter. The company aims to ramp up production significantly over the next few years. Would you want a humanoid robot in your home?",
+    "full_narration": "Robots are now rolling off a California factory line despite a 43% profit drop. Tesla transformed factory space once used for electric cars to start building the very first commercial versions of its Optimus humanoid robot. Massive spending on artificial intelligence and robot development took a huge bite out of company earnings, dragging profits down to $787 million. The company aims to ramp up output to 20,000 bots per week by late 2027, though leadership warns early progress will be bumpy. Would you want a humanoid robot in your home?",
+    "hashtags": [
+      "tesla",
+      "optimus",
+      "robots",
+      "technews",
+      "ai",
+      "robotics"
+    ],
+    "video_path": "runs/307662f86fa4/final.mp4",
+    "thumbnail_path": "runs/307662f86fa4/thumbnail.jpg",
+    "metadata_path": "runs/307662f86fa4/metadata.txt",
+    "used_hero_image": true,
+    "intro_variant": "none",
+    "status": "published",
+    "generated_at": "2026-10-22T10:05:02.483627",
+    "decided_at": "2026-10-22T10:08:09.286389",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/zbxf9NtPicY",
+      "instagram_media_id": "17995590906022173",
+      "linkedin_post_id": "186767697806098432"
+    }
   }
 ]
