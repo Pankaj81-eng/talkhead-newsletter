@@ -13,7 +13,7 @@ A friendly walkthrough of how this project turns the day's tech news into a fini
 | What does it make? | One 45–55 second vertical video (YouTube Shorts / Instagram Reels format, 1080×1920) |
 | How often? | Once a day, fully automatic |
 | Who is it for? | A general audience. Plain language, no jargon |
-| Where does it run? | GitHub Actions (cloud), started by cron-job.org every morning |
+| Where does it run? | Either GitHub Actions (cloud, started by cron-job.org) or Pankaj's Mac (`scripts/local_run.sh`, started by a scheduled Claude task). One repo switch chooses; see "Where it runs" below |
 | Is a human involved? | Yes, once at the end: Publish or Discard on Telegram |
 | What does it cost? | Free tiers only (Gemini, Groq, OpenRouter free models, Pexels, Pixabay, NASA, Wikimedia) |
 
@@ -32,6 +32,8 @@ A friendly walkthrough of how this project turns the day's tech news into a fini
  └───────────┘   └───────────┘   └──────────┘   └───────────┘   └──────────┘   └──────────┘
                                                                   (waits up to 4 hours)
 ```
+
+*When the Mac runs it instead, the first two boxes become a scheduled Claude task starting `scripts/local_run.sh`; everything after is the same.*
 
 ---
 
@@ -281,8 +283,8 @@ Clips used in the last 12 runs are skipped, so videos don't repeat footage.
 |---|---|---|
 | Language | Python 3.11 | Everything |
 | Package manager | uv | Install and run (`uv sync`, `uv run`) |
-| Scheduling | cron-job.org + GitHub Actions | Daily cloud run |
-| Scheduling (local) | macOS launchd | Optional Mac run at 7:30am |
+| Scheduling (cloud) | cron-job.org + GitHub Actions | Daily cloud run (08:15 weekdays, 09:15 weekends UK time) |
+| Scheduling (Mac) | Scheduled Claude tasks + `scripts/local_run.sh` | Daily run on the Mac. macOS launchd does not work here: it is blocked from running scripts inside `~/Documents` |
 | News input | feedparser, Bing News | RSS feeds and topic search |
 | LLM (main) | Google Gemini (`google-genai`) | Story scoring, script, shot plan |
 | LLM (backup) | Groq (`gpt-oss-120b`, `gpt-oss-20b`) | When Gemini fails or has no quota |
@@ -323,7 +325,7 @@ The run is unattended, so almost every step has a fallback.
 
 ---
 
-## 8. Weekly extras (same GitHub workflow)
+## 8. Weekly extras (in the GitHub workflow, so they only run in GitHub mode)
 
 | When | Script | What it does |
 |---|---|---|
@@ -331,6 +333,22 @@ The run is unattended, so almost every step has a fallback.
 | Mondays | same | Sends a weekly performance summary to Telegram |
 | Sundays | [scripts/refresh_ig_token.py](scripts/refresh_ig_token.py) | Renews the 60-day Instagram token |
 | Sundays | [scripts/creator_brief.py](scripts/creator_brief.py) | Sends 3 ideas for Pankaj's weekly deeper video |
+
+---
+
+## Where it runs: GitHub or this Mac
+
+The same pipeline (`scripts/daily_run.py`) runs in either place. Pankaj switches between them to manage GitHub Actions minutes.
+
+| | GitHub Actions | This Mac |
+|---|---|---|
+| Started by | cron-job.org calling the workflow | Two scheduled Claude tasks (weekdays 08:15, weekends 09:15); the Claude app must be open and the Mac awake |
+| Command | `.github/workflows/daily.yml` | `scripts/local_run.sh` (pulls, runs, waits for Telegram, then pushes `state/`) |
+| Voice speed | Slow, CPU only (~45 min) | Faster, uses the Mac's chip (~15-30 min) |
+| Weekly extras (scorecard, creator brief, Instagram token renewal) | Run | Do not run |
+| Switch | `gh variable set LOCAL_RUN --body false --repo Pankaj81-eng/talkhead-newsletter` | `... --body true` (the workflow then skips itself and costs no minutes), and enable or disable the two scheduled Claude tasks |
+
+Every code change has a dated note and an undo recipe in [docs/ROLLBACK-2026-10-17.md](docs/ROLLBACK-2026-10-17.md). Safe-point git tags are named `stable-<date>-<what>`.
 
 ---
 
