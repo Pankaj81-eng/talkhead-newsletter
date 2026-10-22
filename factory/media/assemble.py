@@ -119,7 +119,9 @@ def _next_story_clip(run_dir: Path, beat_text: str) -> dict | None:
     used_file = folder / "_used.txt"
     used = set(used_file.read_text().split()) if used_file.exists() else set()
     for clip in sorted(folder.glob("clip_*")):
-        if clip.name in used or clip.suffix == ".json":
+        # only real video files: the slate check leaves clip_00.slate.jpg in this folder, and picking
+        # it up as a "clip" made ffmpeg loop on a still image for 30+ minutes (2026-10-22)
+        if clip.name in used or clip.suffix.lower() not in (".webm", ".mp4", ".mov", ".ogv", ".mkv"):
             continue
         words = {w for w in re.findall(r"[a-z0-9]+", subjects.get(clip.name, "").lower())
                  if len(w) >= 4 and w not in generic}
