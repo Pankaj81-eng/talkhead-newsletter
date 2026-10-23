@@ -5,6 +5,8 @@ your recorded sample is supplied; the rest of the pipeline never changes.
 """
 from __future__ import annotations
 
+import os
+
 from pathlib import Path
 from typing import Protocol
 from .. import config
@@ -32,6 +34,21 @@ def _speech_wps(wav, sr: int, n_words: int) -> float:
     if len(loud) == 0:
         return 0.0
     return n_words / ((loud[-1] - loud[0] + 1) * 0.01)
+
+def _trim_dead_air(wav, sr: int):
+    """Cut silence around the speech but keep ~80 ms of natural pad (no change to speed)."""
+    import numpy as np
+    frame = int(sr * 0.01)
+    n = len(wav) // frame
+    if n < 10:
+        return wav
+    rms = np.sqrt((wav[: n * frame].reshape(n, frame) ** 2).mean(axis=1))
+    loud = np.where(rms > max(rms.max() * 0.03, 1e-4))[0]
+    if len(loud) == 0:
+        return wav
+    pad = 8
+    return wav[max(int(loud[0]) - pad, 0) * frame: min(int(loud[-1]) + 1 + pad, n) * frame]
+
 
 def _even_pace(wav, sr: int, n_words: int):
     import subprocess
@@ -231,6 +248,38 @@ class ChatterboxVoice:
         # comfortable band, and the best of up to MAX_ATTEMPTS is kept; stretching is only a polish.
         MAX_ATTEMPTS = 5
         BAND = (2.35, 2.85)               # speech-only words/sec, silence excluded
+
+        # 2026-10-23 (Pankaj listened to four versions and picked this one): NATURAL mode. One take per
+        # sentence, no re-recording until the speed lands in a band and no time-stretching, because
+        # forcing every sentence to the same tempo made the narration sound like a metronome. Only a
+        # glitch (almost silent, or absurdly slow/fast) is re-recorded. Gaps between sentences are 0.45 s.
+        # FACTORY_VOICE_NATURAL=0 brings back the old band + stretch behaviour.
+        if os.getenv("FACTORY_VOICE_NATURAL", "1") != "0":
+            natural_gap = np.zeros(int(model.sr * 0.45), dtype=np.float32)
+            parts = []
+            for i, sentence in enumerate(merged):
+                n_words = len(sentence.split())
+                take = None
+                for attempt in range(3):
+                    torch.manual_seed(seed + (i + 1) * 1000 + attempt * 7919)
+                    wav = model.generate(
+                        sentence,
+                        audio_prompt_path=str(self.sample_path) if i == 0 and attempt == 0 else None,
+                    )
+                    wav = _trim_dead_air(wav.squeeze().detach().cpu().numpy().astype(np.float32), model.sr)
+                    wps = _speech_wps(wav, model.sr, n_words)
+                    print(f"[voice] sentence {i+1}/{len(merged)} take {attempt+1} ({n_words} words) -> "
+                          f"{wps:.2f} wps: \"{sentence[:50]}{'...' if len(sentence) > 50 else ''}\"")
+                    take = wav
+                    if n_words < 3 or 1.8 <= wps <= 4.3:
+                        break
+                parts += [take, natural_gap]
+            full = np.concatenate(parts[:-1]) if parts else natural_gap
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            sf.write(str(out_path), full, model.sr)
+            if torch.backends.mps.is_available():
+                torch.mps.empty_cache()
+            return out_path
 
         chunks = []
         for i, sentence in enumerate(merged):

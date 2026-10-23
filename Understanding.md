@@ -398,6 +398,7 @@ talkhead-newsletter/
 | `FACTORY_MIN_SECONDS` / `SAFE_MAX` / `HARD_MAX` | 36 / 45 / 50 | Narration length |
 | `FACTORY_WORDS_PER_SECOND` | 2.4 | Turns seconds into a word budget |
 | `FACTORY_VOICE_SPEED` | 1.0 | Extra speed-up (off) |
+| `FACTORY_VOICE_NATURAL` | 1 (on) | One untouched take per sentence, 0.45 s gaps, no speed correction. `0` = old mode (re-record until in a speed band, then stretch) |
 | `FACTORY_GEMINI_MODEL` | `gemini-3.6-flash` | Main LLM (update here if renamed) |
 | `INTRO_ENABLED` | off | Rotating intro clip before the hook |
 | `FB_PUBLISH_ENABLED` | off | Facebook posting |
