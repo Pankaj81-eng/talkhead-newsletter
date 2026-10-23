@@ -1760,5 +1760,36 @@
       "instagram_media_id": "17995590906022173",
       "linkedin_post_id": "186767697806098432"
     }
+  },
+  {
+    "date": "2026-10-23",
+    "run_id": "28af780afbc0",
+    "story": "SpaceX\u2019s next Starship test will try something new with a double rocket catch",
+    "source_url": "https://www.primetimer.com/features/spacex-s-next-starship-test-will-try-something-new-with-a-double-rocket-catch",
+    "category": "space",
+    "title": "Can SpaceX catch two rockets in mid-air?",
+    "description": "Can SpaceX catch two rocket stages at the same time? During its next test flight, the company will attempt to recover both parts of Starship after launch. If successful, it would be the first fully reusable orbital rocket system in history. Would you feel safe riding in a recycled space rocket?",
+    "full_narration": "Giant mechanical arms are about to try catching two falling space rockets at once. The upcoming test in Texas aims to grab both the massive booster rocket and the main ship right out of the sky. During a test flight on September 28, the craft reached orbit and released 26 satellites before heading back toward Earth. If successfully caught, this will mark the first time an entire orbital rocket system has been recovered and saved for reuse. Would you feel safe riding in a recycled space rocket?",
+    "hashtags": [
+      "spacex",
+      "starship",
+      "space",
+      "technology",
+      "rockets",
+      "elonmusk"
+    ],
+    "video_path": "runs/28af780afbc0/final.mp4",
+    "thumbnail_path": "runs/28af780afbc0/thumbnail.jpg",
+    "metadata_path": "runs/28af780afbc0/metadata.txt",
+    "used_hero_image": true,
+    "intro_variant": "none",
+    "status": "published",
+    "generated_at": "2026-10-23T09:05:51.989081",
+    "decided_at": "2026-10-23T09:35:14.539029",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/MFVOQtZvFSU",
+      "instagram_media_id": "18647194135003394",
+      "linkedin_post_id": "187121802936320000"
+    }
   }
 ]
