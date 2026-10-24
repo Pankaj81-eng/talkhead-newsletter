@@ -1813,8 +1813,14 @@
     "metadata_path": "runs/aea6b9fcbbfb/metadata.txt",
     "used_hero_image": true,
     "intro_variant": "none",
-    "status": "discarded_by_pankaj",
+    "status": "published",
     "generated_at": "2026-10-24T10:44:07.112372",
-    "decided_at": "2026-10-24T11:18:43.202755"
+    "decided_at": "2026-10-24T11:33:55.120824",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/86VGWM4oKko",
+      "instagram_media_id": "17997246048018842",
+      "linkedin_post_id": "187514056632958976"
+    },
+    "note": "published manually after discard: corrected visuals (two images replaced), same voice"
   }
 ]
