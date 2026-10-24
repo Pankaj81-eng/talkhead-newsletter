@@ -140,9 +140,49 @@ def _search(subject: str) -> list[dict]:
         if not _relevant(subject, text):
             continue
         artist = _plain((meta.get("Artist") or {}).get("value", "")) or "Wikimedia Commons contributor"
-        out.append({"url": info.get("thumburl") or info.get("url"), "title": p.get("title", ""),
+        out.append({"subject": subject, "url": info.get("thumburl") or info.get("url"), "title": p.get("title", ""),
                     "credit": f"{artist} / Wikimedia Commons ({_plain(lic, 20)})"})
     return out
+
+
+def _shows_subject(img, headline: str, subject: str, title: str) -> bool:
+    """Vision check that a photo really shows the subject and is suitable (see shotplan.shows_subject).
+    If no vision model can answer, the photo is NOT used."""
+    import tempfile
+
+    from ..media.shotplan import shows_subject
+    with tempfile.NamedTemporaryFile(suffix=".jpg") as f:
+        small = img.convert("RGB")
+        small.thumbnail((640, 640))
+        small.save(f.name, quality=85)
+        ok = shows_subject(f.name, headline, subject)
+    print(f"[wikimedia] picture check {'ok' if ok else 'REJECT' if ok is False else 'REJECT (no answer)'}: {title[:60]}")
+    return bool(ok)
+
+
+def clip_shows_subject(clip_path, headline: str, subject: str) -> bool:
+    """Same strict check for a Commons video clip: two frames (30% and 70% in) must both pass."""
+    import subprocess
+    import tempfile
+
+    from ..media.shotplan import shows_subject
+    from ..utils import probe_duration
+    try:
+        dur = probe_duration(Path(clip_path))
+    except Exception:  # noqa: BLE001
+        return False
+    for frac in (0.3, 0.7):
+        with tempfile.NamedTemporaryFile(suffix=".jpg") as f:
+            r = subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{dur * frac:.2f}", "-i", str(clip_path),
+                                "-frames:v", "1", "-vf", "scale=640:-2", f.name], capture_output=True)
+            if r.returncode != 0:
+                return False
+            ok = shows_subject(f.name, headline, subject)
+        if not ok:
+            print(f"[commons clip] REJECT {Path(clip_path).name} for {subject!r}" + ("" if ok is False else " (no answer)"))
+            return False
+    print(f"[commons clip] ok {Path(clip_path).name} for {subject!r}")
+    return True
 
 
 def fetch_wikimedia_images(
@@ -169,11 +209,15 @@ def fetch_wikimedia_images(
     out_dir.mkdir(parents=True, exist_ok=True)
     kept: list[Path] = []
     credits: dict[str, str] = {}
+    tried: set[str] = set()                       # the same file often turns up under several subjects
     for rank in range(8):
         for cands in results:
             if len(kept) >= count or rank >= len(cands):
                 continue
             c = cands[rank]
+            if c["url"] in tried:
+                continue
+            tried.add(c["url"])
             try:
                 r = requests.get(c["url"], headers=_UA, timeout=25)
                 r.raise_for_status()
@@ -185,6 +229,8 @@ def fetch_wikimedia_images(
                 continue
             ah = _ahash(img)
             if _near_dup(ah, seen):
+                continue
+            if not _shows_subject(img, headline, c["subject"], c["title"]):
                 continue
             seen.append(ah)
             dest = out_dir / f"img_{start_index + len(kept):02d}.jpg"

@@ -118,6 +118,9 @@ def _ask_frame_backup(data: bytes, prompt: str) -> bool | None:
     return ans if ans is not None else _ask_frame_openrouter(data, prompt)
 
 
+_GEMINI_OUT_UNTIL = 0.0      # when Gemini says its quota is used up, skip it for a while instead of waiting on every frame
+
+
 def _ask_frame(frame_jpg, prompt: str, tries: int = 3) -> bool | None:
     """One YES/NO question about one frame, asked of Gemini (vision) with a few retries because the
     free tier often answers 503/429; if Gemini still gives nothing, the same question goes to Groq.
@@ -140,6 +143,9 @@ def _ask_frame(frame_jpg, prompt: str, tries: int = 3) -> bool | None:
     except Exception as e:  # noqa: BLE001
         print(f"[shotplan] frame check unavailable ({str(e)[:80]})")
         return _ask_frame_backup(data, prompt)
+    global _GEMINI_OUT_UNTIL
+    if time.time() < _GEMINI_OUT_UNTIL:
+        return _ask_frame_backup(data, prompt)
     for attempt in range(tries):
         try:
             resp = client.models.generate_content(
@@ -147,6 +153,10 @@ def _ask_frame(frame_jpg, prompt: str, tries: int = 3) -> bool | None:
                 contents=[types.Part.from_bytes(data=data, mime_type="image/jpeg"), prompt])
             return (resp.text or "").strip().upper().startswith("YES")
         except Exception as e:  # noqa: BLE001
+            if "RESOURCE_EXHAUSTED" in str(e):
+                _GEMINI_OUT_UNTIL = time.time() + 600
+                print("[shotplan] Gemini quota used up; picture checks go to the backups for 10 minutes")
+                return _ask_frame_backup(data, prompt)
             if attempt == tries - 1:
                 print(f"[shotplan] frame check gave no answer ({str(e)[:80]}); trying Groq")
                 return _ask_frame_backup(data, prompt)
@@ -163,6 +173,24 @@ def frame_fits(frame_jpg, story: str, line: str) -> bool | None:
         "subject: e.g. cars/roads/robots/space rovers/phones/cities as the line needs)? Random scenery, "
         "markets, oceans, waterfalls, unrelated people, vintage or irrelevant objects, empty abstract "
         "shots and green screens do NOT fit. Answer with exactly one word: YES or NO.")
+    return _ask_frame(frame_jpg, prompt)
+
+
+def shows_subject(frame_jpg, story: str, subject: str) -> bool | None:
+    """Strict check for pictures found by NAME search (Wikimedia photos and Commons clips): is this a
+    suitable picture for a modern news Short about the story? Keyword matching alone let in a 1950s
+    patient film and a Victorian cartoon of a dog doctor (2026-10-24). True / False, or None when no
+    vision model answered (callers then reject the picture)."""
+    prompt = (
+        "You are the picture editor of a modern news Short for a general audience. Story: " + story +
+        "\nSearch subject: " + subject +
+        "\nAnswer YES only if this picture (1) clearly SHOWS the search subject itself, or something "
+        "directly part of this story, AND (2) is a modern, realistic photo or film frame that is pleasant "
+        "to watch. Answer NO for: cartoons, drawings, engravings, paintings, comics, vintage, historical "
+        "or black-and-white archive pictures, diagrams, maps, screenshots, slides full of text, logos "
+        "that are not the subject, generic damaged buildings or crowds, and anything distressing "
+        "(a visibly ill, injured, bandaged or suffering person, wounds, surgery, dead bodies). "
+        "Answer with exactly one word: YES or NO.")
     return _ask_frame(frame_jpg, prompt)
 
 

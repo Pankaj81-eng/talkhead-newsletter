@@ -157,6 +157,10 @@ def main() -> None:
                     break
                 c = fetch_commons_clip(subj, run_id)
                 if c:
+                    from factory.news.wikimedia_images import clip_shows_subject
+                    if not clip_shows_subject(c["path"], story["headline"], subj):
+                        c = None
+                if c:
                     dest = clips_dir / f"clip_{len(credits):02d}{c['path'].suffix}"
                     shutil.copy2(c["path"], dest)
                     credits[dest.name], subjects[dest.name] = c["credit"], subj
