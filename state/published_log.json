@@ -1791,5 +1791,30 @@
       "instagram_media_id": "18647194135003394",
       "linkedin_post_id": "187121802936320000"
     }
+  },
+  {
+    "date": "2026-10-24",
+    "run_id": "aea6b9fcbbfb",
+    "story": "Microsoft AI tool beat generalist doctors at step-by-step diagnosis",
+    "source_url": "https://thenextweb.com/news/microsoft-ai-diagnosis-mai-dxo-science-study",
+    "category": "health",
+    "title": "Can AI diagnose illnesses better than doctors?",
+    "description": "Can software help diagnose complex medical conditions faster than doctors?\n\nA recent study found Microsoft's AI tool scored significantly higher than generalist doctors on tough diagnostic tests by asking questions step-by-step.\n\nWould you trust a system like this?",
+    "full_narration": "A computer program just diagnosed tricky medical cases far better than real doctors. In a tough medical test, it reached the correct diagnosis in 83.2% of complex cases, while human doctors scored 36.1%. Most tools just guess from a summary, but this one acts like a panel of doctors, ordering tests step by step. In emergency hospital cases, it scored 80.3% compared to 46.8% for the human medical group. It is not treating real people yet, but hospitals might test it in emergency waiting rooms soon. Would you trust a system like this?",
+    "hashtags": [
+      "ai",
+      "tech",
+      "healthtech",
+      "medicine",
+      "futuretech"
+    ],
+    "video_path": "runs/aea6b9fcbbfb/final.mp4",
+    "thumbnail_path": "runs/aea6b9fcbbfb/thumbnail.jpg",
+    "metadata_path": "runs/aea6b9fcbbfb/metadata.txt",
+    "used_hero_image": true,
+    "intro_variant": "none",
+    "status": "discarded_by_pankaj",
+    "generated_at": "2026-10-24T10:44:07.112372",
+    "decided_at": "2026-10-24T11:18:43.202755"
   }
 ]
