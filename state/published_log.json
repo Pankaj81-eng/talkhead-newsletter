@@ -1845,14 +1845,14 @@
     "metadata_path": "runs/cef5bef72f77/metadata.txt",
     "used_hero_image": true,
     "intro_variant": "none",
-    "status": "published_partial",
+    "status": "published",
     "generated_at": "2026-10-25T09:13:52.844497",
     "decided_at": "2026-10-25T09:30:25.432722",
     "publish_result": {
       "youtube_url": "https://youtube.com/shorts/mLb1jb8CXMw",
       "instagram_media_id": "18100081571561458",
-      "linkedin_error": "WoopSocial media upload failed: 422: {\"error_message\":\"storage limit exceeded: current usage 1064504363 bytes, uploaded 21104444 bytes, limit 1073741824 bytes\"}\n"
+      "linkedin_post_id": "187862680860622848"
     },
-    "note": "published manually after discard: corrected visuals (two images replaced), same voice (hook clip + blurry stretch replaced)"
+    "note": "published manually after discard: corrected visuals (two images replaced), same voice (hook clip + blurry stretch replaced) | LinkedIn retried after WoopSocial storage was freed"
   }
 ]
