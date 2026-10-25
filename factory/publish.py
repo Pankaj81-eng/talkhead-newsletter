@@ -23,6 +23,7 @@ from datetime import date
 import time
 from pathlib import Path
 
+import os
 import requests
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -319,6 +320,10 @@ def publish_linkedin(video_path: Path, caption: str) -> str:
         }],
         "schedule": {"type": "PUBLISH_NOW"},
         "socialAccounts": [{"platform": "LINKEDIN_PAGES", "socialAccountId": config.WOOP_LINKEDIN_ACCOUNT_ID}],
+        # 2026-10-25: WoopSocial's media library has a 1 GB cap and filled up (LinkedIn uploads failed with
+        # "storage limit exceeded"). With this flag WoopSocial deletes the uploaded video itself once the
+        # post has published successfully; the LinkedIn post is unaffected. FACTORY_WOOP_AUTO_DELETE_MEDIA=0 turns it off.
+        "autoDeleteMediaAfterPublish": os.getenv("FACTORY_WOOP_AUTO_DELETE_MEDIA", "1") != "0",
     }
     r = requests.post(f"{_WOOP_API}/posts", headers=_woop_headers(), json=body, timeout=60)
     if r.status_code >= 400:
