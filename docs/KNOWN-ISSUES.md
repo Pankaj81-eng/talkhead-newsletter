@@ -6,7 +6,6 @@ Every change has its own dated note and undo recipe in `ROLLBACK-2026-10-17.md`.
 ## Open (not fixed yet)
 | Seen | Problem | Why it happens | Proposed fix |
 |---|---|---|---|
-| 25 Oct | Hook showed a man on an e-scooter instead of a delivery robot | The stock check only asks "could this plausibly illustrate the story?", and the hook beat has no rule that it must show the story's main subject | Hook must pass the strict subject check (`shotplan.shows_subject`); else use the article's hero image |
 | 25 Oct | The article's own photos (guide-dog man, legged robot) were unused while weaker stock was shown | Article images are handed out in file order on every other beat, not matched to what each line says | Describe each article image once with the vision model and give each beat the best-matching image first |
 | 21 Oct | Related-story/sidebar images (e.g. The Verge "Most popular") can be taken as the story's own | The heading filter in `article_images.py` is short; the longer filter was REVERTED in the 18 Oct rollback | Re-apply the extended filter (tested: 13 candidates -> 1 on The Verge, no change on 13 other sites) |
 | 24 Oct | YouTube custom thumbnail upload fails (403); thumbnail is the article's own image with a third-party logo (TNW) | Channel permission for custom thumbnails; thumbnail uses the article hero | Check YouTube Studio settings; make our own thumbnail |
@@ -17,6 +16,7 @@ Every change has its own dated note and undo recipe in `ROLLBACK-2026-10-17.md`.
 ## Fixed (watch the next videos)
 | Seen | Problem | Fix | Date |
 |---|---|---|---|
+| 25 Oct | Hook showed a courier on an e-scooter in a delivery-robot video | The hook beat must show the story's main subject: stock must pass the strict subject check (`assemble._hook_subject_ok`, subject from `story_subject.txt` written by `daily_run.py`); otherwise a checked article picture is used. With no known subject the old behaviour applies | 26 Oct |
 | 25 Oct | ~9 s of a blurry, washed-out stock clip | Blur check for stock clips (`factory/media/sharpness.py`: sharpest-tile edge energy, brightness-aware; flags 5 of 144 cached clips) plus the picture checker now says NO to blurry / out-of-focus / almost black frames; `FACTORY_BLUR_CHECK=0` turns the numeric check off | 26 Oct |
 | 25 Oct | LinkedIn failed: WoopSocial 1 GB storage full | `autoDeleteMediaAfterPublish` on every LinkedIn post (verify after the next publish); 50 old videos deleted by hand | 25 Oct |
 | 24 Oct | Cartoon dog picture and a 1950s patient film in the video | Strict vision check for Wikimedia photos and Commons clips | 24 Oct |

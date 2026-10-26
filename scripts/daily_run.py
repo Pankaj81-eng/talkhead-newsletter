@@ -153,7 +153,11 @@ def main() -> None:
             clips_dir = run_dir / "story_clips"
             clips_dir.mkdir(exist_ok=True)
             credits, subjects = {}, {}
-            for subj in visual_subjects(story["headline"], story.get("body", ""))[:3]:
+            story_subjects = visual_subjects(story["headline"], story.get("body", ""))
+            if story_subjects:   # the hook beat must show this (assemble._hook_subject_ok)
+                (run_dir / "story_subject.txt").write_text(story_subjects[0])
+                (run_dir / "story_headline.txt").write_text(story["headline"])
+            for subj in story_subjects[:3]:
                 if len(credits) >= 2:
                     break
                 c = fetch_commons_clip(subj, run_id)

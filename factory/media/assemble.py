@@ -201,6 +201,14 @@ def _build_single_beat_clip(beat, duration: float, idx: int, run_dir: Path) -> P
         if clip_is_blurry(broll_path):
             print(f"[assemble] stock clip for {beat.query!r} is blurry / out of focus; not used")
             broll_path = None
+    if broll_path and idx == 0 and not _hook_subject_ok(broll_path, _story_headline(run_dir) or beat.text, _story_subject(run_dir)):
+        broll_path = None
+    if idx == 0 and is_broll and not broll_path:
+        # the hook must show the story's subject: no stock clip did, so use a (checked) real picture from the story
+        art = _next_article_frame(run_dir)
+        if art:
+            _still_image_clip(art, duration, out, zoom_out=False)
+            return out
 
     if broll_path:
         run_ffmpeg([
@@ -345,12 +353,44 @@ def _is_slate(path: Path) -> bool:
         return False
 
 
+def _story_subject(run_dir: Path) -> str:
+    """The story's main visual subject (first Wikimedia search subject), written by daily_run.py. '' when unknown."""
+    try:
+        return (run_dir / "story_subject.txt").read_text().strip()
+    except OSError:
+        return ""
+
+
+def _story_headline(run_dir: Path) -> str:
+    try:
+        return (run_dir / "story_headline.txt").read_text().strip()
+    except OSError:
+        return ""
+
+
+def _hook_subject_ok(path: Path, story: str, subject: str) -> bool:
+    """The hook (first beat) must SHOW the story's main subject, not just something loosely related (2026-10-25: a courier
+    on an e-scooter opened a video about delivery robots). Strict vision check; no answer = not ok. With no known subject the
+    old behaviour applies (True)."""
+    if not subject:
+        return True
+    try:
+        from .shotplan import shows_subject
+        ok = shows_subject(_frame_jpg(path, ".hook.jpg"), story, subject)
+        print(f"[assemble] hook subject check {'ok' if ok else 'REJECT' if ok is False else 'REJECT (no answer)'} for {subject!r}: {Path(path).name[:40]}")
+        return bool(ok)
+    except Exception as e:  # noqa: BLE001
+        print(f"[assemble] hook subject check failed ({str(e)[:80]}); clip rejected")
+        return False
+
+
 def _gather_shots(beat, idx: int, run_dir: Path, plan: dict, n: int, duration: float) -> list[dict]:
     """Distinct footage for one beat, interleaving stock with the special
     story-specific material (NASA, Commons footage, a real article image)."""
     run_id = run_dir.name
     specials: list[dict] = []
-    if idx % 2 == 1:                       # alternate beats show a real story image
+    hook_subject = _story_subject(run_dir) if idx == 0 else ""
+    if idx % 2 == 1 or idx == 0:           # alternate beats (and the hook) show a real story image
         art = _next_article_frame(run_dir)
         if art:
             specials.append({"kind": "still", "path": art})
@@ -381,6 +421,8 @@ def _gather_shots(beat, idx: int, run_dir: Path, plan: dict, n: int, duration: f
         if p and str(p) not in seen:
             seen.add(str(p))
             if not _stock_fits(p, plan.get("_story", ""), beat.text, q):
+                continue
+            if idx == 0 and not _hook_subject_ok(p, plan.get("_story", ""), hook_subject):
                 continue
             stock.append({"kind": "video", "path": p})
 
