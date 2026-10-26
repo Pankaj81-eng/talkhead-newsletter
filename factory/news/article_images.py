@@ -120,19 +120,19 @@ def _near_dup(h: int, seen: list[int]) -> bool:
     return any(bin(h ^ s).count("1") <= 5 for s in seen)
 
 
-def _belongs_to_story(img, headline: str) -> bool:
-    """Vision check that a picture from the page belongs to the story (see shotplan.story_image_fits).
-    No answer from any vision model = rejected."""
+def _belongs_to_story(img, headline: str) -> tuple[bool, str]:
+    """(belongs?, one-sentence description) from ONE vision call (see shotplan.describe_and_judge). No answer from any vision
+    model = rejected. The description is saved for the picture-to-line matching (article_match)."""
     import tempfile
 
-    from ..media.shotplan import story_image_fits
+    from ..media.shotplan import describe_and_judge
     with tempfile.NamedTemporaryFile(suffix=".jpg") as f:
         small = img.convert("RGB")
         small.thumbnail((640, 640))
         small.save(f.name, quality=85)
-        ok = story_image_fits(f.name, headline)
+        ok, caption = describe_and_judge(f.name, headline)
     print(f"[article_images] belongs-to-story check {'ok' if ok else 'REJECT' if ok is False else 'REJECT (no answer)'}")
-    return bool(ok)
+    return bool(ok), caption
 
 
 def fetch_article_images(
@@ -160,6 +160,7 @@ def fetch_article_images(
 
     out_dir.mkdir(parents=True, exist_ok=True)
     kept: list[Path] = []
+    captions: dict[str, str] = {}
     for url in _candidate_urls(page_html, source_url):
         if len(kept) >= MAX_IMAGES:
             break
@@ -181,14 +182,22 @@ def fetch_article_images(
         if _near_dup(ah, seen):
             continue
         seen.append(ah)
-        if headline and not _belongs_to_story(img, headline):
-            continue
+        cap = ""
+        if headline:
+            ok, cap = _belongs_to_story(img, headline)
+            if not ok:
+                continue
         img = img.convert("RGB")
         if max(img.size) > 2000:
             img.thumbnail((2000, 2000))
         dest = out_dir / f"img_{len(kept):02d}.jpg"
         img.save(dest, quality=90)
         kept.append(dest)
+        if cap:
+            captions[dest.name] = cap
 
+    if captions:   # reused by article_match so these pictures are not described a second time
+        import json
+        (out_dir / "captions.json").write_text(json.dumps(captions, indent=1))
     print(f"[article_images] kept {len(kept)} image(s) from {source_url}")
     return kept

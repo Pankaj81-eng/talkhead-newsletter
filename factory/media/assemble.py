@@ -132,23 +132,77 @@ def _next_story_clip(run_dir: Path, beat_text: str) -> dict | None:
     return None
 
 
-def _next_article_frame(run_dir: Path) -> Path | None:
+def _load_assignments(folder: Path) -> dict[int, str] | None:
+    """{beat index: image name} written by article_match.assign_images, or None when there is no matching (then the old
+    order-based behaviour applies)."""
+    import json
+    f = folder / "assignments.json"
+    if not f.exists():
+        return None
+    try:
+        return {int(k): v for k, v in json.loads(f.read_text()).items()}
+    except (OSError, ValueError):
+        return None
+
+
+def _wants_article(run_dir: Path, idx: int) -> bool:
+    """Should beat `idx` show a real article picture? With a matching: only when a picture was matched to this line. Without
+    one: the old rule (every other beat)."""
+    asg = _load_assignments(run_dir / "article_images")
+    if asg is None:
+        return idx % 2 == 1
+    return idx in asg
+
+
+def _next_article_frame(run_dir: Path, idx: int | None = None, spare_ok: bool = False) -> Path | None:
     """
-    Next not-yet-used real image from the source article (see
-    news/article_images.py), framed as 9:16. Each image is used at most once
-    per video (tracked in _used.txt). None when the run has none left.
+    A real image from the source article (see news/article_images.py), framed as 9:16. Each image is used at most once
+    per video (tracked in _used.txt). None when there is none to give.
+
+    Without a matching (no assignments.json): the next unused image in file order, as before.
+    With a matching: beat `idx` gets the picture matched to its line (the same beat asking twice gets it again); a call with
+    idx=None, or with spare_ok=True when the beat has no match, only gets a SPARE picture, i.e. one not matched to any line, so
+    a matched picture is never taken from its own line.
     """
+    import json
     folder = run_dir / "article_images"
     if not folder.is_dir():
         return None
     used_file = folder / "_used.txt"
     used = set(used_file.read_text().split()) if used_file.exists() else set()
+    by_file = folder / "_used_by.json"
+    try:
+        used_by = json.loads(by_file.read_text()) if by_file.exists() else {}
+    except ValueError:
+        used_by = {}
+    asg = _load_assignments(folder)
+
+    def hand_out(img: Path) -> Path:
+        used_file.write_text("\n".join(sorted(used | {img.name})))
+        if idx is not None:
+            used_by[img.name] = idx
+            by_file.write_text(json.dumps(used_by))
+        _record_credit(run_dir, folder, img.name)
+        return _fill_frame(img, folder / f"{img.stem}_frame.png")
+
+    if asg is not None:
+        if idx is not None and idx in asg:
+            img = folder / asg[idx]
+            if img.exists() and (img.name not in used or used_by.get(img.name) == idx):
+                return hand_out(img)
+        if idx is not None and not spare_ok:
+            return None
+        reserved = set(asg.values())
+        for img in sorted(folder.glob("img_*.jpg")):
+            if img.name in used or img.name in reserved:
+                continue
+            return hand_out(img)
+        return None
+
     for img in sorted(folder.glob("img_*.jpg")):
         if img.name in used:
             continue
-        used_file.write_text("\n".join(sorted(used | {img.name})))
-        _record_credit(run_dir, folder, img.name)
-        return _fill_frame(img, folder / f"{img.stem}_frame.png")
+        return hand_out(img)
     return None
 
 
@@ -189,8 +243,8 @@ def _build_single_beat_clip(beat, duration: float, idx: int, run_dir: Path) -> P
     # Real images from the story's own source page (2026-10-05, Pankaj: stock
     # footage felt generic). Every other broll beat shows one while they last,
     # so the video mixes real story visuals with stock instead of all-stock.
-    if is_broll and idx % 2 == 1:
-        art = _next_article_frame(run_dir)
+    if is_broll and idx != 0 and _wants_article(run_dir, idx):
+        art = _next_article_frame(run_dir, idx)
         if art:
             _still_image_clip(art, duration, out, zoom_out=bool(idx % 4 == 3))
             return out
@@ -205,7 +259,7 @@ def _build_single_beat_clip(beat, duration: float, idx: int, run_dir: Path) -> P
         broll_path = None
     if idx == 0 and is_broll and not broll_path:
         # the hook must show the story's subject: no stock clip did, so use a (checked) real picture from the story
-        art = _next_article_frame(run_dir)
+        art = _next_article_frame(run_dir, 0, spare_ok=True)
         if art:
             _still_image_clip(art, duration, out, zoom_out=False)
             return out
@@ -390,8 +444,8 @@ def _gather_shots(beat, idx: int, run_dir: Path, plan: dict, n: int, duration: f
     run_id = run_dir.name
     specials: list[dict] = []
     hook_subject = _story_subject(run_dir) if idx == 0 else ""
-    if idx % 2 == 1 or idx == 0:           # alternate beats (and the hook) show a real story image
-        art = _next_article_frame(run_dir)
+    if idx == 0 or _wants_article(run_dir, idx):     # the hook, and the beats a picture was matched to (else every other beat)
+        art = _next_article_frame(run_dir, idx, spare_ok=(idx == 0))
         if art:
             specials.append({"kind": "still", "path": art})
     if plan.get("space"):
@@ -873,6 +927,11 @@ def assemble_reel(
     except Exception as e:  # noqa: BLE001 -- planning is an upgrade, never a blocker
         print(f"[assemble] shot planning skipped: {e}")
         plans = {}
+    try:
+        from .article_match import assign_images
+        assign_images([b.text for b in beats], run_dir)
+    except Exception as e:  # noqa: BLE001 -- matching is an upgrade, never a blocker (old order-based behaviour stays)
+        print(f"[assemble] picture matching skipped: {e}")
     clips = [
         build_beat_clip(beat, timing.duration, i, run_dir, plans.get(i))
         for i, (beat, timing) in enumerate(zip(beats, timings))
