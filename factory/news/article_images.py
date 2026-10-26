@@ -120,8 +120,23 @@ def _near_dup(h: int, seen: list[int]) -> bool:
     return any(bin(h ^ s).count("1") <= 5 for s in seen)
 
 
+def _belongs_to_story(img, headline: str) -> bool:
+    """Vision check that a picture from the page belongs to the story (see shotplan.story_image_fits).
+    No answer from any vision model = rejected."""
+    import tempfile
+
+    from ..media.shotplan import story_image_fits
+    with tempfile.NamedTemporaryFile(suffix=".jpg") as f:
+        small = img.convert("RGB")
+        small.thumbnail((640, 640))
+        small.save(f.name, quality=85)
+        ok = story_image_fits(f.name, headline)
+    print(f"[article_images] belongs-to-story check {'ok' if ok else 'REJECT' if ok is False else 'REJECT (no answer)'}")
+    return bool(ok)
+
+
 def fetch_article_images(
-    source_url: str, out_dir: Path, hero_file: Path | None = None,
+    source_url: str, out_dir: Path, hero_file: Path | None = None, headline: str = "",
 ) -> list[Path]:
     """Download up to MAX_IMAGES usable, distinct images from the source page
     into out_dir (img_00.jpg ...). Skips tiny/extreme-aspect images and
@@ -166,6 +181,8 @@ def fetch_article_images(
         if _near_dup(ah, seen):
             continue
         seen.append(ah)
+        if headline and not _belongs_to_story(img, headline):
+            continue
         img = img.convert("RGB")
         if max(img.size) > 2000:
             img.thumbnail((2000, 2000))

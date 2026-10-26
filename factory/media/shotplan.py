@@ -194,6 +194,33 @@ def shows_subject(frame_jpg, story: str, subject: str) -> bool | None:
     return _ask_frame(frame_jpg, prompt)
 
 
+def story_image_fits(frame_jpg, story: str) -> bool | None:
+    """For pictures taken from the story's own web page: does this picture belong to the story? A page also
+    carries ads, 'sign up' boxes, product shots and sidebar promos, which are not the story's pictures
+    (2026-10-26: a bed, a black dress and a newsletter box ended up in a video about an AI restaurant host).
+    True / False, or None when no vision model answered (callers then reject the picture)."""
+    prompt = (
+        "You are the picture editor of a news Short. Story: " + story +
+        "\nThis picture was found on the story's web page. Answer YES only if it plausibly belongs to THIS "
+        "story: it shows the story's subject, place, product, event or data, or the people or groups the "
+        "story is about (for example disabled people with their guide dogs in a story about disabled people). Answer NO for: "
+        "advertisements, promo or newsletter sign-up boxes, buttons, banners, unrelated products "
+        "(clothes, furniture, gadgets that are not the story's subject), unrelated models or stock "
+        "photos, author headshots, logos or icons, and pictures for other articles. "
+        "Answer with exactly one word: YES or NO.")
+    return _ask_frame(frame_jpg, prompt)
+
+
+def has_publisher_branding(frame_jpg) -> bool | None:
+    """Does the picture carry another publisher's logo, watermark or banner (e.g. a 'TNW' bar)? True = yes.
+    Used before a source image is used as OUR cover/thumbnail."""
+    prompt = ("Does this picture contain a visible logo, watermark, text banner or colour bar of a news "
+              "publisher or website (for example a site name or logo in a corner or along an edge)? "
+              "A company's own product or building logo that is part of the scene does not count. "
+              "Answer with exactly one word: YES or NO.")
+    return _ask_frame(frame_jpg, prompt)
+
+
 def is_text_slide(frame_jpg) -> bool | None:
     """True when the frame is a title card, logo, caption slate or mostly text rather than footage."""
     prompt = ("Is this frame mainly a title card, logo, slide, caption screen or cropped text (not real "

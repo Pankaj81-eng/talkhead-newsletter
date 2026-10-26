@@ -129,6 +129,7 @@ def main() -> None:
                 fetch_article_images(
                     story["link"], run_dir / "article_images",
                     hero["file"] if hero else None,
+                    headline=story["headline"],
                 )
             except Exception as e:  # noqa: BLE001 -- a nice-to-have, never blocks the run
                 print(f"[daily_run] article images skipped: {e}")
@@ -199,6 +200,16 @@ def main() -> None:
 
         stage = "thumbnail"
         thumbs = generate_thumbnail(script, run_dir)
+
+        if os.getenv("FACTORY_COVER_FRAMES", "1") != "0":
+            # The thumbnail also goes INTO the video (first ~0.3 s of picture, audio untouched), so platforms that
+            # take the first frame as the cover show it. Never blocks the run.
+            try:
+                from factory.media.cover import add_cover_frames
+                add_cover_frames(final_path, thumbs["vertical"])
+                print("[daily_run] thumbnail laid over the first frames of the video")
+            except Exception as e:  # noqa: BLE001
+                print(f"[daily_run] cover frames skipped: {e}")
 
         credits_file = run_dir / "image_credits.txt"
         if config.CREDITS_IN_DESCRIPTION and credits_file.exists() and credits_file.read_text().strip():

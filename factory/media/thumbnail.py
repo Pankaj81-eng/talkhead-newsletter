@@ -139,6 +139,22 @@ def _compose(frame_path: Path, text: str | None, w: int, h: int, out_path: Path)
     return out_path
 
 
+def _has_branding(image_path: Path) -> bool:
+    """True when a vision model says the image shows another publisher's logo/banner (e.g. the 'TNW' bar on 24 Oct).
+    No answer from any model = False, i.e. the old behaviour (use the key image)."""
+    import tempfile
+
+    from .shotplan import has_publisher_branding
+    try:
+        im = Image.open(image_path).convert("RGB")
+        im.thumbnail((640, 640))
+        with tempfile.NamedTemporaryFile(suffix=".jpg") as f:
+            im.save(f.name, quality=85)
+            return has_publisher_branding(f.name) is True
+    except Exception:  # noqa: BLE001
+        return False
+
+
 def _best_source_beat_index(script) -> int:
     """
     Prefer a beat whose visual is real photo/video footage over one that's
@@ -181,6 +197,9 @@ def generate_thumbnail(script, run_dir: Path) -> dict:
     """
     from ..news.hero_image import find_hero_file
     hero_raw = find_hero_file(config.OFFICIAL_BROLL_DIR)
+    if hero_raw and _has_branding(hero_raw):
+        print(f"[thumbnail] key image {hero_raw.name} carries another publisher's logo/banner; using a video frame with our headline instead")
+        hero_raw = None
 
     if hero_raw:
         from .assemble import _hero_frame
