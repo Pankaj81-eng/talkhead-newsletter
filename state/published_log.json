@@ -1854,5 +1854,35 @@
       "linkedin_post_id": "187862680860622848"
     },
     "note": "published manually after discard: corrected visuals (two images replaced), same voice (hook clip + blurry stretch replaced) | LinkedIn retried after WoopSocial storage was freed"
+  },
+  {
+    "date": "2026-10-26",
+    "run_id": "4ce9cb689d63",
+    "story": "Texas family restaurant says $300 AI host saved them after losing their only server",
+    "source_url": "https://www.thecooldown.com/green-business/spring-texas-wok-karahi-ai-host/",
+    "category": "food_farming",
+    "title": "Can an AI host save a local restaurant?",
+    "description": "How did a small restaurant replace its server with AI to stay open? After losing its only waiter, Wok & Karahi in Texas brought in a $300 monthly digital host to manage phone orders and greeting guests. The owner says the shift saved thousands while passing all tips directly to cooks. Would you eat at a restaurant run by AI?",
+    "full_narration": "A Texas restaurant saved $9,650 a month by replacing their server with AI. When their only waiter quit, the owner introduced a $300 monthly digital host to greet guests instead of hiring a replacement. The digital host answers phone calls after closing, speaks seven languages, and lets diners order and pay using QR codes. Cutting the server salary saved $3,500, while recaptured revenue and smooth operations made up the rest. Best of all, 100% of customer tips now go straight to the kitchen staff. Would you eat at a restaurant run by AI?",
+    "hashtags": [
+      "ai",
+      "tech",
+      "restaurants",
+      "smallbusiness",
+      "foodtech"
+    ],
+    "video_path": "runs/4ce9cb689d63/final.mp4",
+    "thumbnail_path": "runs/4ce9cb689d63/thumbnail.jpg",
+    "metadata_path": "runs/4ce9cb689d63/metadata.txt",
+    "used_hero_image": true,
+    "intro_variant": "none",
+    "status": "published",
+    "generated_at": "2026-10-26T07:44:10.784523",
+    "decided_at": "2026-10-26T08:00:16.833452",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/mE--tUecMUU",
+      "instagram_media_id": "18463044844190153",
+      "linkedin_post_id": "188200168116453376"
+    }
   }
 ]
