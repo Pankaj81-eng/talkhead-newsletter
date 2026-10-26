@@ -29,3 +29,7 @@ Every change has its own dated note and undo recipe in `ROLLBACK-2026-10-17.md`.
 ## Lessons
 - Test an improvement against several days of real videos before keeping it; a rollback tag exists before every change (`stable-<date>-<what>`).
 - A repaired video must replace the run's `final.mp4` before anyone presses Publish. If Discard was already pressed, publish the fixed file with the project's publisher, only on explicit request (see `tools/example_publish_fixed_*.py`).
+
+## Added 26 Oct
+- OPEN (top priority): pictures taken from the article PAGE are never checked. The Cool Down page gave six promo images (sweater model, bed, black dress, newsletter box, solar house, stressed man); three were used in the 26 Oct video and repaired by hand. Fix: run the strict picture check on every article-page image, and describe each image to match it to the right line.
+- OPEN (Pankaj's request): use the thumbnail inside the video (e.g. as the first frames, over the picture track so the audio timing does not move) so platforms that pick the first frame, and YouTube (custom thumbnail upload fails with 403), show the intended cover. Instagram already receives `thumbnail_vertical.jpg` as its cover through the API.
