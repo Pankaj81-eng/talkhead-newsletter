@@ -172,7 +172,8 @@ def frame_fits(frame_jpg, story: str, line: str) -> bool | None:
         "\nDoes this single frame plausibly illustrate the story or that line (the right kind of "
         "subject: e.g. cars/roads/robots/space rovers/phones/cities as the line needs)? Random scenery, "
         "markets, oceans, waterfalls, unrelated people, vintage or irrelevant objects, empty abstract "
-        "shots and green screens do NOT fit. Answer with exactly one word: YES or NO.")
+        "shots and green screens do NOT fit. A frame that is blurry, out of focus, washed out or "
+        "almost black also does NOT fit. Answer with exactly one word: YES or NO.")
     return _ask_frame(frame_jpg, prompt)
 
 

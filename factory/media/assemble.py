@@ -196,6 +196,11 @@ def _build_single_beat_clip(beat, duration: float, idx: int, run_dir: Path) -> P
             return out
 
     broll_path = fetch_broll(beat.query, run_id) if is_broll else None
+    if broll_path:
+        from .sharpness import clip_is_blurry
+        if clip_is_blurry(broll_path):
+            print(f"[assemble] stock clip for {beat.query!r} is blurry / out of focus; not used")
+            broll_path = None
 
     if broll_path:
         run_ffmpeg([
@@ -310,6 +315,10 @@ def _stock_fits(path: Path, story: str, line: str, query: str) -> bool:
     """Vision check on the middle frame of a stock clip (see shotplan.frame_fits). If the check
     cannot run (Gemini busy), the clip is REJECTED: on 2026-10-13 an unchecked run let a Vietnamese
     market and a waterfall into a Mars-rover video. A missing shot is better than a wrong one."""
+    from .sharpness import clip_is_blurry
+    if clip_is_blurry(path):
+        print(f"[assemble] stock check REJECT (blurry / out of focus) for {query!r}: {path.name[:40]}")
+        return False
     if not story:
         return True
     try:
