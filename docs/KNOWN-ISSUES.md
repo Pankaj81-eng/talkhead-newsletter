@@ -20,6 +20,7 @@ Every change has its own dated note and undo recipe in `ROLLBACK-2026-10-17.md`.
 | 25 Oct | LinkedIn failed: WoopSocial 1 GB storage full | `autoDeleteMediaAfterPublish` on every LinkedIn post (verify after the next publish); 50 old videos deleted by hand | 25 Oct |
 | 24 Oct | Cartoon dog picture and a 1950s patient film in the video | Strict vision check for Wikimedia photos and Commons clips | 24 Oct |
 | 23 Oct | Voice sounded robotic/"rhyming" (every sentence forced to the same speed, closing question rushed) | Natural voice mode: one untouched take per sentence, no speed forcing (`FACTORY_VOICE_NATURAL=0` undoes) | 23 Oct |
+| 27 Oct | New cover-frames step froze the run 18 min (ffmpeg stalled on a looped image input) | Loop the picture inside the filter graph, time limit, frame-count check; also removed a 0.07 s picture/audio shift | 27 Oct |
 | 22 Oct | ffmpeg looped 34 min on a still image picked up as a "clip" | Story-clip picker accepts video files only | 22 Oct |
 | 22 Oct | GitHub's ffmpeg install hung, killing the morning run | Retries (3 x 2.5 min) | 22 Oct |
 | 21 Oct | Voice model froze, runs hung for hours | Voice watchdog (`voice_guard.py`) | 21 Oct |
