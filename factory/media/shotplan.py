@@ -173,7 +173,8 @@ def frame_fits(frame_jpg, story: str, line: str) -> bool | None:
         "subject: e.g. cars/roads/robots/space rovers/phones/cities as the line needs)? Random scenery, "
         "markets, oceans, waterfalls, unrelated people, vintage or irrelevant objects, empty abstract "
         "shots and green screens do NOT fit. A frame that is blurry, out of focus, washed out or "
-        "almost black also does NOT fit. Answer with exactly one word: YES or NO.")
+        "almost black also does NOT fit, and neither does anything sensitive or upsetting (arrests, police or "
+        "military action, weapons, violence, protests, injured or suffering people). Answer with exactly one word: YES or NO.")
     return _ask_frame(frame_jpg, prompt)
 
 
@@ -190,7 +191,9 @@ def shows_subject(frame_jpg, story: str, subject: str) -> bool | None:
         "to watch. Answer NO for: cartoons, drawings, engravings, paintings, comics, vintage, historical "
         "or black-and-white archive pictures, diagrams, maps, screenshots, slides full of text, logos "
         "that are not the subject, generic damaged buildings or crowds, and anything distressing "
-        "(a visibly ill, injured, bandaged or suffering person, wounds, surgery, dead bodies). "
+        "(a visibly ill, injured, bandaged or suffering person, wounds, surgery, dead bodies), and anything "
+        "sensitive or upsetting: people being arrested, detained, handcuffed or restrained, police or other "
+        "law-enforcement or military action, weapons, violence, riots or protests. "
         "Answer with exactly one word: YES or NO.")
     return _ask_frame(frame_jpg, prompt)
 

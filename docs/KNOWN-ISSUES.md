@@ -25,6 +25,9 @@ Every change has its own dated note and undo recipe in `ROLLBACK-2026-10-17.md`.
 | 21 Oct | Voice model froze, runs hung for hours | Voice watchdog (`voice_guard.py`) | 21 Oct |
 | 21 Oct | Script written by a weaker backup model went unnoticed (false "more than an ambulance" claim) | Telegram caption warns when Gemini did not write the script | 22 Oct |
 
+## Content rules for pictures (added 27 Oct, Pankaj's request)
+Never show: people being arrested, detained, handcuffed or restrained; police, law-enforcement or military action; weapons, violence, riots or protests; visibly ill, injured, bandaged or suffering people; wounds, surgery, dead bodies; cartoons, engravings or archive footage presented as current. Why: on 27 Oct a Wikimedia photo of an immigration-enforcement arrest appeared in a video about an AI radio host (it was found by a keyword search for the story's "immigrants" angle and passed the earlier check). These rules are in the picture checker's wording (`shotplan.shows_subject`, `shotplan.frame_fits`), so they apply to Wikimedia photos, Commons clips, the hook and stock. Article-page pictures are checked for "belongs to the story" only. If a story is genuinely about such events, Pankaj decides case by case; the default is to avoid it.
+
 ## Lessons
 - Test an improvement against several days of real videos before keeping it; a rollback tag exists before every change (`stable-<date>-<what>`).
 - A repaired video must replace the run's `final.mp4` before anyone presses Publish. If Discard was already pressed, publish the fixed file with the project's publisher, only on explicit request (see `tools/example_publish_fixed_*.py`).
