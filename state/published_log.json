@@ -1884,5 +1884,36 @@
       "instagram_media_id": "18463044844190153",
       "linkedin_post_id": "188200168116453376"
     }
+  },
+  {
+    "date": "2026-10-27",
+    "run_id": "0158b6ff3211",
+    "story": "This AI Radio Host Speaks Spanish and Backs Immigrants. It\u2019s Winning Over Listeners",
+    "source_url": "https://www.wired.com/story/this-ai-radio-hosts-speaks-spanish-and-backs-immigrants-its-winning-over-listeners/",
+    "category": "creative",
+    "title": "Why is an AI radio host blowing up in LA?",
+    "description": "What is This AI Radio Host Speaks Spanish and Backs Immigrants. It\u2019s Winning Over Listeners?\n\nAn AI cohost on a popular Los Angeles radio station is winning over thousands of young listeners.\n\nNamed Coyotec, the bilingual AI speaks passionately about community issues on air and has driven massive listener growth.\n\nWould you listen to an AI radio host?",
+    "full_narration": "A popular morning radio show in Los Angeles is now cohosted by an AI. The virtual host speaks Spanish, uses everyday neighborhood slang, and openly gives support to local immigrant families. Younger people are loving the show. Station listeners aged 18 to 34 surged 84.9% in just one month. In that same time frame, young Hispanic female listenership spiked by 500% as the show expanded to new cities. The AI even gets moody and refuses instructions from its human partner during live broadcasts. Would you listen to an AI radio host?",
+    "hashtags": [
+      "airadio",
+      "radiotok",
+      "technews",
+      "losangeles",
+      "radiohost",
+      "ai"
+    ],
+    "video_path": "runs/0158b6ff3211/final.mp4",
+    "thumbnail_path": "runs/0158b6ff3211/thumbnail.jpg",
+    "metadata_path": "runs/0158b6ff3211/metadata.txt",
+    "used_hero_image": true,
+    "intro_variant": "none",
+    "status": "published",
+    "generated_at": "2026-10-27T07:40:55.598899",
+    "decided_at": "2026-10-27T07:57:43.386513",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/tqI2aM-okg4",
+      "instagram_media_id": "18096728003240839",
+      "linkedin_post_id": "188561912714231808"
+    }
   }
 ]
