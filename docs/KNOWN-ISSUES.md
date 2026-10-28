@@ -20,6 +20,7 @@ Every change has its own dated note and undo recipe in `ROLLBACK-2026-10-17.md`.
 | 25 Oct | LinkedIn failed: WoopSocial 1 GB storage full | `autoDeleteMediaAfterPublish` on every LinkedIn post (verify after the next publish); 50 old videos deleted by hand | 25 Oct |
 | 24 Oct | Cartoon dog picture and a 1950s patient film in the video | Strict vision check for Wikimedia photos and Commons clips | 24 Oct |
 | 23 Oct | Voice sounded robotic/"rhyming" (every sentence forced to the same speed, closing question rushed) | Natural voice mode: one untouched take per sentence, no speed forcing (`FACTORY_VOICE_NATURAL=0` undoes) | 23 Oct |
+| 28 Oct | Cover step froze the OUTRO (all outro frames got one timestamp) | Cover on the body only, outro joined with the pipeline's own concat, and a result is accepted only after duration / frame-count / stream-length / last-frame checks | 28 Oct |
 | 27 Oct | New cover-frames step froze the run 18 min (ffmpeg stalled on a looped image input) | Loop the picture inside the filter graph, time limit, frame-count check; also removed a 0.07 s picture/audio shift | 27 Oct |
 | 22 Oct | ffmpeg looped 34 min on a still image picked up as a "clip" | Story-clip picker accepts video files only | 22 Oct |
 | 22 Oct | GitHub's ffmpeg install hung, killing the morning run | Retries (3 x 2.5 min) | 22 Oct |
@@ -30,6 +31,7 @@ Every change has its own dated note and undo recipe in `ROLLBACK-2026-10-17.md`.
 Never show: people being arrested, detained, handcuffed or restrained; police, law-enforcement or military action; weapons, violence, riots or protests; visibly ill, injured, bandaged or suffering people; wounds, surgery, dead bodies; cartoons, engravings or archive footage presented as current. Why: on 27 Oct a Wikimedia photo of an immigration-enforcement arrest appeared in a video about an AI radio host (it was found by a keyword search for the story's "immigrants" angle and passed the earlier check). These rules are in the picture checker's wording (`shotplan.shows_subject`, `shotplan.frame_fits`), so they apply to Wikimedia photos, Commons clips, the hook and stock. Article-page pictures are checked for "belongs to the story" only. If a story is genuinely about such events, Pankaj decides case by case; the default is to avoid it.
 
 ## Lessons
+- Check the END of a re-encoded video (last frame time, video vs audio length), not only the first frames and the frame count. A test that looks only at the start missed a frozen outro (28 Oct).
 - Test an improvement against several days of real videos before keeping it; a rollback tag exists before every change (`stable-<date>-<what>`).
 - A repaired video must replace the run's `final.mp4` before anyone presses Publish. If Discard was already pressed, publish the fixed file with the project's publisher, only on explicit request (see `tools/example_publish_fixed_*.py`).
 

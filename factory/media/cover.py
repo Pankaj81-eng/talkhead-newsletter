@@ -62,3 +62,63 @@ def add_cover_frames(video_path: Path, cover_jpg: Path, seconds: float = COVER_S
         raise RuntimeError(f"cover frames changed the frame count ({n_before} -> {n_after}); original kept")
     shutil.move(str(tmp), str(video_path))
     return video_path
+
+
+def _stream_info(path: Path, kind: str) -> tuple[float, str]:
+    """(duration, codec parameters) of the first video ('v') or audio ('a') stream."""
+    out = subprocess.check_output(["ffprobe", "-v", "error", "-select_streams", f"{kind}:0", "-show_entries",
+                                   "stream=duration,codec_name,profile,level,pix_fmt,r_frame_rate,time_base,sample_rate,channels",
+                                   "-of", "default=nw=1", str(path)], text=True)
+    kv = dict(line.split("=", 1) for line in out.strip().splitlines() if "=" in line)
+    return float(kv.pop("duration")), "|".join(f"{k}={v}" for k, v in sorted(kv.items()))
+
+
+def _last_frame_time(path: Path) -> float:
+    out = subprocess.check_output(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "frame=pts_time",
+                                   "-of", "csv=p=0", str(path)], text=True)
+    vals = [float(x.strip(",")) for x in out.split() if x.strip(",")]
+    return max(vals) if vals else 0.0
+
+
+def add_cover_to_final(run_dir: Path, final_path: Path, cover_jpg: Path) -> Path:
+    """The safe way to add the cover (2026-10-28). The cover goes on the BODY only (runs/<id>/body_captioned.mp4); the outro
+    (and intro, if any) are then joined with the pipeline's own concat, exactly as assemble_reel() did. Re-encoding the finished
+    video instead froze the outro on 2026-10-28: every outro frame got the same timestamp. The result replaces `final_path` only
+    after it passes these checks, otherwise the original is kept and an error is raised:
+    same total duration and frame count; video and audio streams equally long; the last picture frame is at the end; the body
+    and outro codec parameters match (concat copies them without re-encoding)."""
+    from .assemble import concat_clips
+
+    run_dir, final_path = Path(run_dir), Path(final_path)
+    body, outro = run_dir / "body_captioned.mp4", run_dir / "outro_leveled.mp4"
+    intro = run_dir / "intro_leveled.mp4"
+    if not body.exists() or not outro.exists():
+        raise FileNotFoundError("body_captioned.mp4 / outro_leveled.mp4 missing")
+    covered = run_dir / "body_covered.mp4"
+    shutil.copy2(body, covered)
+    add_cover_frames(covered, cover_jpg)
+    _, p_covered = _stream_info(covered, "v")
+    _, p_outro = _stream_info(outro, "v")
+    if p_covered != p_outro:
+        raise RuntimeError(f"cover body and outro differ in codec parameters ({p_covered} vs {p_outro}); original kept")
+    candidate = run_dir / "final_cover.mp4"
+    concat_clips(([intro] if intro.exists() else []) + [covered, outro], candidate, faststart=True)
+    d_old, d_new = probe_duration(final_path), probe_duration(candidate)
+    n_old, n_new = _video_frames(final_path), _video_frames(candidate)
+    v_dur, _ = _stream_info(candidate, "v")
+    a_dur, _ = _stream_info(candidate, "a")
+    last = _last_frame_time(candidate)
+    problems = []
+    if abs(d_new - d_old) > 0.1:
+        problems.append(f"duration {d_old:.2f}->{d_new:.2f}")
+    if n_old and n_new and n_old != n_new:
+        problems.append(f"frames {n_old}->{n_new}")
+    if abs(v_dur - a_dur) > 0.25:
+        problems.append(f"video {v_dur:.2f}s vs audio {a_dur:.2f}s")
+    if last < d_new - 0.25:
+        problems.append(f"last picture frame at {last:.2f}s of {d_new:.2f}s (frozen end)")
+    if problems:
+        candidate.unlink(missing_ok=True)
+        raise RuntimeError("cover result rejected, original kept: " + "; ".join(problems))
+    shutil.move(str(candidate), str(final_path))
+    return final_path
