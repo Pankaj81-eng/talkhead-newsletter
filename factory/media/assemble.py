@@ -454,6 +454,16 @@ def _gather_shots(beat, idx: int, run_dir: Path, plan: dict, n: int, duration: f
 
 def _build_multicut_beat(beat, duration: float, idx: int, run_dir: Path, plan: dict, n: int) -> Path | None:
     shots = _gather_shots(beat, idx, run_dir, plan, n, duration)
+    if len(shots) == 1 and shots[0]["kind"] == "video":
+        # Only one clip passed the checks for a long line: cut that one clip at different moments instead of playing it
+        # as a single 8-10 s shot (2026-10-28). Needs a clip long enough to give n distinct stretches.
+        seg_len = max(duration / n, 1.0)
+        try:
+            long_enough = probe_duration(shots[0]["path"]) >= seg_len * n * 1.2 + 1.0
+        except Exception:  # noqa: BLE001
+            long_enough = False
+        if long_enough:
+            shots = [shots[0]] * n
     if len(shots) < 2:
         return None                         # nothing to cut between: keep the single-clip path
     total = max(len(shots), round(duration * FPS))
