@@ -1946,5 +1946,36 @@
       "instagram_media_id": "17955678774039168",
       "linkedin_post_id": "188927878895763456"
     }
+  },
+  {
+    "date": "2026-10-29",
+    "run_id": "c607185d958b",
+    "story": "AI traffic system clears the road for ambulances in under 300 milliseconds",
+    "source_url": "https://bioengineer.org/ai-traffic-system-clears-the-road-for-ambulances-in-under-300-milliseconds/",
+    "category": "cities_energy",
+    "title": "Can AI give ambulances a green light in 300 ms?",
+    "description": "Can AI give ambulances a green light in under 300 milliseconds?\nResearchers built a system that detects ambulances with cameras and sound, then flips traffic lights in under a third of a second, potentially saving lives.\nWould you trust AI to clear the way for emergencies?",
+    "full_narration": "An ambulance can get a green light in under 300 milliseconds, saving lives. Every minute stuck at red can cut survival by 7 to 10 percent. The system watches video and listens for sirens, spotting ambulances with 98.4% accuracy, far better than older methods. It then sends a signal that turns the light green in just 175 to 270 milliseconds. Each intersection uses a cheap Raspberry Pi computer, so it works even if the internet drops. Would you trust AI to clear the way for emergencies?",
+    "hashtags": [
+      "ai",
+      "traffic",
+      "ambulance",
+      "smartcity",
+      "iot",
+      "healthtech"
+    ],
+    "video_path": "runs/c607185d958b/final.mp4",
+    "thumbnail_path": "runs/c607185d958b/thumbnail.jpg",
+    "metadata_path": "runs/c607185d958b/metadata.txt",
+    "used_hero_image": false,
+    "intro_variant": "none",
+    "status": "published",
+    "generated_at": "2026-10-29T07:31:20.584267",
+    "decided_at": "2026-10-29T07:58:19.169676",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/ON_nfJ8MLY8",
+      "instagram_media_id": "17906674314669014",
+      "linkedin_post_id": "189286837947203584"
+    }
   }
 ]
