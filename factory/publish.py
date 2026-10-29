@@ -331,6 +331,34 @@ def publish_linkedin(video_path: Path, caption: str) -> str:
     return r.json().get("id", "unknown")
 
 
+def linkedin_delivery_status(post_id: str, wait_s: int = 600, interval_s: int = 20) -> tuple[str, str]:
+    """
+    Waits for WoopSocial to finish delivering the post to LinkedIn and returns (status, error).
+    WoopSocial answers "created" the moment it accepts the post; the real delivery happens after,
+    and can fail (2026-10-28: "failed to download video ... context deadline exceeded" while the
+    pipeline had already logged LinkedIn as published). Status is PUBLISHED or FAILED once it is
+    settled; anything else (SENDING / NOT_STARTED / "UNKNOWN") means it was not settled within wait_s.
+    Never raises: a failing status check must not break the run.
+    """
+    deadline = time.time() + wait_s
+    status, error = "UNKNOWN", ""
+    while True:
+        try:
+            r = requests.get(f"{_WOOP_API}/posts/{post_id}", headers=_woop_headers(), timeout=30)
+            if r.status_code < 400:
+                posts = r.json().get("socialAccountPosts") or []
+                if posts:
+                    status = posts[0].get("deliveryStatus", "UNKNOWN")
+                    error = posts[0].get("errorMessage") or ""
+                    if status in ("PUBLISHED", "FAILED"):
+                        return status, error
+        except Exception as e:  # noqa: BLE001
+            error = f"status check error: {e}"
+        if time.time() >= deadline:
+            return status, error
+        time.sleep(interval_s)
+
+
 # --- TikTok --------------------------------------------------------------
 #
 # Content Posting API, Direct Post + FILE_UPLOAD source (2026-09-06,

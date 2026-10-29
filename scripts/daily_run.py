@@ -293,6 +293,23 @@ def main() -> None:
             if "facebook_error" in result:
                 summary_lines.append(f"Facebook FAILED: {result['facebook_error']}")
             send_text(token, chat_id, "\n".join(summary_lines))
+            if "linkedin_post_id" in result and os.getenv("FACTORY_LINKEDIN_CHECK", "1") != "0":
+                # WoopSocial says "post created" at once; the delivery to LinkedIn happens afterwards and can
+                # fail (28 Oct) -- wait for the final status and tell Pankaj instead of logging a false success.
+                try:
+                    from factory.publish import linkedin_delivery_status
+                    li_status, li_error = linkedin_delivery_status(result["linkedin_post_id"])
+                    result["linkedin_delivery"] = li_status
+                    if li_error:
+                        result["linkedin_delivery_error"] = li_error
+                    _update_log_status(run_id, final_status, publish_result=result)
+                    if li_status != "PUBLISHED":
+                        send_text(token, chat_id,
+                                  f"⚠️ LinkedIn did NOT confirm for {run_id}: delivery status {li_status}."
+                                  + (f"\n{li_error}" if li_error else "")
+                                  + "\nYouTube/Instagram are unaffected. Tell me to repost it if you want it on LinkedIn.")
+                except Exception as e:  # noqa: BLE001
+                    print(f"[daily_run] LinkedIn delivery check failed: {e}")
             if "youtube_url" in result:
                 from factory.engagement import pinned_comment
                 send_text(token, chat_id, pinned_comment(script.full_narration, result["youtube_url"]))
