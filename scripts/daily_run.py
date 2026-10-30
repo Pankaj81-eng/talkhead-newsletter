@@ -229,26 +229,24 @@ def main() -> None:
             repair_notes = [n for n in (run_dir / "autorepair.txt").read_text().splitlines() if n.strip()]
         except OSError:
             pass
-        repair_problems = [n for n in repair_notes if "left as is" in n]
-        pic_warning = ("Some weak pictures could not be fixed automatically (" + "; ".join(repair_problems) +
-                       "). Check the video before pressing Publish.") if repair_problems else ""
 
         stage = "notify"
         message_id = send_daily_video(
             token, chat_id, final_path, thumbs["landscape"],
             script.title, script.description, story.get("link", ""),
             metadata_path, run_id=run_id,
-            warning=" ".join(w for w in [
-                ("" if script_provider.startswith("Gemini") else
-                 f"Script was written by a backup model ({script_provider or 'unknown'}) because Gemini had no "
-                 "quota. Read the script and check every fact and number before pressing Publish."),
-                pic_warning,
-            ] if w),
+            warning=("" if script_provider.startswith("Gemini") else
+                     f"Script was written by a backup model ({script_provider or 'unknown'}) because Gemini had no "
+                     "quota. Read the script and check every fact and number before pressing Publish."),
         )
-        done_notes = [n for n in repair_notes if "rebuilt" in n]
-        if done_notes:
+        # Never blocks and never holds the video back: the video above is always sent as built (or as improved); this is
+        # only a note on what the repair changed and what it could not improve
+        if [n for n in repair_notes if "rebuilt" in n or "left as is" in n]:
             try:
-                send_text(token, chat_id, "Auto-repair: weak pictures were replaced before this video was sent.\n- " + "\n- ".join(done_notes))
+                lines = ["Auto-repair note (the video above is sent as built; nothing is blocked):"]
+                lines += ["- improved: " + n for n in repair_notes if "rebuilt" in n]
+                lines += ["- could not improve: " + n.replace(", left as is", "") for n in repair_notes if "left as is" in n]
+                send_text(token, chat_id, "\n".join(lines))
             except Exception as e:  # noqa: BLE001
                 print(f"[daily_run] auto-repair note not sent: {e}")
 
