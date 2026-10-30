@@ -1979,5 +1979,36 @@
       "instagram_media_id": "17906674314669014",
       "linkedin_post_id": "189286837947203584"
     }
+  },
+  {
+    "date": "2026-10-30",
+    "run_id": "45ea830595ea",
+    "story": "Scientists Develop AI Tool That Spots Early Pancreatic Cancer Signs Missed on Routine CT Scans",
+    "source_url": "https://medicaldialogues.in/mdtv/oncology/videos/scientists-develop-ai-tool-that-spots-early-pancreatic-cancer-signs-missed-on-routine-ct-scans-182258",
+    "category": "health",
+    "title": "AI Detects Pancreatic Cancer a Year Early",
+    "description": "Can AI find pancreatic cancer before doctors see it? A new study shows an AI tool called REDMOD can spot subtle signs in CT scans up to 475 days earlier, catching 73% of cases versus 39% for radiologists and correctly identifying over 81% of healthy scans. This could give patients a chance at earlier treatment. Would you trust a computer to spot hidden cancers early?",
+    "full_narration": "An AI spotted pancreatic cancer a year before doctors even saw it. Researchers built a tool called REDMOD that scans CT images for tiny changes most eyes miss. It flagged cancer signs on average 475 days before the official diagnosis. The AI caught 73% of cases, while radiologists only found 39%. It also correctly labeled over 81% of healthy scans, showing it can tell who\u2019s cancer-free. Would you trust a computer to spot hidden cancers early?",
+    "hashtags": [
+      "ai",
+      "health",
+      "cancer",
+      "imaging",
+      "research"
+    ],
+    "video_path": "runs/45ea830595ea/final.mp4",
+    "thumbnail_path": "runs/45ea830595ea/thumbnail.jpg",
+    "metadata_path": "runs/45ea830595ea/metadata.txt",
+    "used_hero_image": true,
+    "intro_variant": "none",
+    "status": "published",
+    "generated_at": "2026-10-30T09:14:26.114598",
+    "decided_at": "2026-10-30T09:33:02.810284",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/lEo--qh-9LE",
+      "instagram_media_id": "18020992652948834",
+      "linkedin_post_id": "189672809226567680",
+      "linkedin_delivery": "PUBLISHED"
+    }
   }
 ]
