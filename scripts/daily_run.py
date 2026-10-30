@@ -222,15 +222,35 @@ def main() -> None:
         stage = "metadata"
         metadata_path = write_metadata(script, run_dir)
 
+        # 2026-10-30: what the automatic picture repair did (factory/media/autorepair.py); problems it could not fix are
+        # shown first in the video's caption, successes as a short note after it
+        repair_notes: list[str] = []
+        try:
+            repair_notes = [n for n in (run_dir / "autorepair.txt").read_text().splitlines() if n.strip()]
+        except OSError:
+            pass
+        repair_problems = [n for n in repair_notes if "left as is" in n]
+        pic_warning = ("Some weak pictures could not be fixed automatically (" + "; ".join(repair_problems) +
+                       "). Check the video before pressing Publish.") if repair_problems else ""
+
         stage = "notify"
         message_id = send_daily_video(
             token, chat_id, final_path, thumbs["landscape"],
             script.title, script.description, story.get("link", ""),
             metadata_path, run_id=run_id,
-            warning=("" if script_provider.startswith("Gemini") else
-                     f"Script was written by a backup model ({script_provider or 'unknown'}) because Gemini had no "
-                     "quota. Read the script and check every fact and number before pressing Publish."),
+            warning=" ".join(w for w in [
+                ("" if script_provider.startswith("Gemini") else
+                 f"Script was written by a backup model ({script_provider or 'unknown'}) because Gemini had no "
+                 "quota. Read the script and check every fact and number before pressing Publish."),
+                pic_warning,
+            ] if w),
         )
+        done_notes = [n for n in repair_notes if "rebuilt" in n]
+        if done_notes:
+            try:
+                send_text(token, chat_id, "Auto-repair: weak pictures were replaced before this video was sent.\n- " + "\n- ".join(done_notes))
+            except Exception as e:  # noqa: BLE001
+                print(f"[daily_run] auto-repair note not sent: {e}")
 
         stage = "log"
         _append_log({

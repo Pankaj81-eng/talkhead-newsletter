@@ -13,6 +13,7 @@ from .broll import fetch_broll, fetch_broll_image
 from .video_sources import fetch_nasa_clip
 from .textcards import render_text_card
 from .captions import render_caption_images
+from . import autorepair
 
 W, H, FPS = config.OUT_WIDTH, config.OUT_HEIGHT, config.OUT_FPS
 
@@ -193,6 +194,7 @@ def _build_single_beat_clip(beat, duration: float, idx: int, run_dir: Path) -> P
         art = _next_article_frame(run_dir)
         if art:
             _still_image_clip(art, duration, out, zoom_out=bool(idx % 4 == 3))
+            autorepair.record_beat(idx, "article", [art])
             return out
 
     broll_path = fetch_broll(beat.query, run_id) if is_broll else None
@@ -208,6 +210,7 @@ def _build_single_beat_clip(beat, duration: float, idx: int, run_dir: Path) -> P
         art = _next_article_frame(run_dir)
         if art:
             _still_image_clip(art, duration, out, zoom_out=False)
+            autorepair.record_beat(idx, "article", [art])
             return out
 
     if broll_path:
@@ -219,11 +222,13 @@ def _build_single_beat_clip(beat, duration: float, idx: int, run_dir: Path) -> P
             "-an", "-c:v", "libx264",
             str(out),
         ])
+        autorepair.record_beat(idx, "stock", [broll_path])
         return out
 
     photo_path = fetch_broll_image(beat.query, run_id) if is_broll else None
     if photo_path:
         _still_image_clip(photo_path, duration, out)
+        autorepair.record_beat(idx, "photo", [photo_path])
         return out
 
     # Hero image tier (2026-09-19, Pankaj): before ever falling to a text
@@ -237,11 +242,13 @@ def _build_single_beat_clip(beat, duration: float, idx: int, run_dir: Path) -> P
     art = _next_article_frame(run_dir)
     if art:
         _still_image_clip(art, duration, out, zoom_out=bool(idx % 2))
+        autorepair.record_beat(idx, "article", [art])
         return out
 
     hero = _hero_frame(run_dir)
     if hero:
         _still_image_clip(hero, duration, out, zoom_out=bool(idx % 2))
+        autorepair.record_beat(idx, "hero", [hero])
         return out
 
     # Last resort: text card, now only when there is no stock match AND no
@@ -269,6 +276,7 @@ def _build_single_beat_clip(beat, duration: float, idx: int, run_dir: Path) -> P
     card_text = _truncate_for_card(beat.text) if is_broll else (beat.query or beat.text)
     img = render_text_card(card_text, run_dir / f"card_{idx:02d}.png")
     _still_image_clip(img, duration, out)
+    autorepair.record_beat(idx, "card", [])
     return out
 
 
@@ -326,6 +334,7 @@ def _stock_fits(path: Path, story: str, line: str, query: str) -> bool:
     from .sharpness import clip_is_blurry
     if clip_is_blurry(path):
         print(f"[assemble] stock check REJECT (blurry / out of focus) for {query!r}: {path.name[:40]}")
+        autorepair.record_clip(path, "blurry", query)
         return False
     if not story:
         return True
@@ -334,9 +343,11 @@ def _stock_fits(path: Path, story: str, line: str, query: str) -> bool:
         ok = frame_fits(_frame_jpg(path, ".check.jpg"), story, line)
         verdict = "ok " if ok else ("REJECT" if ok is False else "REJECT (no check)")
         print(f"[assemble] stock check {verdict} for {query!r}: {path.name[:40]}")
+        autorepair.record_clip(path, "ok" if ok else ("reject" if ok is False else "nocheck"), query)
         return bool(ok)
     except Exception as e:  # noqa: BLE001
         print(f"[assemble] stock check failed ({str(e)[:80]}); clip rejected")
+        autorepair.record_clip(path, "nocheck", query)
         return False
 
 
@@ -489,6 +500,7 @@ def _build_multicut_beat(beat, duration: float, idx: int, run_dir: Path, plan: d
         parts.append(part)
     out = run_dir / f"beat_{idx:02d}.mp4"
     concat_clips(parts, out)
+    autorepair.record_beat(idx, "multicut", [shot["path"] for shot in shots])
     return out
 
 
@@ -873,6 +885,7 @@ def assemble_reel(
     date: str | None = None,
 ) -> Path:
     _check_full_narration_covered(timings, voiceover_wav)
+    autorepair.begin(run_dir)
 
     beats = script.all_beats
     try:
@@ -887,6 +900,10 @@ def assemble_reel(
         build_beat_clip(beat, timing.duration, i, run_dir, plans.get(i))
         for i, (beat, timing) in enumerate(zip(beats, timings))
     ]
+
+    # 2026-10-30: weak beats (one repeated still, a long static clip, a text card) are rebuilt from pictures the run already has
+    clips, repair_notes = autorepair.repair(run_dir, clips, [t.duration for t in timings])
+    (run_dir / "autorepair.txt").write_text("\n".join(repair_notes))
 
     body_video = run_dir / "body_video.mp4"
     concat_clips(clips, body_video)

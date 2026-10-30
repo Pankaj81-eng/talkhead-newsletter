@@ -230,3 +230,14 @@ def is_text_slide(frame_jpg) -> bool | None:
     prompt = ("Is this frame mainly a title card, logo, slide, caption screen or cropped text (not real "
               "footage of a place, object or person)? Answer with exactly one word: YES or NO.")
     return _ask_frame(frame_jpg, prompt)
+
+def is_real_footage(frame_jpg) -> bool | None:
+    """Is this frame a real photograph or real video footage, not a cartoon, drawing, illustration, icon, chart,
+    diagram or screenshot? Used only by the automatic picture repair (autorepair.py), which re-uses clips that
+    passed the story check earlier: on 2026-10-30 a flat vector BRAIN illustration had passed the story check for a
+    pancreatic-cancer video. True / False, or None when no vision model answered (callers then drop the clip)."""
+    prompt = ("Is this frame a real photograph or real video footage of the real world (people, rooms, equipment, "
+              "screens, streets)? Answer NO for cartoons, drawings, flat or vector illustrations, anatomy or medical "
+              "illustrations, icons, charts, diagrams, infographics, 3D renders, maps and slides. "
+              "Answer with exactly one word: YES or NO.")
+    return _ask_frame(frame_jpg, prompt)
