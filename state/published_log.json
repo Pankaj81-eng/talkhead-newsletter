@@ -2018,8 +2018,8 @@
     "source_url": "https://www.seattletimes.com/business/in-china-the-war-on-mosquitoes-has-entered-the-ai-era/",
     "category": "devices",
     "title": "Can a $1,000 Laser Really Zap Mosquitoes?",
-    "description": "What is In China, the War on Mosquitoes Has Entered the AI Era?\n\n\u26a0\ufe0f GENERIC: the brief has real percentages (94%) but the script cited none after 3 attempts -- consider rejecting and re-running.\n\nCan a $1,000 AI laser gun actually burn mosquitoes' wings off? This Chinese device uses self-driving car tech to spot and zap bugs, and it already has 5,000 orders. Would you let a laser protect your bedroom from buzzing bugs?",
-    "full_narration": "A $1,000 laser gun can burn a mosquito's wings off in a split second. The machine uses self-driving-car sensors to map the room and spot insects as tiny as a pea. When it sees a mosquito, AI decides it\u2019s safe and fires a Class 4 laser for just one-hundredth of a second. It already has 5,000 prepaid orders and plans to start mass production within weeks. Would you let a laser protect your bedroom from buzzing bugs?",
+    "description": "Can a $1,000 AI laser gun actually burn mosquitoes' wings off? This Chinese device uses self-driving car tech to spot and zap bugs, and it already has 5,000 orders. Would you let a laser protect your bedroom from buzzing bugs?",
+    "full_narration": "A 1,000-dollar laser gun can burn a mosquito's wings off in a split second. The machine uses self-driving-car sensors to map the room and spot insects as tiny as a pea. When it sees a mosquito, AI decides it\u2019s safe and fires a Class 4 laser for just one-hundredth of a second. It already has 5,000 prepaid orders and plans to start mass production within weeks. Would you let a laser protect your bedroom from buzzing bugs?",
     "hashtags": [
       "ai",
       "laser",
@@ -2033,6 +2033,8 @@
     "used_hero_image": true,
     "intro_variant": "none",
     "status": "awaiting_decision",
-    "generated_at": "2026-10-31T09:38:11.895791"
+    "generated_at": "2026-10-31T09:38:11.895791",
+    "note": "31 Oct: re-voiced sentence 1 ('1,000-dollar'), description cleaned of review warnings + junk opener, resent for approval",
+    "decided_at": "2026-10-31T09:53:20.460803"
   }
 ]

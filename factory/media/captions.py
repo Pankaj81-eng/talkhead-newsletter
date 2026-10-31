@@ -72,7 +72,16 @@ def align_to_script(words: list[dict], narration: str) -> list[dict]:
             for t, wt in zip(toks, weights):
                 end = at + (t1 - t0) * wt / total
                 out.append({"word": t, "start": float(at), "end": float(end)}); at = end
-        # "delete": Whisper-only noise word, drop.  "insert": script word never heard, skip.
+        elif op == "insert" and out and (j2 - j1) <= 2:
+            # 2026-10-31: Whisper writes a spoken "20 dollars" as "$20", so the script word "dollars" had no Whisper counterpart and
+            # the caption skipped it. A script word (or two) Whisper wrote differently takes a share of the previous word's time.
+            prev = out.pop()
+            toks = [prev["word"], *script_toks[j1:j2]]
+            weights = [max(len(norm(t)), 1) for t in toks]; total = sum(weights); at = prev["start"]
+            for t, wt in zip(toks, weights):
+                end = at + (prev["end"] - prev["start"]) * wt / total
+                out.append({**prev, "word": t, "start": float(at), "end": float(end)}); at = end
+        # "delete": Whisper-only noise word, drop.  Longer "insert" runs: script words never heard, skipped as before.
     return out or words
 
 

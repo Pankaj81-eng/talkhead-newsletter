@@ -178,10 +178,19 @@ def main() -> None:
 
         stage = "generate_script"
         script = generate_script(brief)
+        from factory.agents import script_agent as _script_agent
         from factory import llm as _llm
         script_provider = _llm.LAST_PROVIDER
         print(f"[daily_run] script written by: {script_provider or 'unknown'}")
         print(f"[daily_run] script: {script.word_count} words, title={script.title!r}")
+        # 2026-10-31: the voice skips symbols like "$" (it said "A 1000 laser gun"), so currency etc. are written out as words
+        # in the narration itself, which also makes the captions match what is heard
+        try:
+            from factory.media.spoken import apply_to_script
+            for _c in apply_to_script(script):
+                print(f"[daily_run] spoken form: {_c}")
+        except Exception as e:  # noqa: BLE001 -- never blocks the run
+            print(f"[daily_run] spoken-symbol rewrite skipped: {e}")
 
         stage = "voice"
         if os.getenv("FACTORY_VOICE_GUARD", "1") != "0":
@@ -239,16 +248,18 @@ def main() -> None:
                      f"Script was written by a backup model ({script_provider or 'unknown'}) because Gemini had no "
                      "quota. Read the script and check every fact and number before pressing Publish."),
         )
-        # Never blocks and never holds the video back: the video above is always sent as built (or as improved); this is
-        # only a note on what the repair changed and what it could not improve
-        if [n for n in repair_notes if "rebuilt" in n or "left as is" in n]:
+        # Notes for the reviewer, sent as their own message so nothing in the caption/description is a warning (2026-10-31: a
+        # "GENERIC" warning sat inside the description). Never blocks and never holds the video back: the video above is always
+        # sent as built (or as improved).
+        review_lines = [w.replace("⚠️ ", "") for w in _script_agent.LAST_REVIEW_WARNINGS]
+        review_lines += ["auto-repair improved: " + n for n in repair_notes if "rebuilt" in n]
+        review_lines += ["auto-repair could not improve: " + n.replace(", left as is", "") for n in repair_notes if "left as is" in n]
+        if review_lines:
             try:
-                lines = ["Auto-repair note (the video above is sent as built; nothing is blocked):"]
-                lines += ["- improved: " + n for n in repair_notes if "rebuilt" in n]
-                lines += ["- could not improve: " + n.replace(", left as is", "") for n in repair_notes if "left as is" in n]
-                send_text(token, chat_id, "\n".join(lines))
+                send_text(token, chat_id, "Review notes (NOT part of the caption; the video above is sent as built, nothing is blocked):\n- "
+                          + "\n- ".join(review_lines))
             except Exception as e:  # noqa: BLE001
-                print(f"[daily_run] auto-repair note not sent: {e}")
+                print(f"[daily_run] review notes not sent: {e}")
 
         stage = "log"
         _append_log({

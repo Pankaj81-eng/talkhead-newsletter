@@ -356,7 +356,16 @@ def _topic_percentages(topic: str) -> list[str]:
     return sorted(_pcts(topic))
 
 
+# Warnings for the reviewer (unverified numbers/names, "generic" script). They used to be written INTO the description, which
+# put "⚠️ GENERIC ..." into the copy-paste caption and, because the first line then no longer read as a clear opening, made
+# _ensure_clear_opening() prepend a junk "What is <headline>?" line to the public description (2026-10-31). Now they live here
+# and daily_run shows them in the Telegram caption only; the description stays clean.
+LAST_REVIEW_WARNINGS: list[str] = []
+
+
 def generate_script(topic: str, max_regeneration_attempts: int = 3) -> Script:
+    global LAST_REVIEW_WARNINGS
+    LAST_REVIEW_WARNINGS = []
     lo, hi = _word_budget()
     prompt = build_prompt(topic)
     topic_pcts = _topic_percentages(topic)
@@ -456,10 +465,8 @@ def generate_script(topic: str, max_regeneration_attempts: int = 3) -> Script:
             f"consider rejecting and re-running."
         )
     _tidy_text(script)
-    script.description = _clean_description(script.description)
-    if warnings:
-        script.description = "\n".join(warnings) + "\n\n" + script.description
-    script.description = _clean_description(_ensure_clear_opening(script.description, topic))
+    script.description = _clean_description(_ensure_clear_opening(_clean_description(script.description), topic))
+    LAST_REVIEW_WARNINGS = warnings
     return script
 
 
