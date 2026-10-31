@@ -2032,9 +2032,15 @@
     "metadata_path": "runs/44c86be13ade/metadata.txt",
     "used_hero_image": true,
     "intro_variant": "none",
-    "status": "awaiting_decision",
+    "status": "published",
     "generated_at": "2026-10-31T09:38:11.895791",
     "note": "31 Oct: re-voiced sentence 1 ('1,000-dollar'), description cleaned of review warnings + junk opener, resent for approval",
-    "decided_at": "2026-10-31T09:53:20.460803"
+    "decided_at": "2026-10-31T09:58:11.103544",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/Uf3zRE_G-cE",
+      "instagram_media_id": "18209108605323362",
+      "linkedin_post_id": "190041608014528512",
+      "linkedin_delivery": "PUBLISHED"
+    }
   }
 ]
