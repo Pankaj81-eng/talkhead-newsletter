@@ -2010,5 +2010,29 @@
       "linkedin_post_id": "189672809226567680",
       "linkedin_delivery": "PUBLISHED"
     }
+  },
+  {
+    "date": "2026-10-31",
+    "run_id": "44c86be13ade",
+    "story": "In China, the War on Mosquitoes Has Entered the AI Era",
+    "source_url": "https://www.seattletimes.com/business/in-china-the-war-on-mosquitoes-has-entered-the-ai-era/",
+    "category": "devices",
+    "title": "Can a $1,000 Laser Really Zap Mosquitoes?",
+    "description": "What is In China, the War on Mosquitoes Has Entered the AI Era?\n\n\u26a0\ufe0f GENERIC: the brief has real percentages (94%) but the script cited none after 3 attempts -- consider rejecting and re-running.\n\nCan a $1,000 AI laser gun actually burn mosquitoes' wings off? This Chinese device uses self-driving car tech to spot and zap bugs, and it already has 5,000 orders. Would you let a laser protect your bedroom from buzzing bugs?",
+    "full_narration": "A $1,000 laser gun can burn a mosquito's wings off in a split second. The machine uses self-driving-car sensors to map the room and spot insects as tiny as a pea. When it sees a mosquito, AI decides it\u2019s safe and fires a Class 4 laser for just one-hundredth of a second. It already has 5,000 prepaid orders and plans to start mass production within weeks. Would you let a laser protect your bedroom from buzzing bugs?",
+    "hashtags": [
+      "ai",
+      "laser",
+      "mosquito",
+      "technews",
+      "china"
+    ],
+    "video_path": "runs/44c86be13ade/final.mp4",
+    "thumbnail_path": "runs/44c86be13ade/thumbnail.jpg",
+    "metadata_path": "runs/44c86be13ade/metadata.txt",
+    "used_hero_image": true,
+    "intro_variant": "none",
+    "status": "awaiting_decision",
+    "generated_at": "2026-10-31T09:38:11.895791"
   }
 ]
