@@ -6,6 +6,7 @@ Every change has its own dated note and undo recipe in `ROLLBACK-2026-10-17.md`.
 ## Open (not fixed yet)
 | Seen | Problem | Why it happens | Proposed fix |
 |---|---|---|---|
+| 1 Nov | A stock clip REJECTED by the picture check (rescue team in rubble, looks like construction) was still used: it filled an 11 s single-clip beat | `assemble._build_single_beat_clip` only checks blur (and the hook subject); the vision check runs only on the multi-cut path | Run the same stock check (`_stock_fits`) before a single-clip beat uses a stock clip, and fall to the auto-repair pool when it fails |
 | 25 Oct | The article's own photos (guide-dog man, legged robot) were unused while weaker stock was shown | Article images are handed out in file order on every other beat, not matched to what each line says | IN PROGRESS on branch `wip/image-matching` (not on main): describe each picture once, one text-model call matches pictures to lines; unit-tested (13 checks) and tried on 3 real videos; waiting for a day with fresh picture-model quota to finish the end-to-end test |
 | 21 Oct | Related-story/sidebar images (e.g. The Verge "Most popular") can be taken as the story's own | The heading filter in `article_images.py` is short; the longer filter was REVERTED in the 18 Oct rollback | Re-apply the extended filter (tested: 13 candidates -> 1 on The Verge, no change on 13 other sites) |
 | 21 Oct | A voice freeze at the last sentence (two runs) | Unknown; both stopped on the short closing question | Per-sentence time limit in `voice_guard.py` |
