@@ -2042,5 +2042,30 @@
       "linkedin_post_id": "190041608014528512",
       "linkedin_delivery": "PUBLISHED"
     }
+  },
+  {
+    "date": "2026-11-01",
+    "run_id": "1a60b550c007",
+    "story": "Watch: Swiss researchers unveil robot hand that walks on its fingers",
+    "source_url": "https://tech.yahoo.com/science/articles/watch-swiss-researchers-unveil-robot-175053677.html",
+    "category": "robots",
+    "title": "Why Did Scientists Build a Walking Robot Hand?",
+    "description": "Swiss researchers built a robot hand that walks on its fingers using computer simulations. The hand can crawl over obstacles, push objects, and type on keyboards to help in disaster areas. Would you want a crawling robotic hand in your home?",
+    "full_narration": "Swiss researchers just built a disembodied robotic hand that walks on its fingers. Instead of programming every single movement, scientists used computer simulations to let the hand teach itself how to balance and walk. It can crawl across different surfaces, push objects, stand back up after falling, and even type on a computer keyboard. While holiday tech deals offer a 15% discount on audio gadgets, researchers say tiny walking hands could eventually navigate tight disaster zones. Would you want a crawling robotic hand in your home?",
+    "hashtags": [
+      "robotics",
+      "tech",
+      "ai",
+      "switzerland",
+      "engineering",
+      "innovation"
+    ],
+    "video_path": "runs/1a60b550c007/final.mp4",
+    "thumbnail_path": "runs/1a60b550c007/thumbnail.jpg",
+    "metadata_path": "runs/1a60b550c007/metadata.txt",
+    "used_hero_image": true,
+    "intro_variant": "none",
+    "status": "awaiting_decision",
+    "generated_at": "2026-11-01T07:30:45.178669"
   }
 ]
