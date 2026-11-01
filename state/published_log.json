@@ -2051,7 +2051,7 @@
     "category": "robots",
     "title": "Why Did Scientists Build a Walking Robot Hand?",
     "description": "Swiss researchers built a robot hand that walks on its fingers using computer simulations. The hand can crawl over obstacles, push objects, and type on keyboards to help in disaster areas. Would you want a crawling robotic hand in your home?",
-    "full_narration": "Swiss researchers just built a disembodied robotic hand that walks on its fingers. Instead of programming every single movement, scientists used computer simulations to let the hand teach itself how to balance and walk. It can crawl across different surfaces, push objects, stand back up after falling, and even type on a computer keyboard. While holiday tech deals offer a 15% discount on audio gadgets, researchers say tiny walking hands could eventually navigate tight disaster zones. Would you want a crawling robotic hand in your home?",
+    "full_narration": "Swiss researchers just built a disembodied robotic hand that walks on its fingers. Instead of programming every single movement, scientists used computer simulations to let the hand teach itself how to balance and walk. It can crawl across different surfaces, push objects, stand back up after falling, and even type on a computer keyboard. Researchers say tiny walking hands could eventually reach confined disaster spaces where big robots can't go. Would you want a crawling robotic hand in your home?",
     "hashtags": [
       "robotics",
       "tech",
@@ -2065,7 +2065,15 @@
     "metadata_path": "runs/1a60b550c007/metadata.txt",
     "used_hero_image": true,
     "intro_variant": "none",
-    "status": "awaiting_decision",
-    "generated_at": "2026-11-01T07:30:45.178669"
+    "status": "published",
+    "generated_at": "2026-11-01T07:30:45.178669",
+    "note": "1 Nov: sentence 4 replaced (it quoted a sidebar ad); only that sentence re-voiced; beats 2-3 re-cut with related robot clips (no construction/rubble clip, shorter keyboard); resent for approval",
+    "decided_at": "2026-11-01T09:06:40.209657",
+    "publish_result": {
+      "youtube_url": "https://youtube.com/shorts/W_N-Ca15SK0",
+      "instagram_media_id": "18357757600174655",
+      "linkedin_post_id": "190391031877861376",
+      "linkedin_delivery": "PUBLISHED"
+    }
   }
 ]
