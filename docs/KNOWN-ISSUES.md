@@ -15,6 +15,7 @@ Every change has its own dated note and undo recipe in `ROLLBACK-2026-10-17.md`.
 ## Fixed (watch the next videos)
 | Seen | Problem | Fix | Date |
 |---|---|---|---|
+| 1 Nov | Script used a headphones ad from the article page ("15% discount on audio gadgets"); the percentage nudge itself pushed it | Prompt rule to use only the headline story's facts + percentage nudge limited to the headline story's own percentages (`script_agent._topic_percentages`). First real run with it: 2 Nov | 1 Nov |
 | 31 Oct | Voice skipped the "$" ("A 1000 laser gun") | Narration is rewritten with currency etc. as words before voice and captions (`factory/media/spoken.py`); caption aligner keeps the added word. First real daily run with it: 1 Nov | 31 Oct |
 | 31 Oct | A reviewer warning ("GENERIC ...") sat inside the description/caption and caused a junk "What is <headline>?" first line in the public description | Warnings kept apart (`LAST_REVIEW_WARNINGS`) and sent as a separate review-notes message | 31 Oct |
 | 27-30 Oct | Every video needed a hand repair: one repeated still (hero image with a play icon) or one static clip for 8-14 s, because picture checks reject most clips on the free quota | Automatic picture repair before the Telegram gate (`factory/media/autorepair.py`): weak beats rebuilt from unused article photos and clips that passed this run's check; unfixable ones are sent as built with a Telegram note (never blocked); `FACTORY_AUTOREPAIR=0` turns it off. NOT yet seen in a real run | 30 Oct |

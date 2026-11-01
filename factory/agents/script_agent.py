@@ -51,6 +51,12 @@ explainable facts in the brief above -- not the longest list you can
 find, the ones that will actually land with a total beginner.
 
 Hard requirements:
+- STAY ON THE HEADLINE STORY (the brief's first line). The "Full source article text" is a raw web page: after the real article
+  it often carries sidebar and footer material -- ads and promo blurbs (discounts, "shop now", product deals), "related",
+  "trending" or "more from" headlines about OTHER stories, newsletter boxes, cookie text. Use ONLY facts about the headline
+  story. Never use a number, offer, product, company, name or claim that comes from a promo or from another story, even if it
+  looks interesting; if a fact is not clearly about THIS story, leave it out. (Real failure, 2026-11-01: a robot-hand video
+  said "holiday tech deals offer a 15% discount on audio gadgets", taken from a headphones ad in the page's sidebar.)
 - Total narration across hook + body must be between {lo} and {hi} words
   (at ~{config.WORDS_PER_SECOND} words/sec, this lands the video in the
   {config.MIN_SECONDS:.0f}-{config.SAFE_MAX_SECONDS:.0f} second range).
@@ -352,8 +358,28 @@ def _unverified_percentages(script: Script, topic: str) -> list[str]:
     return sorted(_pcts(script.full_narration) - _pcts(topic))
 
 
+_KEY_WORD_RE = re.compile(r"[a-z]{5,}")
+_KEY_STOP = {"about", "after", "their", "there", "these", "those", "which", "would", "could", "should", "other", "while", "where",
+             "first", "years", "people", "source", "watch", "article", "full", "text", "additional", "facts", "numbers", "real"}
+
+
 def _topic_percentages(topic: str) -> list[str]:
-    return sorted(_pcts(topic))
+    """Percentages the script should be pushed to cite. Only those that belong to the HEADLINE STORY: the brief's text is a
+    raw web page, and a percentage in a sidebar ad ("15% holiday discount" on a headphones promo, 2026-11-01) or another
+    story used to count, so the retry nudge ("being generic is a failure") made the model put the ad into the video. A
+    percentage counts only if the words around it share three significant words with the headline + summary (the brief's opening).
+    The check that the narration's own percentages exist in the brief (_unverified_percentages) is unchanged."""
+    head = re.sub(r"source:\s*\S+", " ", topic[:700], flags=re.IGNORECASE).lower()     # the link's words are not story words
+    story_words = set(_KEY_WORD_RE.findall(head)) - _KEY_STOP
+    keep: set[str] = set()
+    for m in _PERCENT_RE.finditer(topic):
+        if m.start() < 700:                                    # in the headline / summary itself
+            keep |= _pcts(m.group())
+            continue
+        around = set(_KEY_WORD_RE.findall(topic[max(0, m.start() - 160):m.end() + 160].lower())) - _KEY_STOP
+        if len(around & story_words) >= 3:
+            keep |= _pcts(m.group())
+    return sorted(keep)
 
 
 # Warnings for the reviewer (unverified numbers/names, "generic" script). They used to be written INTO the description, which
